@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">FullProject</string>
+    <string name="music">music</string>
+    <string name="nameMusic">Name of music</string>
+    <string name="artist">Artist</string>
+    <string name="imageD">No image</string>
+    <string name="startTime">00:00</string>
+    <string name="EndTime">04:27</string>
+</resources>
