@@ -4,11 +4,12 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.fullproject.R
 import com.example.fullproject.databinding.ActivityMainScreenBinding
-
+import com.example.fullproject.screens.MusicPlayerFragment
+import com.example.fullproject.screens.MusicPlayerFragment2
 
 
 class MainActivity :AppCompatActivity(){
-    lateinit var binding: ActivityMainScreenBinding
+    private lateinit var binding: ActivityMainScreenBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,11 +17,10 @@ class MainActivity :AppCompatActivity(){
 
         if(savedInstanceState == null){
             supportFragmentManager.beginTransaction()
-                .add(R.id.fragmentContainer, MusicPlayerFragment())
+                .add(R.id.fragmentContainer, MusicPlayerFragment2())
                 .commit()
         }
     }
-
 }
 
 

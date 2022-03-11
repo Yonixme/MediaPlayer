@@ -1,4 +1,4 @@
-package com.example.fullproject.tasks
+package com.example.fullproject.screens
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,80 +14,78 @@ import android.os.Looper
 import android.util.Log
 import android.widget.SeekBar
 import com.example.fullproject.R
+import com.example.fullproject.model.PlaylistSound
+import com.example.fullproject.tasks.MusicNavigator
 
 class MusicPlayerFragment : Fragment() {
-    lateinit var binding: FragmentMusicPlayerBinding
+    private lateinit var binding: FragmentMusicPlayerBinding
+//    val playList = PlayList(context)
+    private val song = Song(R.raw.crush)
+    private val songs = mutableListOf(song)
+   // val playlist = PlaylistSound(context,songs)
     private var mp: MediaPlayer? = null
-    private var isPlay : Boolean = true
-    val song = Song(R.raw.crush)
+    private var isPlay: Boolean = true
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         binding = FragmentMusicPlayerBinding.inflate(inflater, container, false)
-        controlSound(song.currentSong)
+        controlSound(song)
         return binding.root
     }
 
-    private fun controlSound(id:Int){
-        binding.play.setOnClickListener{
-            if(mp == null){
-                mp = MediaPlayer.create(context,id)
-                Log.d("MainActivity", "ID: ${mp!!.audioSessionId}")
-                initialiseSeekBar()
-            }
-            mp?.start()
-            binding.timeAll.text = nowTime(mp!!.duration)
-            if(!isPlay) isPlay = !isPlay
+    private fun controlSound(song: Song) {
+        binding.play.setOnClickListener {
+            playSound(song.id)
         }
 
         binding.pause.setOnClickListener {
-            if (mp !== null) {
-                mp?.pause()
-            }
-            if(isPlay) isPlay = !isPlay
+            pauseSound()
         }
-        binding.stop.setOnClickListener{
-            if(mp !== null){
-                mp?.stop()
-                mp?.reset()
-                mp?.release()
-                mp = null
-                updateUI(0)
-            }
+        binding.stop.setOnClickListener {
+            stopSound()
         }
-        binding.timeView.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
+
+        binding.timeView.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if(fromUser){
+                if (fromUser) {
+                    mp?.seekTo(progress)
                     val currentPosition = mp?.currentPosition ?: 0
                     updateUI(currentPosition)
-                    mp?.seekTo(progress)
                 }
             }
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                if(isPlay) mp?.pause()
+                if (isPlay) mp?.pause()
             }
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                if(isPlay) mp?.start()
+                if (isPlay) mp?.start()
             }
         })
     }
 
-    private fun initialiseSeekBar(){
+
+    private fun initialiseSeekBar() {
         binding.timeView.max = mp!!.duration
 
         val handler = Handler(Looper.getMainLooper())
-        handler.postDelayed(object: Runnable{
+        handler.postDelayed(object : Runnable {
             override fun run() {
                 try {
                     val currentPosition = mp?.currentPosition ?: 0
                     updateUI(currentPosition)
                     handler.postDelayed(this, 1000)
-                }catch (e: Exception){
+                } catch (e: Exception) {
                     val currentPosition = 0
                     updateUI(currentPosition)
                 }
             }
         }, 0)
     }
+
     private fun updateUI(currentPosition: Int) {
         binding.timeView.progress = currentPosition
         binding.timeNow.text = nowTime(currentPosition)
@@ -106,7 +104,35 @@ class MusicPlayerFragment : Fragment() {
         else "$minute:0$seconds"
     }
 
-    companion object{
+     private fun playSound(id: Int) {
+        if (mp == null) {
+            mp = MediaPlayer.create(context, id)
+            Log.d("MainActivity", "ID: ${mp!!.audioSessionId}")
+            initialiseSeekBar()
+        }
+        mp?.start()
+        binding.timeAll.text = nowTime(mp!!.duration)
+        if (!isPlay) isPlay = !isPlay
+    }
+
+    private fun pauseSound() {
+        if (mp !== null) {
+            mp?.pause()
+        }
+        if (isPlay) isPlay = !isPlay
+    }
+
+    private fun stopSound() {
+        if (mp !== null) {
+            mp?.stop()
+            mp?.reset()
+            mp?.release()
+            mp = null
+            updateUI(0)
+        }
+    }
+
+    companion object {
 
         private const val ARG = "ARG"
 
@@ -116,3 +142,4 @@ class MusicPlayerFragment : Fragment() {
 
     }
 }
+
