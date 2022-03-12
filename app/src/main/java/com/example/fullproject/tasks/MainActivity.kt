@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.fullproject.R
 import com.example.fullproject.databinding.ActivityMainScreenBinding
 import com.example.fullproject.screens.MusicPlayerFragment
-import com.example.fullproject.screens.MusicPlayerFragment2
 
 
 class MainActivity :AppCompatActivity(){
@@ -17,7 +16,7 @@ class MainActivity :AppCompatActivity(){
 
         if(savedInstanceState == null){
             supportFragmentManager.beginTransaction()
-                .add(R.id.fragmentContainer, MusicPlayerFragment2())
+                .add(R.id.fragmentContainer, MusicPlayerFragment())
                 .commit()
         }
     }

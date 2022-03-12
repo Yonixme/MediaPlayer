@@ -2,11 +2,8 @@ package com.example.fullproject.model
 
 import android.content.Context
 import android.media.MediaPlayer
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
+import android.os.CountDownTimer
 import com.example.fullproject.tasks.MusicNavigator
-import java.lang.Exception
 
 typealias UPUI = () -> Unit
 
@@ -16,19 +13,22 @@ class PlaylistSound(
     private val updateUI: UPUI
     ): MusicNavigator{
 
+    private lateinit var countTimer : CountDownTimer
     private var mp: MediaPlayer? = null
-    private var isPlay: Boolean = true
-    var currentPosition: Int = 0
-    var musicTime: Int = 0
+    private var isPlay: Boolean = false
+    private var isTimerRun: Boolean = false
+
+    var currentPositionInMillis: Int = 0
+        private set
+    var musicTimeInMillis: Int = 0
+        private set
 
     override fun playSoundPlayer(id: Int) {
-        Log.d("MainActivity", "playSoundPlayer sssssss")
         if(context != null){
             if (mp == null) {
                 mp = MediaPlayer.create(context, id)
-                Log.d("MainActivity", "playSoundPlayer")
-                startTimer()
             }
+            startTimer()
             mp?.start()
             updateUI()
             if (!isPlay) isPlay = !isPlay
@@ -37,56 +37,63 @@ class PlaylistSound(
 
     override fun pauseSoundPlayer() {
         if (mp !== null) {
+            stopTimer()
             mp?.pause()
         }
         if (isPlay) isPlay = !isPlay
-        Log.d("MainActivity", "pauseSoundPlayer")
     }
 
     override fun stopSoundPlayer() {
         if (mp !== null) {
+            stopTimer()
             mp?.stop()
             mp?.reset()
             mp?.release()
             mp = null
+            currentPositionInMillis = 0
+            musicTimeInMillis = 0
+            updateUI()
         }
-        updateUI()
-        Log.d("MainActivity", "stopSoundPlayer")
     }
 
-    fun playSound(progress: Int){
-        currentPosition = progress
+    fun setTimeSound(progress: Int){
+        currentPositionInMillis = progress
         mp?.seekTo(progress)
         updateUI()
-        Log.d("MainActivity", "playSound${progress}")
     }
 
-    fun pauseSound(){
+    fun pauseTimeSound(){
         if (isPlay) mp?.pause()
-        Log.d("MainActivity", "pauseSound")
+        stopTimer()
     }
 
-    fun continueSound(){
-        if (isPlay) mp?.start()
-        Log.d("MainActivity", "continueSound")
+    fun continueTimeSound(){
+        if (isPlay) {
+            mp?.start()
+            startTimer()
+        }
     }
 
-    private fun startTimer() {
-        musicTime = mp!!.duration
-        val handler = Handler(Looper.getMainLooper())
-        handler.postDelayed(object : Runnable {
-            override fun run() {
-                try {
-                    currentPosition = mp?.currentPosition ?: 0
-                    Log.d("MainActivity", "handler.postDelayed(object : Runnable ${mp?.currentPosition}")
-                    updateUI()
-                    handler.postDelayed(this, 1000)
-                } catch (e: Exception) {
-                    currentPosition = 0
-                    updateUI()
-                }
+    private fun stopTimer(){
+        if(!isTimerRun) return
+        countTimer.cancel()
+        isTimerRun = false
+    }
+
+    private fun startTimer(){
+        musicTimeInMillis = mp!!.duration
+        if (isTimerRun) return
+        countTimer = object : CountDownTimer((musicTimeInMillis - currentPositionInMillis).toLong(), 1000L){
+            override fun onTick(millisUntilFinished: Long) {
+                currentPositionInMillis = mp?.currentPosition ?: 0
+                updateUI()
             }
-        }, 0)
+            override fun onFinish() {
+                stopSoundPlayer()
+            }
+        }
+        countTimer.start()
+        isTimerRun = true
     }
 
     override fun add(song: Song) {
