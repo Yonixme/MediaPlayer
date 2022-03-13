@@ -9,14 +9,14 @@ import com.example.fullproject.databinding.FragmentMusicPlayerBinding
 import com.example.fullproject.model.Song
 import android.widget.SeekBar
 import com.example.fullproject.R
-import com.example.fullproject.model.PlaylistSound
+import com.example.fullproject.model.ControlSound
 import com.example.fullproject.tasks.millisToMinute
 
 class MusicPlayerFragment : Fragment() {
     private lateinit var binding: FragmentMusicPlayerBinding
+    private lateinit var controlSound : ControlSound
     private val song = Song(R.raw.crush)
     private val songs = mutableListOf(song)
-    lateinit var playlist : PlaylistSound
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -24,46 +24,50 @@ class MusicPlayerFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMusicPlayerBinding.inflate(inflater, container, false)
-        playlist = PlaylistSound(context,songs){updateUI()}
-        controlSound(playlist.playlist[0])
+        controlSound = ControlSound(context,songs){updateUI()}
+        controlSound(controlSound.playlist[0])
         return binding.root
     }
 
     private fun controlSound(song: Song) {
         binding.play.setOnClickListener {
-           playlist.playSoundPlayer(song.id)
+           controlSound.playSoundPlayer(song.id)
         }
 
         binding.pause.setOnClickListener {
-            playlist.pauseSoundPlayer()
+            controlSound.pauseSoundPlayer()
         }
         binding.stop.setOnClickListener {
-            playlist.stopSoundPlayer()
+            controlSound.stopSoundPlayer()
         }
 
         binding.timeView.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
-                    playlist.setTimeSound(progress)
+                    controlSound.setTimeSound(progress)
                 }
             }
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                playlist.pauseTimeSound()
+                controlSound.pauseTimeSound()
             }
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                playlist.continueTimeSound()
+                controlSound.continueTimeSound()
             }
         })
     }
 
 
     private fun updateUI() {
-        binding.timeView.progress = playlist.currentPositionInMillis
-        binding.timeNow.text = millisToMinute(playlist.currentPositionInMillis)
-        binding.timeAll.text = millisToMinute(playlist.musicTimeInMillis)
+        binding.timeView.progress = controlSound.currentPositionInMillis
 
-        if(binding.timeView.max != playlist.musicTimeInMillis)
-        binding.timeView.max = playlist.musicTimeInMillis
+        if(binding.timeNow.text != millisToMinute(controlSound.currentPositionInMillis))
+        binding.timeNow.text = millisToMinute(controlSound.currentPositionInMillis)
+
+        if(binding.timeAll.text != millisToMinute(controlSound.musicTimeInMillis))
+        binding.timeAll.text = millisToMinute(controlSound.musicTimeInMillis)
+
+        if(binding.timeView.max != controlSound.musicTimeInMillis)
+        binding.timeView.max = controlSound.musicTimeInMillis
     }
 
     companion object {

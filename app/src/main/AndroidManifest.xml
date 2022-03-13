@@ -12,7 +12,6 @@
 
         android:theme="@style/Theme.FullProject">
         <activity android:name=".tasks.MainActivity"
-            android:configChanges="orientation"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

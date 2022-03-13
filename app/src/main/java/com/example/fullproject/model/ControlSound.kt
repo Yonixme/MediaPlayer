@@ -7,7 +7,7 @@ import com.example.fullproject.tasks.MusicNavigator
 
 typealias UPUI = () -> Unit
 
-class PlaylistSound(
+class ControlSound(
     private var context: Context?,
     val playlist: MutableList<Song>,
     private val updateUI: UPUI
@@ -27,6 +27,7 @@ class PlaylistSound(
         if(context != null){
             if (mp == null) {
                 mp = MediaPlayer.create(context, id)
+                musicTimeInMillis = mp!!.duration
             }
             startTimer()
             mp?.start()
@@ -81,7 +82,6 @@ class PlaylistSound(
     }
 
     private fun startTimer(){
-        musicTimeInMillis = mp!!.duration
         if (isTimerRun) return
         countTimer = object : CountDownTimer((musicTimeInMillis - currentPositionInMillis).toLong(), 1000L){
             override fun onTick(millisUntilFinished: Long) {
