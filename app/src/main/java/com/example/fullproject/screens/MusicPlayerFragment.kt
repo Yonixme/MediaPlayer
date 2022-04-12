@@ -9,7 +9,10 @@ import com.example.fullproject.databinding.FragmentMusicPlayerBinding
 import com.example.fullproject.model.Song
 import android.widget.SeekBar
 import com.example.fullproject.R
+import com.example.fullproject.databinding.AppBarMainBinding
 import com.example.fullproject.model.ControlSound
+import com.example.fullproject.tasks.listFilesWithSubFolders
+import com.example.fullproject.tasks.listFilesWithSubFolders2
 import com.example.fullproject.tasks.millisToMinute
 
 class MusicPlayerFragment : Fragment() {
@@ -18,24 +21,28 @@ class MusicPlayerFragment : Fragment() {
     private val song = Song(R.raw.crush)
     private val songs = mutableListOf(song)
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        controlSound = ControlSound(context,songs){updateUI()}
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMusicPlayerBinding.inflate(inflater, container, false)
-        controlSound = ControlSound(context,songs){updateUI()}
         controlSound(controlSound.playlist[0])
         return binding.root
     }
 
     private fun controlSound(song: Song) {
-        binding.play.setOnClickListener {
-           controlSound.playSoundPlayer(song.id)
-        }
-
-        binding.pause.setOnClickListener {
-            controlSound.pauseSoundPlayer()
+        binding.playOrPause.setOnClickListener {
+            if(!controlSound.isPlay) {
+                controlSound.playSoundPlayer(song.id)
+            }
+            else {
+                controlSound.pauseSoundPlayer()
+            }
         }
         binding.stop.setOnClickListener {
             controlSound.stopSoundPlayer()
@@ -58,17 +65,27 @@ class MusicPlayerFragment : Fragment() {
 
 
     private fun updateUI() {
+        val files = listFilesWithSubFolders2()
+        for(f in files!!){
+            binding.nameMusicHeader.text = f.isFile.toString()
+        }
         binding.timeView.progress = controlSound.currentPositionInMillis
 
-        if(binding.timeNow.text != millisToMinute(controlSound.currentPositionInMillis))
-        binding.timeNow.text = millisToMinute(controlSound.currentPositionInMillis)
+        if(binding.currentTime.text != millisToMinute(controlSound.currentPositionInMillis))
+        binding.currentTime.text = millisToMinute(controlSound.currentPositionInMillis)
 
         if(binding.timeAll.text != millisToMinute(controlSound.musicTimeInMillis))
         binding.timeAll.text = millisToMinute(controlSound.musicTimeInMillis)
 
         if(binding.timeView.max != controlSound.musicTimeInMillis)
         binding.timeView.max = controlSound.musicTimeInMillis
+
+        if(!controlSound.isPlay)
+            binding.playOrPause.setImageResource(R.drawable.ic_play)
+        else
+            binding.playOrPause.setImageResource(R.drawable.ic_pause)
     }
+
 
     companion object {
 

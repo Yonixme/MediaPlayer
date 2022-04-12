@@ -1,8 +1,7 @@
-package com.example.fullproject.tasks
+package com.example.fullproject
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.fullproject.R
 import com.example.fullproject.databinding.ActivityMainScreenBinding
 import com.example.fullproject.screens.MusicPlayerFragment
 

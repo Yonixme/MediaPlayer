@@ -1,5 +1,6 @@
 package com.example.fullproject.tasks
 
+import android.os.Environment
 import java.io.File
 
 fun millisToMinute(progress: Int): String {
@@ -16,11 +17,20 @@ fun millisToMinute(progress: Int): String {
 }
 
     fun listFilesWithSubFolders(dir: File): MutableList<File>? {
+        var f = Environment.getExternalStorageDirectory()
         val files = mutableListOf<File>()
-        for (file in dir.listFiles()) {
+        for (file in f.listFiles()) {
             if (file.isDirectory) files.addAll(listFilesWithSubFolders(file)!!) else files.add(
                 file
             )
+        }
+        return files
+    }
+fun listFilesWithSubFolders2(): MutableList<File>? {
+        var f = Environment.getExternalStorageDirectory()
+        val files = mutableListOf<File>()
+        for (file in f.listFiles()) {
+            if (file.isDirectory)files.add(file)
         }
         return files
     }

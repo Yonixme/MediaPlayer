@@ -2,22 +2,24 @@ package com.example.fullproject.model
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.CountDownTimer
-import com.example.fullproject.tasks.MusicNavigator
+import com.example.fullproject.MusicNavigator
 
-typealias UPUI = () -> Unit
+typealias UpdateUI= () -> Unit
 
 class ControlSound(
     private var context: Context?,
     val playlist: MutableList<Song>,
-    private val updateUI: UPUI
-    ): MusicNavigator{
+    private val updateUI: UpdateUI
+    ): MusicNavigator {
 
     private lateinit var countTimer : CountDownTimer
     private var mp: MediaPlayer? = null
-    private var isPlay: Boolean = false
     private var isTimerRun: Boolean = false
 
+    var isPlay: Boolean = false
+        private set
     var currentPositionInMillis: Int = 0
         private set
     var musicTimeInMillis: Int = 0
@@ -31,8 +33,21 @@ class ControlSound(
             }
             startTimer()
             mp?.start()
-            updateUI()
             if (!isPlay) isPlay = !isPlay
+            updateUI()
+        }
+    }
+
+    fun playSoundPlayer2(uri: Uri) {
+        if(context != null){
+            if (mp == null) {
+                mp = MediaPlayer.create(context, uri)
+                musicTimeInMillis = mp!!.duration
+            }
+            startTimer()
+            mp?.start()
+            if (!isPlay) isPlay = !isPlay
+            updateUI()
         }
     }
 
@@ -40,8 +55,9 @@ class ControlSound(
         if (mp !== null) {
             stopTimer()
             mp?.pause()
+            if (isPlay) isPlay = !isPlay
+            updateUI()
         }
-        if (isPlay) isPlay = !isPlay
     }
 
     override fun stopSoundPlayer() {
@@ -53,6 +69,7 @@ class ControlSound(
             mp = null
             currentPositionInMillis = 0
             musicTimeInMillis = 0
+            isPlay = false
             updateUI()
         }
     }
@@ -64,8 +81,10 @@ class ControlSound(
     }
 
     fun pauseTimeSound(){
-        if (isPlay) mp?.pause()
-        stopTimer()
+        if (isPlay) {
+            mp?.pause()
+            stopTimer()
+        }
     }
 
     fun continueTimeSound(){

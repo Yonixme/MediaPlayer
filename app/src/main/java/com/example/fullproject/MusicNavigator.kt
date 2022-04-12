@@ -1,4 +1,4 @@
-package com.example.fullproject.tasks
+package com.example.fullproject
 
 import android.content.Context
 import com.example.fullproject.model.Song
