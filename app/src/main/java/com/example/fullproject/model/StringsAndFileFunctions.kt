@@ -17,19 +17,16 @@ fun millisToMinute(progress: Int): String {
 }
 
     fun listFilesWithSubFolders(dir: File): MutableList<File>? {
-        var f = Environment.getExternalStorageDirectory()
         val files = mutableListOf<File>()
-        for (file in f.listFiles()) {
-            if (file.isDirectory) files.addAll(listFilesWithSubFolders(file)!!) else files.add(
-                file
-            )
+        for (file in dir.listFiles()) {
+            if (file.isDirectory) files.addAll(listFilesWithSubFolders(file)!!) else files.add(file)
         }
         return files
     }
-fun listFilesWithSubFolders2(): MutableList<File>? {
-        var f = Environment.getExternalStorageDirectory()
+
+fun listFilesWithSubFolders2(dir: File): MutableList<File>? {
         val files = mutableListOf<File>()
-        for (file in f.listFiles()) {
+        for (file in dir.listFiles()) {
             if (file.isDirectory)files.add(file)
         }
         return files

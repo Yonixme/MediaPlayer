@@ -8,7 +8,7 @@ import com.example.fullproject.MusicNavigator
 
 typealias UpdateUI= () -> Unit
 
-class ControlSound(
+class SoundService(
     private var context: Context?,
     val playlist: MutableList<Song>,
     private val updateUI: UpdateUI
@@ -20,16 +20,16 @@ class ControlSound(
 
     var isPlay: Boolean = false
         private set
-    var currentPositionInMillis: Int = 0
+    var currentPositionInMillis: Long = 0
         private set
-    var musicTimeInMillis: Int = 0
+    var musicTimeInMillis: Long = 0
         private set
 
-    override fun playSoundPlayer(id: Int) {
+    override fun onSoundPlay(id: Int) {
         if(context != null){
             if (mp == null) {
                 mp = MediaPlayer.create(context, id)
-                musicTimeInMillis = mp!!.duration
+                musicTimeInMillis = (mp!!.duration).toLong()
             }
             startTimer()
             mp?.start()
@@ -42,7 +42,7 @@ class ControlSound(
         if(context != null){
             if (mp == null) {
                 mp = MediaPlayer.create(context, uri)
-                musicTimeInMillis = mp!!.duration
+                musicTimeInMillis = (mp!!.duration).toLong()
             }
             startTimer()
             mp?.start()
@@ -51,7 +51,7 @@ class ControlSound(
         }
     }
 
-    override fun pauseSoundPlayer() {
+    override fun onSoundPause() {
         if (mp !== null) {
             stopTimer()
             mp?.pause()
@@ -60,7 +60,7 @@ class ControlSound(
         }
     }
 
-    override fun stopSoundPlayer() {
+    override fun onSoundStop() {
         if (mp !== null) {
             stopTimer()
             mp?.stop()
@@ -74,9 +74,9 @@ class ControlSound(
         }
     }
 
-    fun setTimeSound(progress: Int){
+    fun setTimeSound(progress: Long){
         currentPositionInMillis = progress
-        mp?.seekTo(progress)
+        mp?.seekTo(progress.toInt())
         updateUI()
     }
 
@@ -102,25 +102,21 @@ class ControlSound(
 
     private fun startTimer(){
         if (isTimerRun) return
-        countTimer = object : CountDownTimer((musicTimeInMillis - currentPositionInMillis).toLong(), 1000L){
+        countTimer = object : CountDownTimer(musicTimeInMillis - currentPositionInMillis, 1000L){
             override fun onTick(millisUntilFinished: Long) {
-                currentPositionInMillis = mp?.currentPosition ?: 0
+                currentPositionInMillis = (mp?.currentPosition ?: 0).toLong()
                 updateUI()
             }
             override fun onFinish() {
-                stopSoundPlayer()
+                onSoundStop()
             }
         }
         countTimer.start()
         isTimerRun = true
     }
 
-    override fun add(song: Song) {
-        playlist.add(song)
+    fun updateCurrentPosition() {
+        currentPositionInMillis = (mp?.currentPosition ?: 0).toLong()
     }
 
-
-    override fun delete(song: Song) {
-        playlist.remove(song)
-    }
 }

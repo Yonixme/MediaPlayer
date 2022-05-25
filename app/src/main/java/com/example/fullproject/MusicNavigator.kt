@@ -4,13 +4,9 @@ import android.content.Context
 import com.example.fullproject.model.Song
 
 interface MusicNavigator {
-    fun playSoundPlayer(id: Int)
+    fun onSoundPlay(id: Int)
 
-    fun pauseSoundPlayer()
+    fun onSoundPause()
 
-    fun stopSoundPlayer()
-
-    fun add(song: Song)
-
-    fun delete(song: Song)
+    fun onSoundStop()
 }
