@@ -61,14 +61,11 @@ class MusicPlayerFragment : Fragment() {
 
                 val file = File("/storage/emulated/0/Download")
                 Log.d("  file", "${file.isFile}")
-//                val d = File(file.absolutePath + "/muzika_dlja__bez_avtorskih_prav_-_ap_-_pty_(z2.fm).mp3")
-//                Log.d("  file", "${d.isFile}")
                 for (f in file.listFiles())
                     Log.d("  files", "${f.name}")
                 for (f in file.listFiles())
                     Log.d("  files", "${f.absolutePath}")
             }
-
 
         binding.timeView.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
