@@ -15,8 +15,6 @@ class MusicPlayerModel(
 ) : ViewModel(){
     private lateinit var countTimer : CountDownTimer
 
-    private val _songs = MutableLiveData<List<Song>>()
-    val songs : LiveData<List<Song>> = _songs
     private var isTimerRun: Boolean = false
 
     fun onSoundPlay(id: Int) {

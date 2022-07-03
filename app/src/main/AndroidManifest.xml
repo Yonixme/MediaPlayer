@@ -13,8 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:testOnly="false"
-
+        android:name=".App"
         android:theme="@style/Theme.FullProject">
+
         <activity android:name=".MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>

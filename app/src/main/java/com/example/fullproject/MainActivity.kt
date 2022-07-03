@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.fullproject.databinding.ActivityMainScreenBinding
 import com.example.fullproject.screens.MusicPlayerFragment
+import com.example.fullproject.view.MusicListFragment
 
 
 class MainActivity :AppCompatActivity() {
@@ -14,10 +15,18 @@ class MainActivity :AppCompatActivity() {
         binding = ActivityMainScreenBinding.inflate(layoutInflater).also { setContentView(it.root) }
 
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
+            supportFragmentManager
+                .beginTransaction()
                 .add(R.id.fragmentContainer, MusicPlayerFragment())
                 .commit()
         }
+        
+        /*if (savedInstanceState == null) {
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragmentContainer, MusicListFragment())
+                .commit()
+        }*/
     }
 }
 

@@ -1,7 +1,6 @@
 package com.example.fullproject.screens
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,22 +12,22 @@ import com.example.fullproject.model.Song
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import com.example.fullproject.MainActivity
+import androidx.fragment.app.viewModels
+import com.example.fullproject.App
 import com.example.fullproject.R
 import com.example.fullproject.model.SoundService
 import com.example.fullproject.tasks.millisToMinute
-import java.io.File
+import com.example.fullproject.view.MusicPlayerViewModel
+import com.example.fullproject.view.factory
 
 class MusicPlayerFragment : Fragment() {
-    private val f = registerForActivityResult(
+    private val requestReadExternalStorage = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
         ::dot
     )
-
     private lateinit var binding: FragmentMusicPlayerBinding
     private lateinit var soundService : SoundService
+    private val viewModel: MusicPlayerViewModel by viewModels { factory() }
     private val song = Song(R.raw.crush)
     private val songs = mutableListOf(song)
 
@@ -56,16 +55,11 @@ class MusicPlayerFragment : Fragment() {
         }
         binding.stop.setOnClickListener {
             soundService.onSoundStop()
-            f.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            requestReadExternalStorage.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
 
-
-                val file = File("/storage/emulated/0/Download")
-                Log.d("  file", "${file.isFile}")
-                for (f in file.listFiles())
-                    Log.d("  files", "${f.name}")
-                for (f in file.listFiles())
-                    Log.d("  files", "${f.absolutePath}")
-            }
+            for (u in App().songs!!)
+                Log.d("files", "$u")
+        }
 
         binding.timeView.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -106,22 +100,22 @@ class MusicPlayerFragment : Fragment() {
     private fun dot(granted: Boolean){
         if (granted)
         {
-            Toast.makeText(context, "sssssss", Toast.LENGTH_LONG).show()
+            //Toast.makeText(context, "Permission granted", Toast.LENGTH_LONG).show()
         }
         else
         {
             if(!shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE))
                 Toast.makeText(context, "dddd", Toast.LENGTH_LONG).show()
+            else
+                Toast.makeText(context, "fffff", Toast.LENGTH_LONG).show()
         }
     }
 
     companion object {
-
         private const val ARG = "ARG"
 
         fun newInstance(): Fragment {
             return MusicPlayerFragment()
         }
-
     }
 }

@@ -1,4 +1,4 @@
-package com.example.fullproject.screens
+package com.example.fullproject.view
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,7 +16,6 @@ class MusicListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentMusicListBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 }

@@ -38,19 +38,6 @@ class SoundService(
         }
     }
 
-    fun playSoundPlayer2(uri: Uri) {
-        if(context != null){
-            if (mp == null) {
-                mp = MediaPlayer.create(context, uri)
-                musicTimeInMillis = (mp!!.duration).toLong()
-            }
-            startTimer()
-            mp?.start()
-            if (!isPlay) isPlay = !isPlay
-            updateUI()
-        }
-    }
-
     override fun onSoundPause() {
         if (mp !== null) {
             stopTimer()

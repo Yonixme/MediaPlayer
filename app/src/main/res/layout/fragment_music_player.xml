@@ -19,12 +19,12 @@ tools:context=".screens.MusicPlayerFragment">
         app:layout_constraintTop_toTopOf="parent">
 
     <ImageView
-        android:id="@+id/frame"
+        android:id="@+id/back1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:src="@drawable/ic_mainmenu"
-        android:alpha="0.4"
+        android:layout_marginStart="10dp"
+        android:src="@drawable/ic_back"
+        android:alpha="0.8"
         android:contentDescription="@string/imageD"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,9 +34,9 @@ tools:context=".screens.MusicPlayerFragment">
         android:id="@+id/setting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="28dp"
+        android:layout_marginEnd="20dp"
         android:src="@drawable/ic_setting"
-        android:alpha="0.5"
+        android:alpha="0.8"
         android:contentDescription="@string/imageD"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -54,7 +54,7 @@ tools:context=".screens.MusicPlayerFragment">
         android:fontFamily="sans-serif-condensed-medium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/setting"
-        app:layout_constraintStart_toEndOf="@+id/frame"
+        app:layout_constraintStart_toEndOf="@+id/back1"
         app:layout_constraintTop_toTopOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
