@@ -13,7 +13,7 @@ import com.example.fullproject.model.Song
 class MusicPlayerFragment2() : Fragment() {
 
     private lateinit var binding: FragmentMusicPlayerBinding
-    private val viewModel:MusicPlayerViewModel by viewModels { factory() }
+    private val viewModel: MusicPlayerViewModel by viewModels { factory() }
 
 
     override fun onCreateView(

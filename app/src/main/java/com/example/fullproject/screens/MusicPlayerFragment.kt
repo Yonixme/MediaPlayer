@@ -57,7 +57,7 @@ class MusicPlayerFragment : Fragment() {
             soundService.onSoundStop()
             requestReadExternalStorage.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
 
-            for (u in App().songs!!)
+            for (u in App().soundServiceMusic.songs)
                 Log.d("files", "$u")
         }
 
@@ -100,7 +100,7 @@ class MusicPlayerFragment : Fragment() {
     private fun dot(granted: Boolean){
         if (granted)
         {
-            //Toast.makeText(context, "Permission granted", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Permission granted", Toast.LENGTH_LONG).show()
         }
         else
         {

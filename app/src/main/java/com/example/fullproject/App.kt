@@ -6,22 +6,24 @@ import com.example.fullproject.businesslogic.SoundServiceMusic
 import java.io.File
 
 class App: Application() {
-    var songs: ArrayList<Uri>? = null
+    var soundServiceMusic = SoundServiceMusic()
+    //val songs= mutableListOf<Uri>()
 
-    init {
-        var listOFMusic: Array<File>? = null
-        val uris: ArrayList<Uri> = ArrayList()
 
-        val file = File("/storage/emulated/0/Download")
-        if (file.isDirectory) listOFMusic = file.listFiles()
+    /*init {
+        val listOFMusic = mutableListOf<File>()
+        val uris = mutableListOf<Uri>()
 
-        if (listOFMusic != null) {
-            for (u in listOFMusic) {
-                if (equalsWithSupportFormat(getFormatFile(u.toString())))
+        val file1 = File("/storage/emulated/0/Download")
+        val file2 = File("/storage/emulated/0/Music")
+        if (file1.isDirectory && file1.listFiles() != null) listOFMusic.addAll(file1.listFiles()!!)
+        if (file2.isDirectory && file2.listFiles() != null) listOFMusic.addAll(file2.listFiles()!!)
+
+        for (u in listOFMusic) {
+            if (equalsWithSupportFormat(getFormatFile(u.toString())))
                 uris.add(Uri.fromFile(u))
-            }
-            songs = uris
         }
+        songs.addAll(uris)
     }
 
     private fun getFormatFile(string: String): String{
@@ -39,6 +41,8 @@ class App: Application() {
                     return "No Support Format"
                 }
         }
+
+
     }
 
     private fun equalsWithSupportFormat(format: String): Boolean{
@@ -58,5 +62,5 @@ class App: Application() {
             }
         }
         return isSupportFormat
-    }
+    }*/
 }

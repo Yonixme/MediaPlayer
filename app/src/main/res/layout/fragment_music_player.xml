@@ -104,16 +104,18 @@ tools:context=".screens.MusicPlayerFragment">
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/name_music_playing" />
 
-    <SeekBar
-        android:id="@+id/timeView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/playing"
-        app:layout_constraintLeft_toRightOf="@id/current_time"
-        app:layout_constraintRight_toLeftOf="@id/timeAll"
-        app:layout_constraintTop_toBottomOf="@id/name_artist" />
+        <SeekBar
+            android:id="@+id/timeView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/playing"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintLeft_toRightOf="@id/current_time"
+            app:layout_constraintRight_toLeftOf="@id/timeAll"
+            app:layout_constraintTop_toBottomOf="@id/name_artist"
+            app:layout_constraintVertical_bias="0.444" />
 
-    <TextView
+        <TextView
         android:id="@+id/current_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

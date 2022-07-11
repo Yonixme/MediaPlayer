@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel
 import com.example.fullproject.businesslogic.SoundServiceMusic
 import java.lang.Exception
 
-class MusicPlayerViewModel(private val array: ArrayList<Uri>?) : ViewModel() {
-    private var soundService: SoundServiceMusic = SoundServiceMusic(array)
+class MusicPlayerViewModel(private val array: MutableList<Uri>) : ViewModel() {
+    private var soundService: SoundServiceMusic = SoundServiceMusic()
 
     fun setContextForMusic(context: Context?){
             soundService.putContext(context)
