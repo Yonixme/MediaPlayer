@@ -3,21 +3,20 @@ package com.example.fullproject.view
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.fullproject.App
 import com.example.fullproject.SongActionListener
 import com.example.fullproject.SongAdapter
+import com.example.fullproject.businesslogic.SongMusic
 import com.example.fullproject.databinding.FragmentMusicListBinding
 
 class MusicListFragment : Fragment() {
@@ -28,6 +27,7 @@ class MusicListFragment : Fragment() {
     private lateinit var binding: FragmentMusicListBinding
     private lateinit var adapter: SongAdapter
     private val uris: List<Uri> = App().soundServiceMusic.songs
+    private val viewModel: MusicListViewModel by viewModels { factory() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,16 +47,34 @@ class MusicListFragment : Fragment() {
         }
 
         adapter = SongAdapter(object: SongActionListener{
-            override fun onStartAndPauseSound() {
-                Log.d("ssssss", "Menu")
+
+            override fun onStartSound(songMusic: SongMusic) {
+                Log.d("ssssss", "play")
+                viewModel.onSoundPlay(requireContext(), songMusic)
             }
 
-            override fun onMusicPlaylist() {
-                Log.d("dddd", "Object")
+            override fun onPauseSound(songMusic: SongMusic) {
+                Log.d("ssssss", "pause")
+                viewModel.onSoundPause(songMusic)
+            }
 
+            override fun onStopSound(songMusic: SongMusic) {
+                Log.d("ssssss", "stop")
+                viewModel.onSoundStop(songMusic)
+            }
+
+            override fun onMusicPlaylist(song: SongMusic) {
+                Log.d("dddd", "Object ${song.uri.lastPathSegment}")
+            }
+
+            override fun onSetName() {
+                Log.d("Menu" , "set name")
             }
         })
-        adapter.listMusic = uris.toMutableList()
+//        adapter.listMusic = uris.toMutableList()
+        for (u in uris)
+            adapter.listSong.add(SongMusic(u))
+
         val layoutManager = LinearLayoutManager(context)
         binding.ListMusic.layoutManager = layoutManager
         binding.ListMusic.adapter = adapter

@@ -8,7 +8,6 @@ import com.example.fullproject.tasks.getFormatFile
 import java.io.File
 
 class SoundServiceMusic() {
-    private var context:Context? = null
     private var mp: MediaPlayer? = null
     val songs= mutableListOf<Uri>()
 
@@ -35,30 +34,24 @@ class SoundServiceMusic() {
     var musicTimeInMillis: Long = 0
         private set
 
-    fun putContext(context: Context?){
-        this.context = context
-    }
 
-    fun playSound(id: Int){
-        if(context != null)
-        {
+    fun playSound(context: Context, songMusic: SongMusic){
             if (mp == null) {
-                mp = MediaPlayer.create(context, songs[id])
+                mp = MediaPlayer.create(context, songMusic.uri)
                 musicTimeInMillis = (mp!!.duration).toLong()
             }
             mp?.start()
-            if (!isPlay) isPlay = !isPlay
-        }
+            songMusic.isPlay = true
     }
 
-    fun soundPause() {
+    fun soundPause(songMusic: SongMusic) {
         if (mp !== null) {
             mp?.pause()
-            if (isPlay) isPlay = !isPlay
+            songMusic.isPlay = false
         }
     }
 
-    fun soundStop() {
+    fun soundStop(songMusic: SongMusic) {
         if (mp !== null) {
             mp?.stop()
             mp?.reset()
@@ -66,7 +59,7 @@ class SoundServiceMusic() {
             mp = null
             currentPositionInMillis = 0
             musicTimeInMillis = 0
-            isPlay = false
+            songMusic.isPlay = false
         }
     }
 

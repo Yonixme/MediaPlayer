@@ -10,7 +10,9 @@ import java.lang.Exception
 class MusicPlayerViewModel(private val array: MutableList<Uri>) : ViewModel() {
     private var soundService: SoundServiceMusic = SoundServiceMusic()
 
-    fun setContextForMusic(context: Context?){
-            soundService.putContext(context)
-    }
+//    fun setContextForMusic(context: Context?){
+//            soundService.putContext(context)
+//    }
+
+
 }

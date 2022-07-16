@@ -10,10 +10,14 @@ class FactoryViewModel(private val app: App) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         val viewModel = when(modelClass){
             MusicPlayerViewModel::class.java -> {
-                MusicPlayerViewModel(app.songs)
+                MusicPlayerViewModel(app.soundServiceMusic.songs)
             }
             MusicPlayerViewModel::class.java ->{
-                MusicListViewModel()
+                //todo
+            }
+
+            MusicListViewModel::class.java -> {
+                MusicListViewModel(app)
             }
             else ->{
                 throw IllegalStateException("Unknown view model class")

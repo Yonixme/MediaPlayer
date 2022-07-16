@@ -22,7 +22,7 @@ class MusicPlayerFragment2() : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentMusicPlayerBinding.inflate(inflater, container,false)
-        viewModel.setContextForMusic(context)
+        //viewModel.setContextForMusic(context)
 
         return binding.root
     }
@@ -35,7 +35,7 @@ class MusicPlayerFragment2() : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        viewModel.setContextForMusic(null)
+        //viewModel.setContextForMusic(null)
     }
 
 
