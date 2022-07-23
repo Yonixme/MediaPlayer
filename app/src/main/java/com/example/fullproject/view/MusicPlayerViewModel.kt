@@ -1,18 +1,17 @@
 package com.example.fullproject.view
 
-import android.content.Context
-import android.media.MediaPlayer
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import com.example.fullproject.App
+import com.example.fullproject.businesslogic.SongMusic
 import com.example.fullproject.businesslogic.SoundServiceMusic
-import java.lang.Exception
 
-class MusicPlayerViewModel(private val array: MutableList<Uri>) : ViewModel() {
-    private var soundService: SoundServiceMusic = SoundServiceMusic()
+class MusicPlayerViewModel(private val app: App) : ViewModel() {
+    private var soundService: SoundServiceMusic = getSoundService()
+    var currentTime: Long = 0
+    var song: SongMusic = SongMusic(Uri.parse("Empty"))
 
-//    fun setContextForMusic(context: Context?){
-//            soundService.putContext(context)
-//    }
 
+    private fun getSoundService():SoundServiceMusic = app.soundServiceMusic
 
 }

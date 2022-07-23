@@ -10,12 +10,8 @@ class FactoryViewModel(private val app: App) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         val viewModel = when(modelClass){
             MusicPlayerViewModel::class.java -> {
-                MusicPlayerViewModel(app.soundServiceMusic.songs)
+                MusicPlayerViewModel(app)
             }
-            MusicPlayerViewModel::class.java ->{
-                //todo
-            }
-
             MusicListViewModel::class.java -> {
                 MusicListViewModel(app)
             }

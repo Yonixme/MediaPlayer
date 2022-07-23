@@ -1,5 +1,8 @@
 package com.example.fullproject.businesslogic
 
 import android.net.Uri
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-class SongMusic(val uri: Uri, var isPlay: Boolean = false) {}
+@Parcelize
+class SongMusic(val uri: Uri, var isPlay: Boolean = false): Parcelable

@@ -61,10 +61,8 @@ class SongAdapter(
             userNameTextView.text = song.uri.lastPathSegment
             if (song.isPlay) {
                 launchMusic.setImageResource(R.drawable.ic_pause)
-                song.isPlay = false
             }else{
                 launchMusic.setImageResource(R.drawable.ic_play)
-                song.isPlay = true
             }
         }
     }
@@ -82,13 +80,11 @@ class SongAdapter(
                     notifyItemChanged(lastMusic!!)
                 }
                 if (song.isPlay) {
-                    view.setImageResource(R.drawable.ic_pause)
-                    songActionListener.onPauseSound(song)
-                    song.isPlay = false
-                }else{
                     view.setImageResource(R.drawable.ic_play)
+                    songActionListener.onPauseSound(song)
+                }else{
+                    view.setImageResource(R.drawable.ic_pause)
                     songActionListener.onStartSound(song)
-                    song.isPlay = true
                 }
                 lastMusic = listSong.indexOfFirst { it.uri == song.uri }
             }

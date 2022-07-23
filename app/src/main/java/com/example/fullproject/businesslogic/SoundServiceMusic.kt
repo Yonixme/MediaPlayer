@@ -9,31 +9,17 @@ import java.io.File
 
 class SoundServiceMusic() {
     private var mp: MediaPlayer? = null
-    val songs= mutableListOf<Uri>()
 
-    init {
-        val listOFMusic = mutableListOf<File>()
-        val uris = mutableListOf<Uri>()
-
-        val file1 = File("/storage/emulated/0/Download")
-        val file2 = File("/storage/emulated/0/Music")
-        if (file1.isDirectory && file1.listFiles() != null) listOFMusic.addAll(file1.listFiles()!!)
-        if (file2.isDirectory && file2.listFiles() != null) listOFMusic.addAll(file2.listFiles()!!)
-
-        for (u in listOFMusic) {
-            if (equalsWithSupportFormat(getFormatFile(u.toString())))
-                uris.add(Uri.fromFile(u))
-        }
-        songs.addAll(uris)
-    }
-
-    var isPlay: Boolean = false
-        private set
     var currentPositionInMillis: Long = 0
         private set
     var musicTimeInMillis: Long = 0
         private set
 
+    val songs= mutableListOf<Uri>()
+
+    init {
+        updateList()
+    }
 
     fun playSound(context: Context, songMusic: SongMusic){
             if (mp == null) {
@@ -68,19 +54,37 @@ class SoundServiceMusic() {
         mp?.seekTo(progress.toInt())
     }
 
-    fun pauseTimeSound(){
-        if (isPlay) {
+    fun pauseTimeSound(songMusic: SongMusic){
+        if (songMusic.isPlay) {
             mp?.pause()
         }
     }
 
-    fun continueTimeSound(){
-        if (isPlay) {
+    fun continueTimeSound(songMusic: SongMusic){
+        if (songMusic.isPlay) {
             mp?.start()
         }
     }
 
     fun updateCurrentPosition() {
         currentPositionInMillis = (mp?.currentPosition ?: 0).toLong()
+    }
+
+    fun updateList(){
+        val songList = songs
+        songs.removeAll(songList)
+        val listOFMusic = mutableListOf<File>()
+        val uris = mutableListOf<Uri>()
+
+        val file1 = File("/storage/emulated/0/Download")
+        val file2 = File("/storage/emulated/0/Music")
+        if (file1.isDirectory && file1.listFiles() != null) listOFMusic.addAll(file1.listFiles()!!)
+        if (file2.isDirectory && file2.listFiles() != null) listOFMusic.addAll(file2.listFiles()!!)
+
+        for (u in listOFMusic) {
+            if (equalsWithSupportFormat(getFormatFile(u.toString())))
+                uris.add(Uri.fromFile(u))
+        }
+        songs.addAll(uris)
     }
 }

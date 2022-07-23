@@ -3,6 +3,7 @@ package com.example.fullproject.view
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.example.fullproject.App
+import com.example.fullproject.R
 import com.example.fullproject.businesslogic.SongMusic
 
 class MusicListViewModel(private val app: App) : ViewModel() {
@@ -18,4 +19,11 @@ class MusicListViewModel(private val app: App) : ViewModel() {
     fun onSoundStop(songMusic: SongMusic) {
         app.soundServiceMusic.soundStop(songMusic)
     }
+
+    fun onMusicPlayer(song: SongMusic){
+        app.soundServiceMusic.updateCurrentPosition()
+        app.soundServiceMusic.pauseTimeSound(song)
+    }
+
+    fun getCurrentTime() = app.soundServiceMusic.currentPositionInMillis
 }
