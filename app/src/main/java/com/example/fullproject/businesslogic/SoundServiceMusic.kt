@@ -3,50 +3,54 @@ package com.example.fullproject.businesslogic
 import android.content.Context
 import android.media.MediaPlayer
 import android.net.Uri
-import com.example.fullproject.tasks.equalsWithSupportFormat
-import com.example.fullproject.tasks.getFormatFile
 import java.io.File
 
-class SoundServiceMusic() {
+class SoundServiceMusic{
     private var mp: MediaPlayer? = null
 
-    var currentPositionInMillis: Long = 0
+    var currentPositionInMillis: Long
         private set
-    var musicTimeInMillis: Long = 0
+    var musicTimeInMillis: Long
         private set
 
-    val songs= mutableListOf<Uri>()
+    private var songs= mutableListOf<Uri>()
+
+    var musicList = mutableListOf<SongMusic>()
+        private set
 
     init {
+        currentPositionInMillis = 0
+        musicTimeInMillis = 0
         updateList()
     }
 
-    fun playSound(context: Context, songMusic: SongMusic){
-            if (mp == null) {
-                mp = MediaPlayer.create(context, songMusic.uri)
-                musicTimeInMillis = (mp!!.duration).toLong()
-            }
+    fun onPlaySound(context: Context, songMusic: SongMusic){
+        createMusic(context, songMusic)
+        mp?.start()
+        songMusic.isPlay = true
+    }
+
+    fun startSound(context: Context, songMusic: SongMusic) {
+        createMusic(context, songMusic)
+        if(songMusic.isPlay)
             mp?.start()
-            songMusic.isPlay = true
     }
 
-    fun soundPause(songMusic: SongMusic) {
-        if (mp !== null) {
-            mp?.pause()
-            songMusic.isPlay = false
-        }
+    fun onSoundPause(songMusic: SongMusic) {
+        if (mp == null) return
+        mp?.pause()
+        songMusic.isPlay = false
     }
 
-    fun soundStop(songMusic: SongMusic) {
-        if (mp !== null) {
-            mp?.stop()
-            mp?.reset()
-            mp?.release()
-            mp = null
-            currentPositionInMillis = 0
-            musicTimeInMillis = 0
-            songMusic.isPlay = false
-        }
+    fun onSoundStop(songMusic: SongMusic) {
+        if (mp == null) return
+        mp?.stop()
+        mp?.reset()
+        mp?.release()
+        mp = null
+        currentPositionInMillis = 0
+        musicTimeInMillis = 0
+        songMusic.isPlay = false
     }
 
     fun setTimeSound(progress: Long){
@@ -66,13 +70,20 @@ class SoundServiceMusic() {
         }
     }
 
+    fun changeCurrentSong(song: SongMusic, moveBy: Int): SongMusic {
+        val isPlay = song.isPlay
+        val oldMusicIndex = songs.indexOfFirst { song.uri == it }
+        if (oldMusicIndex == -1) return song
+        val newMusicIndex = oldMusicIndex + moveBy
+        if (newMusicIndex < 0 || newMusicIndex == songs.size) return song
+        return SongMusic(songs[newMusicIndex], isPlay)
+    }
+
     fun updateCurrentPosition() {
         currentPositionInMillis = (mp?.currentPosition ?: 0).toLong()
     }
 
     fun updateList(){
-        val songList = songs
-        songs.removeAll(songList)
         val listOFMusic = mutableListOf<File>()
         val uris = mutableListOf<Uri>()
 
@@ -82,9 +93,18 @@ class SoundServiceMusic() {
         if (file2.isDirectory && file2.listFiles() != null) listOFMusic.addAll(file2.listFiles()!!)
 
         for (u in listOFMusic) {
-            if (equalsWithSupportFormat(getFormatFile(u.toString())))
+            if (equalsWithSupportedFormat(getFormatFile(u.name)))
                 uris.add(Uri.fromFile(u))
         }
-        songs.addAll(uris)
+        if(songs == uris) return
+        songs = uris
+        for (uri in songs)
+            musicList.add(SongMusic(uri))
+    }
+
+    private fun createMusic(context: Context, songMusic: SongMusic){
+        if (mp !== null) return
+        mp = MediaPlayer.create(context, songMusic.uri)
+        musicTimeInMillis = (mp!!.duration).toLong()
     }
 }

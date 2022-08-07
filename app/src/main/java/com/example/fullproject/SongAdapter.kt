@@ -1,19 +1,14 @@
 package com.example.fullproject
 
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.PopupMenu
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fullproject.businesslogic.SongMusic
 import com.example.fullproject.databinding.MusicSongItemBinding
-import java.lang.Exception
-import java.security.cert.Extension
-import kotlin.properties.Delegates
 
 interface SongActionListener{
     fun onStartSound(song: SongMusic)
@@ -32,14 +27,11 @@ class SongAdapter(
     ): RecyclerView.Adapter<SongAdapter.SongHolder>(), View.OnClickListener
 {
     var listSong = mutableListOf<SongMusic>()
-//    var listMusic = mutableListOf<Uri>()
-    var lastMusic: Int? = null
-    private var isPlay = false
+    private var lastMusic: Int? = null
 
     class SongHolder(val binding: MusicSongItemBinding): RecyclerView.ViewHolder(binding.root)
 
     override fun getItemCount(): Int = listSong.size
-//    override fun getItemCount(): Int = listMusic.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -97,8 +89,6 @@ class SongAdapter(
     private fun showPopupMenu(view: View){
         val context = view.context
         val popupMenu = PopupMenu(context, view)
-        val song = view.tag as SongMusic
-        val position = listSong.indexOfFirst { it.uri == song.uri }
 
         popupMenu.menu.add(0, set_Name, Menu.NONE, "set name for music")
 

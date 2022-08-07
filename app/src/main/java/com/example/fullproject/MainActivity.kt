@@ -1,14 +1,14 @@
 package com.example.fullproject
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.example.fullproject.businesslogic.SongMusic
 import com.example.fullproject.databinding.ActivityMainScreenBinding
-import com.example.fullproject.screens.MusicPlayerFragment
 import com.example.fullproject.view.MusicListFragment
+import com.example.fullproject.view.MusicPlayerFragment
 
-
-class MainActivity :AppCompatActivity() {
+class MainActivity :AppCompatActivity(), Navigator{
     private lateinit var binding: ActivityMainScreenBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,19 +21,21 @@ class MainActivity :AppCompatActivity() {
                 .add(R.id.fragmentContainer, MusicListFragment())
                 .commit()
         }
+    }
 
+    override fun goBack() {
+        onBackPressed()
+    }
 
-//        if (savedInstanceState == null) {
-//            supportFragmentManager
-//                .beginTransaction()
-//                .add(R.id.fragmentContainer, MusicPlayerFragment())
-//                .commit()
-//        }
+    override fun onMusicPlaylist(currentTime: Long, song: SongMusic) {
+        launchFragment(MusicPlayerFragment.newInstance(currentTime, song))
+    }
 
-
-
-
+    private fun launchFragment(fragment: Fragment){
+        supportFragmentManager
+            .beginTransaction()
+            .addToBackStack(null)
+            .replace(R.id.fragmentContainer, fragment)
+            .commit()
     }
 }
-
-

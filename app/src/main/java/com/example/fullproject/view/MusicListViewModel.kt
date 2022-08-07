@@ -1,29 +1,12 @@
 package com.example.fullproject.view
 
-import android.content.Context
-import androidx.lifecycle.ViewModel
+import android.util.Log
 import com.example.fullproject.App
-import com.example.fullproject.R
 import com.example.fullproject.businesslogic.SongMusic
 
-class MusicListViewModel(private val app: App) : ViewModel() {
-
-    fun onSoundPlay(context: Context, songMusic: SongMusic) {
-        app.soundServiceMusic.playSound(context,songMusic)
-    }
-
-    fun onSoundPause(songMusic: SongMusic) {
-        app.soundServiceMusic.soundPause(songMusic)
-    }
-
-    fun onSoundStop(songMusic: SongMusic) {
-        app.soundServiceMusic.soundStop(songMusic)
-    }
-
+class MusicListViewModel(private val app: App) : BaseMusicViewModel(app) {
     fun onMusicPlayer(song: SongMusic){
-        app.soundServiceMusic.updateCurrentPosition()
+        Log.d("onMusicPlayer", "Stop")
         app.soundServiceMusic.pauseTimeSound(song)
     }
-
-    fun getCurrentTime() = app.soundServiceMusic.currentPositionInMillis
 }
