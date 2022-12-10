@@ -6,6 +6,7 @@ import android.os.CountDownTimer
 import com.example.fullproject.App
 import com.example.fullproject.NavigatorPlaylist
 import com.example.fullproject.businesslogic.SongMusic
+import com.example.fullproject.view.BaseMusicViewModel
 
 class MusicPlayerViewModel(private val app: App) : BaseMusicViewModel(app) {
     var currentPosition: Long = 0
@@ -75,13 +76,13 @@ class MusicPlayerViewModel(private val app: App) : BaseMusicViewModel(app) {
     private fun startTimer(){
         if (isTimerRun) return
         countTimer = object : CountDownTimer(
-            app.soundServiceMusic.musicTimeInMillis - app.soundServiceMusic.currentPositionInMillis,
+            getCurrentTime() - app.soundServiceMusic.currentPositionInMillis,
             1000L) {
             override fun onTick(millisUntilFinished: Long) {
                 notifyDataChanged()
             }
             override fun onFinish() {
-                app.soundServiceMusic.onSoundStop(song)
+                onSoundStop()
                 notifyDataChanged()
             }
         }

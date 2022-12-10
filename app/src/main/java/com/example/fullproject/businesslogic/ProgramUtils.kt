@@ -1,7 +1,7 @@
 package com.example.fullproject.businesslogic
 
 fun millisToMinute(progress: Int): String {
-    var seconds: Int = progress / 1000
+    var seconds:Int = progress / 1000
 
     val minute: Int
     if (seconds > 59) {

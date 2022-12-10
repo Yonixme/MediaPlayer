@@ -33,7 +33,7 @@ abstract class BaseMusicViewModel(private val app: App) : ViewModel() {
     }
 
     fun continueSound(song: SongMusic){
-        if (uriNotCorrect(song.uri)) return
+        //if (uriNotCorrect(song.uri)) return
         app.soundServiceMusic.continueTimeSound(song)
     }
 
@@ -63,8 +63,8 @@ abstract class BaseMusicViewModel(private val app: App) : ViewModel() {
     fun getListSong(): MutableList<Uri>{
         app.soundServiceMusic.updateList()
         val list = mutableListOf<Uri>()
-        for(u in app.soundServiceMusic.musicList)
-            list.add(u.uri)
+        for(u in app.soundServiceMusic.songs)
+            list.add(u)
         return list
     }
 }

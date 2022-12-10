@@ -3,6 +3,7 @@ package com.example.fullproject.businesslogic
 import android.content.Context
 import android.media.MediaPlayer
 import android.net.Uri
+import android.util.Log
 import java.io.File
 
 class SoundServiceMusic{
@@ -13,7 +14,7 @@ class SoundServiceMusic{
     var musicTimeInMillis: Long
         private set
 
-    private var songs= mutableListOf<Uri>()
+    var songs= mutableListOf<Uri>()
 
     var musicList = mutableListOf<SongMusic>()
         private set
@@ -49,7 +50,6 @@ class SoundServiceMusic{
         mp?.release()
         mp = null
         currentPositionInMillis = 0
-        musicTimeInMillis = 0
         songMusic.isPlay = false
     }
 
@@ -67,6 +67,7 @@ class SoundServiceMusic{
     fun continueTimeSound(songMusic: SongMusic){
         if (songMusic.isPlay) {
             mp?.start()
+            Log.d("ssss", "sss")
         }
     }
 
@@ -89,8 +90,10 @@ class SoundServiceMusic{
 
         val file1 = File("/storage/emulated/0/Download")
         val file2 = File("/storage/emulated/0/Music")
+        val file3 = File("/storage/emulated/0/Ringtone")
         if (file1.isDirectory && file1.listFiles() != null) listOFMusic.addAll(file1.listFiles()!!)
         if (file2.isDirectory && file2.listFiles() != null) listOFMusic.addAll(file2.listFiles()!!)
+        if (file2.isDirectory && file3.listFiles() != null) listOFMusic.addAll(file3.listFiles()!!)
 
         for (u in listOFMusic) {
             if (equalsWithSupportedFormat(getFormatFile(u.name)))

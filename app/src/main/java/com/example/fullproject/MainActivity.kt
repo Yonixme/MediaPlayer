@@ -27,6 +27,7 @@ class MainActivity :AppCompatActivity(), Navigator{
         onBackPressed()
     }
 
+
     override fun onMusicPlaylist(currentTime: Long, song: SongMusic) {
         launchFragment(MusicPlayerFragment.newInstance(currentTime, song))
     }

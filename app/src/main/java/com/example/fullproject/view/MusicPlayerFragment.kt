@@ -104,6 +104,7 @@ class MusicPlayerFragment : Fragment(), NavigatorPlaylist{
             binding.nameMusicPlaying.text = viewModel.song.uri.lastPathSegment
     }
 
+
     companion object{
 
         @JvmStatic

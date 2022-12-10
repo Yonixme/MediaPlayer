@@ -104,7 +104,7 @@ tools:context=".view.MusicPlayerFragment">
         <SeekBar
             android:id="@+id/timeView"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="20dp"
             app:layout_constraintBottom_toBottomOf="@id/playing"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintLeft_toRightOf="@id/current_time"
