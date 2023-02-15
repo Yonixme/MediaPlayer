@@ -41,7 +41,6 @@ fun equalsWithSupportedFormat(format: String): Boolean{
         ".MP4", ".MPC", ".Opus", ".RA", ".TTA",
         ".VOC", ".VOX", ".VQF", ".WAV", ".WMA",
         ".XM", ".CD", ".MQA")
-
     for(f in arrayFormat){
         if(format == f || format == f.lowercase()){
             isSupportFormat = true

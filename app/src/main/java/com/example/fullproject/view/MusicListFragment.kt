@@ -58,6 +58,9 @@ class MusicListFragment : Fragment() {
             }
         })
         updateUI()
+
+        val id = (activity?.applicationContext as App).id
+        Log.d("idApp", "fragment $id ")
         return binding.root
     }
 

@@ -1,6 +1,7 @@
 package com.example.fullproject
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.fullproject.businesslogic.SongMusic
@@ -15,12 +16,19 @@ class MainActivity :AppCompatActivity(), Navigator{
         super.onCreate(savedInstanceState)
         binding = ActivityMainScreenBinding.inflate(layoutInflater).also { setContentView(it.root) }
 
+        Log.d("Activity", "onCreate()")
+
         if (savedInstanceState == null) {
             supportFragmentManager
                 .beginTransaction()
                 .add(R.id.fragmentContainer, MusicListFragment())
                 .commit()
         }
+        var id = (applicationContext as App).id
+        Log.d("idApp", "$id")
+        (applicationContext as App).upValue()
+        id = (applicationContext as App).id
+        Log.d("idApp", "$id")
     }
 
     override fun goBack() {

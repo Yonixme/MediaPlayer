@@ -1,6 +1,8 @@
 package com.example.fullproject.view
 
+
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,11 +10,9 @@ import android.widget.SeekBar
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.fullproject.NavigatorPlaylist
-import com.example.fullproject.R
+import com.example.fullproject.*
 import com.example.fullproject.businesslogic.SongMusic
 import com.example.fullproject.databinding.FragmentMusicPlayerBinding
-import com.example.fullproject.navigator
 import com.example.fullproject.businesslogic.millisToMinute
 
 class MusicPlayerFragment : Fragment(), NavigatorPlaylist{
@@ -35,6 +35,9 @@ class MusicPlayerFragment : Fragment(), NavigatorPlaylist{
     ): View {
         binding = FragmentMusicPlayerBinding.inflate(inflater, container,false)
         controlSound()
+        (activity?.applicationContext as App).upValue()
+        val id = (activity?.applicationContext as App).id
+        Log.d("idApp", "fragment list $id ")
         return binding.root
     }
 

@@ -1,8 +1,11 @@
 package com.example.fullproject.services
 
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.os.IBinder
+import com.example.fullproject.App
+import com.example.fullproject.businesslogic.SongMusic
 
 class BaseServiceMusic : Service() {
     override fun onBind(intent: Intent?): IBinder? {
@@ -19,5 +22,9 @@ class BaseServiceMusic : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+    }
+
+    fun play(context: Context, song: SongMusic){
+        (applicationContext as App).soundServiceMusic.onPlaySound(context, song)
     }
 }

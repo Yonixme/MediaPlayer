@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.fullproject.App
 
 class FactoryViewModel(private val app: App) : ViewModelProvider.Factory {
+
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         val viewModel = when(modelClass){
             MusicPlayerViewModel::class.java -> {
