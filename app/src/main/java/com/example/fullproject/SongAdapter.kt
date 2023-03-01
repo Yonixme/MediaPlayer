@@ -9,6 +9,7 @@ import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fullproject.businesslogic.SongMusic
 import com.example.fullproject.databinding.MusicSongItemBinding
+import com.example.fullproject.databinding.SongItemBinding
 
 interface SongActionListener{
     fun onStartSound(song: SongMusic)
@@ -17,7 +18,7 @@ interface SongActionListener{
 
     fun onStopSound(song: SongMusic)
 
-    fun onMusicPlaylist(song: SongMusic)
+    fun openMusicPlayer(song: SongMusic)
 
     fun onSetName()
 }
@@ -29,13 +30,13 @@ class SongAdapter(
     var listSong = mutableListOf<SongMusic>()
     private var lastMusic: Int? = null
 
-    class SongHolder(val binding: MusicSongItemBinding): RecyclerView.ViewHolder(binding.root)
+    class SongHolder(val binding: SongItemBinding): RecyclerView.ViewHolder(binding.root)
 
     override fun getItemCount(): Int = listSong.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = MusicSongItemBinding.inflate(inflater, parent, false)
+        val binding = SongItemBinding.inflate(inflater, parent, false)
 
         binding.itemView.setOnClickListener(this)
         binding.itemMore.setOnClickListener(this)
@@ -51,6 +52,7 @@ class SongAdapter(
             itemMore.tag = song
             itemView.tag = song
             userNameTextView.text = song.uri.lastPathSegment
+            authorNameTextView.text = "Author"
             if (song.isPlay) {
                 launchMusic.setImageResource(R.drawable.ic_pause)
             }else{
@@ -81,7 +83,7 @@ class SongAdapter(
                 lastMusic = listSong.indexOfFirst { it.uri == song.uri }
             }
             else -> {
-                songActionListener.onMusicPlaylist(song)
+                songActionListener.openMusicPlayer(song)
             }
         }
     }

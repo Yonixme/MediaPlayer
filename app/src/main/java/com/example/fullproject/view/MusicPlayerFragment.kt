@@ -15,7 +15,7 @@ import com.example.fullproject.businesslogic.SongMusic
 import com.example.fullproject.databinding.FragmentMusicPlayerBinding
 import com.example.fullproject.businesslogic.millisToMinute
 
-class MusicPlayerFragment : Fragment(), NavigatorPlaylist{
+class MusicPlayerFragment : Fragment(){
 
     private lateinit var binding: FragmentMusicPlayerBinding
 
@@ -23,9 +23,10 @@ class MusicPlayerFragment : Fragment(), NavigatorPlaylist{
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         viewModel.currentPosition = requireArguments().getLong(CURRENT_TIME)
         viewModel.song = requireArguments().getParcelable(CURRENT_SONG)!!
-        viewModel.navigator = this
+        viewModel.manager = object : PlayerManager{ override fun updateStateElement() { updateUI() } }
     }
 
     override fun onCreateView(
@@ -42,19 +43,20 @@ class MusicPlayerFragment : Fragment(), NavigatorPlaylist{
     }
 
     private fun controlSound(){
-        viewModel.startSound(requireContext())
+        viewModel.startSound()
+
         binding.playOrPause.setOnClickListener {
             if (viewModel.song.isPlay){
                 viewModel.onSoundPause()
             }else{
-                viewModel.onSoundPlay(requireContext())
+                viewModel.onSoundPlay()
             }
         }
         binding.stop.setOnClickListener {
             viewModel.onSoundStop()
         }
 
-        binding.back1.setOnClickListener{
+        binding.backBtn.setOnClickListener{
             navigator().goBack()
         }
 
@@ -73,15 +75,15 @@ class MusicPlayerFragment : Fragment(), NavigatorPlaylist{
         })
 
         binding.next.setOnClickListener{
-            viewModel.nextSound(requireContext())
+            viewModel.nextSound()
         }
 
         binding.previous.setOnClickListener{
-            viewModel.previouslySound(requireContext())
+            viewModel.previouslySound()
         }
     }
 
-    override fun updateUI(){
+    fun updateUI(){
         binding.timeView.progress = viewModel.currentPosition.toInt()
 
         if(binding.currentTime.text != millisToMinute(viewModel.currentPosition.toInt()))
@@ -109,9 +111,8 @@ class MusicPlayerFragment : Fragment(), NavigatorPlaylist{
 
 
     companion object{
-
         @JvmStatic
-        val CURRENT_TIME = "Current time"
+        val CURRENT_TIME = "Current duration"
 
         @JvmStatic
         val CURRENT_SONG = "Current song"

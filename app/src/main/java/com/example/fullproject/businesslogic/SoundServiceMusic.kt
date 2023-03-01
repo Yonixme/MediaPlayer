@@ -14,7 +14,7 @@ class SoundServiceMusic{
     var musicTimeInMillis: Long
         private set
 
-    var songs= mutableListOf<Uri>()
+    var songs = mutableListOf<Uri>()
 
     var musicList = mutableListOf<SongMusic>()
         private set
@@ -67,7 +67,6 @@ class SoundServiceMusic{
     fun continueTimeSound(songMusic: SongMusic){
         if (songMusic.isPlay) {
             mp?.start()
-            Log.d("ssss", "sss")
         }
     }
 
@@ -111,3 +110,4 @@ class SoundServiceMusic{
         musicTimeInMillis = (mp!!.duration).toLong()
     }
 }
+

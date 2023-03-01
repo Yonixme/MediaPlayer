@@ -3,52 +3,54 @@ package com.example.fullproject.view
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import com.example.fullproject.App
+import com.example.fullproject.R
 import com.example.fullproject.businesslogic.SongMusic
 
 abstract class BaseMusicViewModel(private val app: App) : ViewModel() {
 
-    fun onSoundPlay(context: Context, song: SongMusic){
-        if (uriNotCorrect(song.uri)) return
-        app.soundServiceMusic.onPlaySound(context, song)
+    fun onSoundPlay(song: SongMusic){
+        if (uriNotCorrect(song.uri)) notifyUser(app.applicationContext.resources.getString(R.string.music_not_found_alert))
+        app.soundServiceMusic.onPlaySound(app.applicationContext, song)
         Log.d("onSoundPlay", "play")
     }
 
     fun onSoundPause(song: SongMusic){
-        if (uriNotCorrect(song.uri)) return
+        if (uriNotCorrect(song.uri)) notifyUser(app.applicationContext.resources.getString(R.string.music_not_found_alert))
         app.soundServiceMusic.onSoundPause(song)
         Log.d("onSoundPause", "pause")
     }
 
     fun onSoundStop(song: SongMusic){
-        if (uriNotCorrect(song.uri)) return
+        if (uriNotCorrect(song.uri)) notifyUser(app.applicationContext.resources.getString(R.string.music_not_found_alert))
         app.soundServiceMusic.onSoundStop(song)
         Log.d("onSoundStop", "stop")
     }
 
     fun pauseSound(song: SongMusic){
-        if (uriNotCorrect(song.uri)) return
+        if (uriNotCorrect(song.uri)) notifyUser(app.applicationContext.resources.getString(R.string.music_not_found_alert))
         app.soundServiceMusic.pauseTimeSound(song)
     }
 
     fun continueSound(song: SongMusic){
-        //if (uriNotCorrect(song.uri)) return
+        //if (uriNotCorrect(song.uri)) onError(app.applicationContext.resources.getString(R.string.music_not_found_alert))
         app.soundServiceMusic.continueTimeSound(song)
     }
 
-    protected fun changeCurrentSong(context: Context, oldSong: SongMusic, moveBy: Int): SongMusic{
+    protected fun changeCurrentSong(oldSong: SongMusic, moveBy: Int): SongMusic{
         if (uriNotCorrect(oldSong.uri)) return oldSong
         val newSong = app.soundServiceMusic.changeCurrentSong(oldSong, moveBy)
         if(oldSong == newSong) return oldSong
         onSoundStop(oldSong)
-        startSound(context, newSong)
+        startSound(newSong)
         return newSong
     }
 
-    fun startSound(context: Context, song: SongMusic){
+    fun startSound(song: SongMusic){
         if (uriNotCorrect(song.uri)) return
-        app.soundServiceMusic.startSound(context, song)
+        app.soundServiceMusic.startSound(app.applicationContext, song)
     }
 
     fun getCurrentTime(): Long {
@@ -66,5 +68,16 @@ abstract class BaseMusicViewModel(private val app: App) : ViewModel() {
         for(u in app.soundServiceMusic.songs)
             list.add(u)
         return list
+    }
+
+    protected fun notifyUser(outputText: String? = null){
+        if (outputText !== null){
+            Toast.makeText(app.applicationContext, outputText, Toast.LENGTH_SHORT).show()
+
+        }
+    }
+
+    open fun onError(notifyUser: String? = null){
+        notifyUser(notifyUser)
     }
 }

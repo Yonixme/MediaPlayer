@@ -44,12 +44,14 @@
         android:id="@+id/List_Music"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        tools:itemCount="20"
-        tools:listitem="@layout/music_song_item"
-        app:layout_constraintTop_toBottomOf="@id/header"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintVertical_bias="1.0"
+        tools:itemCount="20"
+        tools:listitem="@layout/song_item" />
 
     <Button
         android:id="@+id/requestPermission"

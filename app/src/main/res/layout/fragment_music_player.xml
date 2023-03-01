@@ -19,7 +19,7 @@ tools:context=".view.MusicPlayerFragment">
         app:layout_constraintTop_toTopOf="parent">
 
     <ImageView
-        android:id="@+id/back1"
+        android:id="@+id/back_btn"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:padding="10dp"

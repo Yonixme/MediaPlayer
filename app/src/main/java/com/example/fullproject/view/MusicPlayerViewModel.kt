@@ -1,29 +1,27 @@
 package com.example.fullproject.view
 
-import android.content.Context
 import android.net.Uri
 import android.os.CountDownTimer
 import com.example.fullproject.App
-import com.example.fullproject.NavigatorPlaylist
+import com.example.fullproject.PlayerManager
 import com.example.fullproject.businesslogic.SongMusic
-import com.example.fullproject.view.BaseMusicViewModel
 
 class MusicPlayerViewModel(private val app: App) : BaseMusicViewModel(app) {
     var currentPosition: Long = 0
     var song: SongMusic = SongMusic(Uri.parse("Empty"))
-    lateinit var navigator: NavigatorPlaylist
+    lateinit var manager: PlayerManager
 
     private lateinit var countTimer : CountDownTimer
     private var isTimerRun: Boolean = false
 
-    fun onSoundPlay(context: Context) {
-        super.onSoundPlay(context, song)
+    fun onSoundPlay() {
+        super.onSoundPlay(song)
         notifyDataChanged()
         startTimer()
     }
 
-    fun startSound(context: Context){
-        super.startSound(context, song)
+    fun startSound(){
+        super.startSound(song)
         setTimeSound(getCurrentTime())
         startTimer()
         notifyDataChanged()
@@ -57,13 +55,13 @@ class MusicPlayerViewModel(private val app: App) : BaseMusicViewModel(app) {
         notifyDataChanged()
         startTimer()
     }
-    fun previouslySound(context: Context){
-        song = super.changeCurrentSong(context, song, -1)
+    fun previouslySound(){
+        song = super.changeCurrentSong(song, -1)
         notifyDataChanged()
     }
 
-    fun nextSound(context: Context){
-        song = super.changeCurrentSong(context, song, 1)
+    fun nextSound(){
+        song = super.changeCurrentSong(song, 1)
         notifyDataChanged()
     }
 
@@ -76,7 +74,7 @@ class MusicPlayerViewModel(private val app: App) : BaseMusicViewModel(app) {
     private fun startTimer(){
         if (isTimerRun) return
         countTimer = object : CountDownTimer(
-            getCurrentTime() - app.soundServiceMusic.currentPositionInMillis,
+            app.soundServiceMusic.musicTimeInMillis - app.soundServiceMusic.currentPositionInMillis,
             1000L) {
             override fun onTick(millisUntilFinished: Long) {
                 notifyDataChanged()
@@ -92,6 +90,6 @@ class MusicPlayerViewModel(private val app: App) : BaseMusicViewModel(app) {
 
     fun notifyDataChanged(){
         currentPosition = getCurrentTime()
-        navigator.updateUI()
+        manager.updateStateElement()
     }
 }

@@ -1,12 +1,14 @@
 package com.example.fullproject.view
 
 import android.Manifest
+import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
@@ -18,13 +20,14 @@ import com.example.fullproject.businesslogic.SongMusic
 import com.example.fullproject.databinding.FragmentMusicListBinding
 
 class MusicListFragment : Fragment() {
+    private lateinit var binding: FragmentMusicListBinding
+    private lateinit var adapter: SongAdapter
+    private val viewModel: MusicListViewModel by viewModels { factory() }
+
     private val requestSinglePermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
         ::updateList
     )
-    private lateinit var binding: FragmentMusicListBinding
-    private lateinit var adapter: SongAdapter
-    private val viewModel: MusicListViewModel by viewModels { factory() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,37 +37,41 @@ class MusicListFragment : Fragment() {
         binding = FragmentMusicListBinding.inflate(inflater, container, false)
         checkNeededPermission()
 
-        adapter = SongAdapter(object: SongActionListener{
-            override fun onStartSound(song: SongMusic) {
-                viewModel.onSoundPlay(requireContext(), song)
-            }
-
-            override fun onPauseSound(song: SongMusic) {
-                viewModel.onSoundPause(song)
-            }
-
-            override fun onStopSound(song: SongMusic) {
-                viewModel.onSoundStop(song)
-            }
-
-            override fun onMusicPlaylist(song: SongMusic) {
-                val pushedSong = SongMusic(song.uri, song.isPlay)
-                viewModel.onMusicPlayer(song)
-                runWhenActive { navigator().onMusicPlaylist(viewModel.getCurrentTime(), pushedSong) }
-            }
-
-            override fun onSetName() {
-                Log.d("Menu" , "set name")
-            }
-        })
-        updateUI()
 
         val id = (activity?.applicationContext as App).id
         Log.d("idApp", "fragment $id ")
         return binding.root
     }
 
+    override fun onStart() {
+        super.onStart()
+        adapter = SongAdapter(object: SongActionListener{
+            override fun onStartSound(song: SongMusic) {
+                viewModel.onSoundPlay(song)
+                viewModel.onError()
+            }
 
+            override fun onPauseSound(song: SongMusic) {
+                viewModel.onSoundPause(song)
+                viewModel.onError(context!!.resources.getString(R.string.music_not_found_alert))
+            }
+
+            override fun onStopSound(song: SongMusic) {
+                viewModel.onSoundStop(song)
+            }
+
+            override fun openMusicPlayer(song: SongMusic) {
+                val pushedSong = SongMusic(song.uri, song.isPlay)
+                viewModel.onMusicPlayer(song)
+                runWhenActive { navigator().onMusicPlaylist(viewModel.getCurrentTime(), pushedSong) }
+            }
+
+            override fun onSetName() {
+                Toast.makeText(context, "This method will be added later", Toast.LENGTH_LONG).show()
+            }
+        })
+        updateUI()
+    }
 
     private fun updateList(granted: Boolean){
         if (granted)
