@@ -3,7 +3,7 @@ package com.example.fullproject
 import androidx.fragment.app.Fragment
 import com.example.fullproject.businesslogic.SongMusic
 
-fun Fragment.navigator(): Navigator{
+fun Fragment.activityNavigator(): Navigator{
     return requireActivity() as Navigator
 }
 

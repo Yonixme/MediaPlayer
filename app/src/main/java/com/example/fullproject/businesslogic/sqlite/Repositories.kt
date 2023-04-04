@@ -1,8 +1,7 @@
-package com.example.fullproject
+package com.example.fullproject.businesslogic.sqlite
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import com.example.fullproject.businesslogic.sqlite.AppSQLiteHelper
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 

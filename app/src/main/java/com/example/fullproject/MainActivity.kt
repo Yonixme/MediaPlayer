@@ -1,16 +1,25 @@
 package com.example.fullproject
 
 
+import android.content.Context
+import android.media.AudioFocusRequest
+import android.media.AudioManager
+import android.media.AudioManager.OnAudioFocusChangeListener
+import android.media.MediaPlayer
+import android.media.MediaPlayer.OnCompletionListener
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
 import androidx.activity.OnBackPressedDispatcher
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.PackageManagerCompat.LOG_TAG
 import androidx.fragment.app.Fragment
 import com.example.fullproject.businesslogic.SongMusic
 import com.example.fullproject.databinding.ActivityMainScreenBinding
 import com.example.fullproject.view.MusicListFragment
 import com.example.fullproject.view.MusicPlayerFragment
+
 
 class MainActivity :AppCompatActivity(), Navigator{
     private lateinit var binding: ActivityMainScreenBinding
@@ -28,11 +37,8 @@ class MainActivity :AppCompatActivity(), Navigator{
         test()
     }
 
-//    override fun goBack() {
-//        onBackPressed()
-//    }
     override fun goBack() {
-        OnBackPressedDispatcher()
+        onBackPressed()
     }
 
     override fun onMusicPlaylist(currentTime: Long, song: SongMusic) {
@@ -52,11 +58,12 @@ class MainActivity :AppCompatActivity(), Navigator{
         Log.d("test2", "${(this::launchFragment)}")
         Log.d("test2", " ")
 
-        var str: String? = null
-        if(str == null || str.isBlank()) Log.d("Check path", "work")
+
+        Log.d("Check path", "Test started")
         var id = (applicationContext as App).id
         Log.d("idApp", "$id")
         (applicationContext as App).upValue()
+
         id = (applicationContext as App).id
         Log.d("idApp", "$id")
 

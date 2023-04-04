@@ -6,7 +6,6 @@
     <string name="imageD">No image</string>
     <string name="startTime">00:00</string>
     <string name="EndTime">XX:XX</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="no_image">no image</string>
     <string name="enter_the_name">Enter the name</string>

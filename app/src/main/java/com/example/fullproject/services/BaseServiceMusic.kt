@@ -15,7 +15,7 @@ class BaseServiceMusic : Service() {
     var serviceIsRun = false
 
     override fun onBind(intent: Intent?): IBinder? {
-        TODO("Not yet implemented")
+        return null
     }
 
     override fun onCreate() {
@@ -40,15 +40,14 @@ class BaseServiceMusic : Service() {
 
 
 //        Handler(Looper.getMainLooper()).postDelayed({stopSelf()}, 3000L)
-        return START_NOT_STICKY
-//        return super.onStartCommand(intent, flags, startId)
+//        return START_NOT_STICKY
+        return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onDestroy() {
         if (serviceIsRun) serviceIsRun = false
         Log.d("Base Service", "Destroy")
         super.onDestroy()
-        Log.d("Base Service", "Destroy")
     }
 
     fun play(context: Context, song: SongMusic){

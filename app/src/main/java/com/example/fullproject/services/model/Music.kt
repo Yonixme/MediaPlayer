@@ -22,37 +22,21 @@ class Music(private val application: App) {
         private set
 
     init {
-        update()
+        updateData()
     }
 
-    fun createMusic(song: Song){
-        if (mp == null) {
-            lastSong = song
-            currentSong = song
-            mp = MediaPlayer.create(application.applicationContext, song.uri)
-            duration = (mp!!.duration).toLong()
-        }
-        if (currentSong != song){
-            mp = MediaPlayer.create(application.applicationContext, song.uri)
-            lastSong = currentSong
-            currentSong = song
-            duration = (mp!!.duration).toLong()
-        }
-
-        if (currentSong != song){
-            mp = MediaPlayer.create(application.applicationContext, song.uri)
-            duration = (mp!!.duration).toLong()
-            if (mp == null) lastSong = song
-            else lastSong = currentSong
-            currentSong = song
-        }
+    private fun createMusic(song: Song){
+        if (currentSong == song) return
+        lastSong = if (mp == null) song else currentSong
+        currentSong = song
+        mp = MediaPlayer.create(application.applicationContext, song.uri)
+        duration = (mp!!.duration).toLong()
     }
 
-    fun startSound(song: Song) {
+    private fun startSound(song: Song) {
         createMusic(song)
+        if(isPlay) mp?.start()
 
-        if(isPlay)
-            mp?.start()
     }
 
     fun onPlay(song: Song){
@@ -65,13 +49,14 @@ class Music(private val application: App) {
         mp?.stop()
         mp?.reset()
         mp?.release()
+        currentTime = 0L
     }
 
-    fun update(){
-        updateList()
+    fun updateData(){
+        updateListSongs()
     }
 
-    private fun updateList(){
+    private fun updateListSongs(){
         val listOFMusic = mutableListOf<File>()
         val uris = mutableListOf<Song>()
 

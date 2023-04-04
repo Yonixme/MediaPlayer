@@ -2,10 +2,10 @@ package com.example.fullproject.view
 
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.Factory
 import com.example.fullproject.App
 
-class FactoryViewModel(private val app: App) : ViewModelProvider.Factory {
+class FactoryViewModel(private val app: App) : Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val viewModel = when(modelClass){

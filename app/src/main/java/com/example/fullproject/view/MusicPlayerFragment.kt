@@ -1,7 +1,11 @@
 package com.example.fullproject.view
 
 
+import android.app.Service
+import android.content.ComponentName
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,13 +18,24 @@ import com.example.fullproject.*
 import com.example.fullproject.businesslogic.SongMusic
 import com.example.fullproject.databinding.FragmentMusicPlayerBinding
 import com.example.fullproject.businesslogic.millisToMinute
+import com.example.fullproject.services.ServiceMusic
 
-class MusicPlayerFragment : Fragment(){
+class MusicPlayerFragment : Fragment()/*, ServiceConnection*/{
+    /*private lateinit var myService: Service
+
+    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+        myService = (name as ServiceMusic.MyServiceBinder).myService()
+    }
+
+    override fun onServiceDisconnected(name: ComponentName?) {
+        TODO("Not yet implemented")
+    }*/
 
     private lateinit var binding: FragmentMusicPlayerBinding
 
     private val viewModel: MusicPlayerViewModel by viewModels { factory() }
 
+    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -39,8 +54,11 @@ class MusicPlayerFragment : Fragment(){
         (activity?.applicationContext as App).upValue()
         val id = (activity?.applicationContext as App).id
         Log.d("idApp", "fragment list $id ")
+
         return binding.root
     }
+
+
 
     private fun controlSound(){
         viewModel.startSound()
@@ -57,7 +75,7 @@ class MusicPlayerFragment : Fragment(){
         }
 
         binding.backBtn.setOnClickListener{
-            navigator().goBack()
+            activityNavigator().goBack()
         }
 
         binding.timeView.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {

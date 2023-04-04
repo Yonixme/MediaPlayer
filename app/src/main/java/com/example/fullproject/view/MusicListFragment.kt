@@ -35,6 +35,9 @@ class MusicListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMusicListBinding.inflate(inflater, container, false)
+        binding.requestPermission.setOnClickListener { ActivityCompat.requestPermissions(activity as Activity,
+            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+            PackageManager.PERMISSION_GRANTED) }
         checkNeededPermission()
 
 
@@ -63,7 +66,7 @@ class MusicListFragment : Fragment() {
             override fun openMusicPlayer(song: SongMusic) {
                 val pushedSong = SongMusic(song.uri, song.isPlay)
                 viewModel.onMusicPlayer(song)
-                runWhenActive { navigator().onMusicPlaylist(viewModel.getCurrentTime(), pushedSong) }
+                runWhenActive { activityNavigator().onMusicPlaylist(viewModel.getCurrentTime(), pushedSong) }
             }
 
             override fun onSetName() {
