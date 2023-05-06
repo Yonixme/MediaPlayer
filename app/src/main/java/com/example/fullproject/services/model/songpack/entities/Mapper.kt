@@ -1,7 +1,8 @@
 package com.example.fullproject.services.model
 
 import android.net.Uri
-import com.example.fullproject.businesslogic.SongMusic
+import com.example.fullproject.services.model.songpack.entities.MetaDataSong
+import com.example.fullproject.services.model.songpack.entities.Song
 
 interface SongMapper<T> {
     fun map(): T
@@ -12,7 +13,7 @@ interface SongMapper<T> {
         }
     }
 
-    class MetaData(private val uri: Uri,
+    class MetaData(private val uri: String,
                    private var name: String? = null,
                    private var author: String? = null,
                    private var description: String? = null,
@@ -20,15 +21,15 @@ interface SongMapper<T> {
     ) : SongMapper<MetaDataSong>{
         override fun map(): MetaDataSong {
             if (name == null || name!!.isBlank()) {
-                name = uri.toString()
+                name = uri
             }
-            return MetaDataSong(uri, name!!, author, description, addToStackPlaying)
+            return MetaDataSong(-1, uri, name!!, author, description, addToStackPlaying)
         }
     }
 
     class MDSongToSong(private val metaDataSong: MetaDataSong) : SongMapper<Song>{
         override fun map(): Song {
-            return Song(metaDataSong.uri)
+            return Song(Uri.parse(metaDataSong.uri))
         }
     }
 }

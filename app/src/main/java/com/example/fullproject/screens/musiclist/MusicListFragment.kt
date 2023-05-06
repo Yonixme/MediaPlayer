@@ -1,10 +1,9 @@
-package com.example.fullproject.view
+package com.example.fullproject.screens.musiclist
 
 import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,8 +15,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.fullproject.*
-import com.example.fullproject.businesslogic.SongMusic
+import com.example.fullproject.services.model.SongMusic
 import com.example.fullproject.databinding.FragmentMusicListBinding
+import com.example.fullproject.screens.BaseListViewModel
+import com.example.fullproject.services.model.songpack.entities.MetaDataSong
+import com.example.fullproject.utils.factory
 
 class MusicListFragment : Fragment() {
     private lateinit var binding: FragmentMusicListBinding
@@ -41,14 +43,16 @@ class MusicListFragment : Fragment() {
         checkNeededPermission()
 
 
-        val id = (activity?.applicationContext as App).id
-        Log.d("idApp", "fragment $id ")
+        binding.btnChangeDataInDb.setOnClickListener{
+            activityNavigator().onDataBaseList()
+        }
+
         return binding.root
     }
 
     override fun onStart() {
         super.onStart()
-        adapter = SongAdapter(object: SongActionListener{
+        adapter = SongAdapter(object: SongActionListener {
             override fun onStartSound(song: SongMusic) {
                 viewModel.onSoundPlay(song)
                 viewModel.onError()
@@ -71,6 +75,10 @@ class MusicListFragment : Fragment() {
 
             override fun onSetName() {
                 Toast.makeText(context, "This method will be added later", Toast.LENGTH_LONG).show()
+            }
+
+            override suspend fun getSong(): List<MetaDataSong> {
+                return BaseListViewModel.Base().getListSongWithDB(false)
             }
         })
         updateUI()

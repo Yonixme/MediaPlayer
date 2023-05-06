@@ -1,4 +1,4 @@
-package com.example.fullproject.businesslogic.sqlite
+package com.example.fullproject.services.model.sqlite
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -13,7 +13,9 @@ class AppSQLiteHelper (private val applicationContext: Context) : SQLiteOpenHelp
         }
         sql.split(";")
             .filter { it.isNotBlank() }
-            .forEach { db.execSQL(it) }
+            .forEach {
+                db.execSQL(it)
+            }
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) = Unit

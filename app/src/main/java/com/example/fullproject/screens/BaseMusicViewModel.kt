@@ -1,13 +1,12 @@
-package com.example.fullproject.view
+package com.example.fullproject.screens
 
-import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import com.example.fullproject.App
 import com.example.fullproject.R
-import com.example.fullproject.businesslogic.SongMusic
+import com.example.fullproject.services.model.SongMusic
 
 abstract class BaseMusicViewModel(private val app: App) : ViewModel() {
 
@@ -39,7 +38,7 @@ abstract class BaseMusicViewModel(private val app: App) : ViewModel() {
         app.soundServiceMusic.continueTimeSound(song)
     }
 
-    protected fun changeCurrentSong(oldSong: SongMusic, moveBy: Int): SongMusic{
+    protected fun changeCurrentSong(oldSong: SongMusic, moveBy: Int): SongMusic {
         if (uriNotCorrect(oldSong.uri)) return oldSong
         val newSong = app.soundServiceMusic.changeCurrentSong(oldSong, moveBy)
         if(oldSong == newSong) return oldSong
@@ -70,10 +69,9 @@ abstract class BaseMusicViewModel(private val app: App) : ViewModel() {
         return list
     }
 
-    protected fun notifyUser(outputText: String? = null){
+    private fun notifyUser(outputText: String? = null){
         if (outputText !== null){
             Toast.makeText(app.applicationContext, outputText, Toast.LENGTH_SHORT).show()
-
         }
     }
 

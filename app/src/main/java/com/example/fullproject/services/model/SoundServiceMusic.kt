@@ -1,9 +1,10 @@
-package com.example.fullproject.businesslogic
+package com.example.fullproject.services.model
 
 import android.content.Context
 import android.media.MediaPlayer
 import android.net.Uri
-import android.util.Log
+import com.example.fullproject.businesslogic.equalsWithSupportedFormat
+import com.example.fullproject.businesslogic.getFormatFile
 import java.io.File
 
 class SoundServiceMusic{

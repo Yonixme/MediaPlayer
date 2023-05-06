@@ -1,42 +1,51 @@
 package com.example.fullproject
 
-
-
 import android.app.Application
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
-import android.os.Handler
-import android.os.Looper
+import android.content.ServiceConnection
+import android.os.IBinder
 import android.util.Log
-import com.example.fullproject.businesslogic.SoundServiceMusic
-import com.example.fullproject.services.BaseServiceMusic
+import com.example.fullproject.services.model.SoundServiceMusic
+import com.example.fullproject.services.ServiceMusic
 import java.io.File
 
 class App: Application() {
 
-    var listDirWithMusic = mutableListOf<File>(
-        File("/storage/emulated/0/Download") ,
-        File("/storage/emulated/0/Music"),
-        File("/storage/emulated/0/Ringtone")
-    )
+    private lateinit var mService: ServiceMusic
+    private var mBound: Boolean = false
+
+    private val connection = object : ServiceConnection {
+
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance.
+            val binder = service as ServiceMusic.MyServiceBinder
+            mService = binder.myService()
+            mBound = true
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            mBound = false
+        }
+    }
 
     var soundServiceMusic = SoundServiceMusic()
-
-    var id = 0
 
     override fun onCreate() {
         super.onCreate()
 
-        val intent = Intent(this, BaseServiceMusic::class.java)
+        Intent(this, ServiceMusic::class.java).also { intent ->
+            bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        }
 
-        startService(intent)
-
-        Handler(Looper.getMainLooper()).postDelayed({stopService(intent)}, 3000L)
-
-        id = 1
         Log.d("Base Service", "onCreate()")
     }
 
-    fun upValue(){
-        id++
+    fun stopService(){
+        unbindService(connection)
+        mBound = false
     }
+
+    fun getMusicService(): ServiceMusic = mService
 }

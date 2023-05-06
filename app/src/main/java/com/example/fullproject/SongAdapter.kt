@@ -1,5 +1,7 @@
 package com.example.fullproject
 
+import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
@@ -7,9 +9,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
-import com.example.fullproject.businesslogic.SongMusic
-import com.example.fullproject.databinding.MusicSongItemBinding
+import com.example.fullproject.services.model.SongMusic
 import com.example.fullproject.databinding.SongItemBinding
+import com.example.fullproject.services.model.songpack.entities.MetaDataSong
+import kotlinx.coroutines.*
 
 interface SongActionListener{
     fun onStartSound(song: SongMusic)
@@ -21,18 +24,33 @@ interface SongActionListener{
     fun openMusicPlayer(song: SongMusic)
 
     fun onSetName()
+
+    suspend fun getSong(): List<MetaDataSong>
 }
 
 class SongAdapter(
     private val songActionListener: SongActionListener
     ): RecyclerView.Adapter<SongAdapter.SongHolder>(), View.OnClickListener
 {
+    private var list = listOf<MetaDataSong>()
+    private var listUri = mutableListOf<String?>()
+
     var listSong = mutableListOf<SongMusic>()
     private var lastMusic: Int? = null
 
     class SongHolder(val binding: SongItemBinding): RecyclerView.ViewHolder(binding.root)
 
     override fun getItemCount(): Int = listSong.size
+
+    init {
+        GlobalScope.launch(Dispatchers.IO) {
+            list = songActionListener.getSong()
+            for (l in list) {
+                listUri.add(l.uri)
+                Log.d("DataBaseURI", l.uri)
+            }
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -47,18 +65,31 @@ class SongAdapter(
 
     override fun onBindViewHolder(holder: SongHolder, position: Int) {
         val song = listSong[position]
-        with(holder.binding){
-            launchMusic.tag = song
-            itemMore.tag = song
-            itemView.tag = song
-            userNameTextView.text = song.uri.lastPathSegment
-            authorNameTextView.text = "Author"
-            if (song.isPlay) {
-                launchMusic.setImageResource(R.drawable.ic_pause)
-            }else{
-                launchMusic.setImageResource(R.drawable.ic_play)
+            with(holder.binding){
+                launchMusic.tag = song
+                itemMore.tag = song
+                itemView.tag = song
+                Log.d("DataBaseURI", song.uri.path.toString())
+
+                if(song.uri.path.toString() in listUri){
+                    Log.d("DataBaseURI", "")
+                    val index = listUri.indexOf(song.uri.path.toString())
+                    userNameTextView.text = list[index].name ?: Uri.parse(list[index].uri).lastPathSegment.toString()
+                    authorNameTextView.text = list[index].author ?: Uri.parse(list[index].uri).lastPathSegment.toString()
+                }else{
+                    userNameTextView.text = song.uri.lastPathSegment
+                    authorNameTextView.text = "Author"
+                }
+//
+//                userNameTextView.text = song.uri.lastPathSegment
+//                authorNameTextView.text = "Author"
+
+                if (song.isPlay) {
+                    launchMusic.setImageResource(R.drawable.ic_pause)
+                }else{
+                    launchMusic.setImageResource(R.drawable.ic_play)
+                }
             }
-        }
     }
 
     override fun onClick(v: View) {
@@ -103,6 +134,15 @@ class SongAdapter(
             return@setOnMenuItemClickListener true
         }
         popupMenu.show()
+    }
+
+    private suspend fun initLists() = withContext(Dispatchers.IO){
+        Repositories.songsRepository.getSongs(true)
+            .collect {
+                list = it
+            }
+        for (s in list)
+            listUri.add(Uri.parse(s.uri).lastPathSegment.toString())
     }
 
     companion object{

@@ -1,12 +1,7 @@
-package com.example.fullproject.view
+package com.example.fullproject.screens.musicplayer
 
 
-import android.app.Service
-import android.content.ComponentName
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,21 +10,12 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.fullproject.*
-import com.example.fullproject.businesslogic.SongMusic
+import com.example.fullproject.services.model.SongMusic
 import com.example.fullproject.databinding.FragmentMusicPlayerBinding
 import com.example.fullproject.businesslogic.millisToMinute
-import com.example.fullproject.services.ServiceMusic
+import com.example.fullproject.utils.factory
 
-class MusicPlayerFragment : Fragment()/*, ServiceConnection*/{
-    /*private lateinit var myService: Service
-
-    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        myService = (name as ServiceMusic.MyServiceBinder).myService()
-    }
-
-    override fun onServiceDisconnected(name: ComponentName?) {
-        TODO("Not yet implemented")
-    }*/
+class MusicPlayerFragment : Fragment(){
 
     private lateinit var binding: FragmentMusicPlayerBinding
 
@@ -51,9 +37,6 @@ class MusicPlayerFragment : Fragment()/*, ServiceConnection*/{
     ): View {
         binding = FragmentMusicPlayerBinding.inflate(inflater, container,false)
         controlSound()
-        (activity?.applicationContext as App).upValue()
-        val id = (activity?.applicationContext as App).id
-        Log.d("idApp", "fragment list $id ")
 
         return binding.root
     }
@@ -73,7 +56,6 @@ class MusicPlayerFragment : Fragment()/*, ServiceConnection*/{
         binding.stop.setOnClickListener {
             viewModel.onSoundStop()
         }
-
         binding.backBtn.setOnClickListener{
             activityNavigator().goBack()
         }
@@ -136,7 +118,7 @@ class MusicPlayerFragment : Fragment()/*, ServiceConnection*/{
         val CURRENT_SONG = "Current song"
 
         @JvmStatic
-        fun newInstance(time: Long, song : SongMusic): MusicPlayerFragment{
+        fun newInstance(time: Long, song : SongMusic): MusicPlayerFragment {
             val fragment = MusicPlayerFragment()
             fragment.arguments = bundleOf(
                 CURRENT_TIME to time,

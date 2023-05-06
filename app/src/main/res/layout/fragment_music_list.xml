@@ -20,12 +20,26 @@
             android:textSize="20sp"
             android:lines="1"
             android:textColor="@color/black"
-            android:text="Demo"
+            android:text="@string/music_list"
             android:fontFamily="sans-serif"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/line"/>
+
+        <ImageView
+            android:id="@+id/btn_change_data_in_db"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:padding="10dp"
+            android:layout_marginEnd="5dp"
+            android:visibility="visible"
+            android:src="@drawable/ic_baseline_add_30"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="@string/imageD"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <View
             android:id="@+id/line"
@@ -35,7 +49,6 @@
             android:background="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1"
             app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
