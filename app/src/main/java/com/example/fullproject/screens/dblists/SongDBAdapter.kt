@@ -9,7 +9,7 @@ import com.example.fullproject.services.model.songpack.entities.MetaDataSong
 import kotlinx.coroutines.*
 
 interface SongDBActionListener{
-    suspend fun getListSong(): List<MetaDataSong>
+    fun getListSong(): List<MetaDataSong>
 
     fun updateFlag(id: Long, flag: Boolean)
 }
@@ -22,7 +22,7 @@ class SongDBAdapter(
     private var listSong = listOf<MetaDataSong>()
 
     init {
-        GlobalScope.launch(Dispatchers.IO) { listSong = songDBActionListener.getListSong() }
+         listSong = songDBActionListener.getListSong()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongDBHolder {

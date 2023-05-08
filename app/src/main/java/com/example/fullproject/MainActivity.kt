@@ -2,13 +2,19 @@ package com.example.fullproject
 
 
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.example.fullproject.services.model.SongMusic
 import com.example.fullproject.databinding.ActivityMainScreenBinding
 import com.example.fullproject.screens.dblists.DataBaseListFragment
 import com.example.fullproject.screens.musiclist.MusicListFragment
 import com.example.fullproject.screens.musicplayer.MusicPlayerFragment
+import com.example.fullproject.services.model.songpack.entities.SongPackage
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity(), Navigator{
@@ -18,21 +24,21 @@ class MainActivity : AppCompatActivity(), Navigator{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainScreenBinding.inflate(layoutInflater).also { setContentView(it.root) }
-
         Repositories.init(applicationContext)
-        supportFragmentManager
-            .beginTransaction()
-            .add(R.id.fragmentContainer, MusicListFragment())
-            .commit()
+        val handler = Handler(Looper.getMainLooper())
 
-    }
-
-    override fun onStart() {
-        super.onStart()
-    }
-
-    override fun onStop() {
-        super.onStop()
+        object : CountDownTimer(500L, 500L){
+            override fun onTick(millisUntilFinished: Long) = Unit
+            override fun onFinish() {
+                handler.post{
+                    Log.d("DataBaseURI", "sss")
+                    supportFragmentManager
+                        .beginTransaction()
+                        .add(R.id.fragmentContainer, MusicListFragment())
+                        .commit()
+                }
+            }
+        }.start()
     }
 
     override fun goBack() {
@@ -40,8 +46,8 @@ class MainActivity : AppCompatActivity(), Navigator{
         onBackPressed()
     }
 
-    override fun onMusicPlaylist(currentTime: Long, song: SongMusic) {
-        launchFragment(MusicPlayerFragment.newInstance(currentTime, song))
+    override fun onMusicPlaylist(song:SongPackage) {
+        launchFragment(MusicPlayerFragment.newInstance(song))
     }
 
     private fun launchFragment(fragment: Fragment){
@@ -51,8 +57,6 @@ class MainActivity : AppCompatActivity(), Navigator{
             .replace(R.id.fragmentContainer, fragment)
             .commit()
     }
-
-
 
     override fun onDataBaseList() { launchFragment(DataBaseListFragment()) }
 }

@@ -1,7 +1,7 @@
 package com.example.fullproject
 
 import androidx.fragment.app.Fragment
-import com.example.fullproject.services.model.SongMusic
+import com.example.fullproject.services.model.songpack.entities.SongPackage
 
 fun Fragment.activityNavigator(): Navigator{
     return requireActivity() as Navigator
@@ -10,7 +10,7 @@ fun Fragment.activityNavigator(): Navigator{
 interface Navigator {
     fun goBack()
 
-    fun onMusicPlaylist(currentTime: Long, song: SongMusic)
+    fun onMusicPlaylist(song: SongPackage)
 
     fun onDataBaseList()
 }

@@ -2,6 +2,7 @@ package com.example.fullproject.screens.musicplayer
 
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,9 +11,10 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.fullproject.*
-import com.example.fullproject.services.model.SongMusic
 import com.example.fullproject.databinding.FragmentMusicPlayerBinding
 import com.example.fullproject.businesslogic.millisToMinute
+import com.example.fullproject.services.model.SongMapper
+import com.example.fullproject.services.model.songpack.entities.SongPackage
 import com.example.fullproject.utils.factory
 
 class MusicPlayerFragment : Fragment(){
@@ -25,9 +27,8 @@ class MusicPlayerFragment : Fragment(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.currentPosition = requireArguments().getLong(CURRENT_TIME)
-        viewModel.song = requireArguments().getParcelable(CURRENT_SONG)!!
-        viewModel.manager = object : PlayerManager{ override fun updateStateElement() { updateUI() } }
+        viewModel.song = SongMapper.SongPackageToSong(requireArguments().getParcelable(CHOOSED_SONG)!!).map()
+        viewModel.manager = object : PlayerManager{ override fun updateViewUI() { updateUI() } }
     }
 
     override fun onCreateView(
@@ -36,6 +37,7 @@ class MusicPlayerFragment : Fragment(){
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMusicPlayerBinding.inflate(inflater, container,false)
+        updateUI()
         controlSound()
 
         return binding.root
@@ -44,10 +46,10 @@ class MusicPlayerFragment : Fragment(){
 
 
     private fun controlSound(){
-        viewModel.startSound()
+        viewModel.launchTimer()
 
         binding.playOrPause.setOnClickListener {
-            if (viewModel.song.isPlay){
+            if (viewModel.isPlaySound()){
                 viewModel.onSoundPause()
             }else{
                 viewModel.onSoundPlay()
@@ -58,6 +60,14 @@ class MusicPlayerFragment : Fragment(){
         }
         binding.backBtn.setOnClickListener{
             activityNavigator().goBack()
+        }
+
+        binding.playlist.setOnClickListener{
+            viewModel.notifyUserWhatElementAddedLater()
+        }
+
+        binding.setting.setOnClickListener{
+            viewModel.notifyUserWhatElementAddedLater()
         }
 
         binding.timeView.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -75,19 +85,21 @@ class MusicPlayerFragment : Fragment(){
         })
 
         binding.next.setOnClickListener{
+            Log.d("Debug123", "next in Frag")
             viewModel.nextSound()
         }
 
         binding.previous.setOnClickListener{
+            Log.d("Debug123", "prev in Frag")
             viewModel.previouslySound()
         }
     }
 
     fun updateUI(){
-        binding.timeView.progress = viewModel.currentPosition.toInt()
+        binding.timeView.progress = viewModel.getCurrentPosition().toInt()
 
-        if(binding.currentTime.text != millisToMinute(viewModel.currentPosition.toInt()))
-            binding.currentTime.text = millisToMinute(viewModel.currentPosition.toInt())
+        if(binding.currentTime.text != millisToMinute(viewModel.getCurrentPosition().toInt()))
+            binding.currentTime.text = millisToMinute(viewModel.getCurrentPosition().toInt())
 
         if(binding.timeAll.text != millisToMinute(viewModel.getDuration().toInt()))
             binding.timeAll.text = millisToMinute(viewModel.getDuration().toInt())
@@ -96,7 +108,7 @@ class MusicPlayerFragment : Fragment(){
             binding.timeView.max = viewModel.getDuration().toInt()
 
 
-        if(viewModel.song.isPlay) {
+        if(viewModel.isPlaySound()) {
             binding.playOrPause.setImageResource(R.drawable.ic_pause)
         } else {
             binding.playOrPause.setImageResource(R.drawable.ic_play)
@@ -112,17 +124,13 @@ class MusicPlayerFragment : Fragment(){
 
     companion object{
         @JvmStatic
-        val CURRENT_TIME = "Current duration"
+        val CHOOSED_SONG = "Choosed song"
 
         @JvmStatic
-        val CURRENT_SONG = "Current song"
-
-        @JvmStatic
-        fun newInstance(time: Long, song : SongMusic): MusicPlayerFragment {
+        fun newInstance(song: SongPackage): MusicPlayerFragment {
             val fragment = MusicPlayerFragment()
             fragment.arguments = bundleOf(
-                CURRENT_TIME to time,
-                CURRENT_SONG to song
+                CHOOSED_SONG to song
             )
             return fragment
         }

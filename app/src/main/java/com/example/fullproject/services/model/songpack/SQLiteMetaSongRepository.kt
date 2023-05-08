@@ -4,7 +4,6 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.os.Parcel
-import android.util.Log
 import androidx.core.content.contentValuesOf
 import com.example.fullproject.services.model.songpack.entities.MetaDataSong
 import com.example.fullproject.services.model.sqlite.AppSQLiteContract.SongTable
@@ -12,14 +11,13 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 
-class SQLiteSongRepository(
+class SQLiteMetaSongRepository(
     private val db: SQLiteDatabase,
     private val ioDispatcher: CoroutineDispatcher
-) : SongsRepository{
+) : MetaSongsRepository{
 
-    override suspend fun getSongs(onlyActive: Boolean): Flow<List<MetaDataSong>> {
+    override fun getSongs(onlyActive: Boolean): Flow<List<MetaDataSong>> {
         return flow{
-            //querySongs(onlyActive)
             emit(querySongs(onlyActive))
         }.flowOn(ioDispatcher)
     }
@@ -66,7 +64,7 @@ class SQLiteSongRepository(
         )
     }
 
-    override suspend fun updateSongUserName(id: Long, newSongName: String) {
+    override suspend fun updateSongUserName(id: Long, newSongName: String): Unit = withContext(ioDispatcher) {
         updateValueOfElementInTable(id, newSongName, null, null, null)
     }
 

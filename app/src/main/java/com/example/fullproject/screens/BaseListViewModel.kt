@@ -3,7 +3,6 @@ package com.example.fullproject.screens
 import com.example.fullproject.Repositories
 import com.example.fullproject.services.model.dirpack.entities.Dir
 import com.example.fullproject.services.model.songpack.entities.MetaDataSong
-import kotlinx.coroutines.flow.collect
 
 interface BaseListViewModel {
     suspend fun getListSongWithDB(onlyActive: Boolean): List<MetaDataSong>
@@ -20,7 +19,7 @@ interface BaseListViewModel {
         override suspend fun getListSongWithDB(onlyActive: Boolean): List<MetaDataSong> {
             val list: MutableList<MetaDataSong> = mutableListOf()
 
-            Repositories.songsRepository.getSongs(false)
+            Repositories.metaSongsRepository.getSongs(false)
                 .collect{
                     for (l in it)
                         list.add(l)
@@ -30,11 +29,11 @@ interface BaseListViewModel {
         }
 
         override suspend fun activateFlagAutoPlaySong(id: Long, newValue: Boolean) {
-            Repositories.songsRepository.updateFlagItem(id, newValue)
+            Repositories.metaSongsRepository.updateFlagItem(id, newValue)
         }
 
         override suspend fun findIdByUri(uri: String): Long {
-            return Repositories.songsRepository.findSongIdByURI(uri)
+            return Repositories.metaSongsRepository.findSongIdByURI(uri)
         }
 
         override suspend fun getListDirWithDB(onlyActive: Boolean): List<Dir> {

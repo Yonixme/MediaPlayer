@@ -7,19 +7,21 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
-import com.example.fullproject.services.model.SoundServiceMusic
 import com.example.fullproject.services.ServiceMusic
-import java.io.File
+import com.example.fullproject.services.model.dirpack.entities.Dir
+import com.example.fullproject.services.model.songpack.entities.MetaDataSong
+import kotlinx.coroutines.*
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class App: Application() {
-
-    private lateinit var mService: ServiceMusic
-    private var mBound: Boolean = false
+    private var mService = ServiceMusic()
+    var mBound: Boolean = false
+    private set
 
     private val connection = object : ServiceConnection {
 
-        override fun onServiceConnected(className: ComponentName, service: IBinder) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance.
+        override fun onServiceConnected(className: ComponentName, service: IBinder){
             val binder = service as ServiceMusic.MyServiceBinder
             mService = binder.myService()
             mBound = true
@@ -30,8 +32,6 @@ class App: Application() {
         }
     }
 
-    var soundServiceMusic = SoundServiceMusic()
-
     override fun onCreate() {
         super.onCreate()
 
@@ -39,7 +39,14 @@ class App: Application() {
             bindService(intent, connection, Context.BIND_AUTO_CREATE)
         }
 
-        Log.d("Base Service", "onCreate()")
+        startServiceAsync(Intent(this, ServiceMusic::class.java))
+    }
+
+    private fun startServiceAsync(intent: Intent) = runBlocking(Dispatchers.Default){
+
+        intent.also { intent ->
+            bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        }
     }
 
     fun stopService(){
@@ -47,5 +54,7 @@ class App: Application() {
         mBound = false
     }
 
-    fun getMusicService(): ServiceMusic = mService
+    fun getMusicService(): ServiceMusic{
+        return mService
+    }
 }

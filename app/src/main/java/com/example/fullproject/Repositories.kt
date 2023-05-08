@@ -4,8 +4,8 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import com.example.fullproject.services.model.dirpack.DirRepository
 import com.example.fullproject.services.model.dirpack.SQLiteDirRepository
-import com.example.fullproject.services.model.songpack.SQLiteSongRepository
-import com.example.fullproject.services.model.songpack.SongsRepository
+import com.example.fullproject.services.model.songpack.SQLiteMetaSongRepository
+import com.example.fullproject.services.model.songpack.MetaSongsRepository
 import com.example.fullproject.services.model.sqlite.AppSQLiteHelper
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -19,8 +19,8 @@ object Repositories {
 
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 
-    val songsRepository: SongsRepository by lazy {
-        SQLiteSongRepository(database, ioDispatcher)
+    val metaSongsRepository: MetaSongsRepository by lazy {
+        SQLiteMetaSongRepository(database, ioDispatcher)
     }
 
     val dirRepository: DirRepository by lazy {

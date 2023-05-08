@@ -4,72 +4,84 @@ import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.fullproject.App
 import com.example.fullproject.R
-import com.example.fullproject.services.model.SongMusic
+import com.example.fullproject.Repositories
+import com.example.fullproject.services.model.songpack.entities.Song
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 abstract class BaseMusicViewModel(private val app: App) : ViewModel() {
 
-    fun onSoundPlay(song: SongMusic){
-        if (uriNotCorrect(song.uri)) notifyUser(app.applicationContext.resources.getString(R.string.music_not_found_alert))
-        app.soundServiceMusic.onPlaySound(app.applicationContext, song)
+    open fun onSoundPlay(song: Song){
+        if (uriNotCorrect(song)) {
+            notifyUser(app.applicationContext.resources.getString(R.string.music_not_found_alert))
+            return
+        }
+        app.getMusicService().onPlay(song)
         Log.d("onSoundPlay", "play")
     }
 
-    fun onSoundPause(song: SongMusic){
-        if (uriNotCorrect(song.uri)) notifyUser(app.applicationContext.resources.getString(R.string.music_not_found_alert))
-        app.soundServiceMusic.onSoundPause(song)
+    open fun onSoundPause(): Unit = runBlocking{
+        app.getMusicService().onSoundPause()
         Log.d("onSoundPause", "pause")
     }
 
-    fun onSoundStop(song: SongMusic){
-        if (uriNotCorrect(song.uri)) notifyUser(app.applicationContext.resources.getString(R.string.music_not_found_alert))
-        app.soundServiceMusic.onSoundStop(song)
+    open fun onSoundStop(): Unit = runBlocking{
+        app.getMusicService().onStop()
         Log.d("onSoundStop", "stop")
     }
 
-    fun pauseSound(song: SongMusic){
-        if (uriNotCorrect(song.uri)) notifyUser(app.applicationContext.resources.getString(R.string.music_not_found_alert))
-        app.soundServiceMusic.pauseTimeSound(song)
+    open fun pauseSound() = runBlocking{
+        app.getMusicService().pauseTimeSound()
     }
 
-    fun continueSound(song: SongMusic){
-        //if (uriNotCorrect(song.uri)) onError(app.applicationContext.resources.getString(R.string.music_not_found_alert))
-        app.soundServiceMusic.continueTimeSound(song)
+    open fun continueSound() = runBlocking{
+        app.getMusicService().continueTimeSound()
     }
 
-    protected fun changeCurrentSong(oldSong: SongMusic, moveBy: Int): SongMusic {
-        if (uriNotCorrect(oldSong.uri)) return oldSong
-        val newSong = app.soundServiceMusic.changeCurrentSong(oldSong, moveBy)
-        if(oldSong == newSong) return oldSong
-        onSoundStop(oldSong)
-        startSound(newSong)
-        return newSong
+    open fun nextSong(){
+        app.getMusicService().nextSound()
+        Log.d("Debug123", "next in VM")
     }
 
-    fun startSound(song: SongMusic){
-        if (uriNotCorrect(song.uri)) return
-        app.soundServiceMusic.startSound(app.applicationContext, song)
+    open fun previousSong(){
+        app.getMusicService().previousSound()
+        Log.d("Debug123", "prev in VM")
     }
 
-    fun getCurrentTime(): Long {
-        app.soundServiceMusic.updateCurrentPosition()
-        return app.soundServiceMusic.currentPositionInMillis
+    fun uriNotCorrect(song: Song): Boolean {
+        return song !in getListSong()
     }
 
-    fun getDuration() = app.soundServiceMusic.musicTimeInMillis
-
-    fun uriNotCorrect(uri: Uri): Boolean = uri !in getListSong()
-
-    fun getListSong(): MutableList<Uri>{
-        app.soundServiceMusic.updateList()
-        val list = mutableListOf<Uri>()
-        for(u in app.soundServiceMusic.songs)
-            list.add(u)
-        return list
+    open fun getCurrentPosition(): Long = runBlocking {
+        return@runBlocking app.getMusicService().currentTime
     }
 
-    private fun notifyUser(outputText: String? = null){
+    fun getDuration(): Long = runBlocking {
+        return@runBlocking app.getMusicService().duration
+    }
+
+     fun getListSong(): List<Song> = runBlocking{
+         app.getMusicService().updateData()
+         return@runBlocking app.getMusicService().songs
+    }
+
+    fun isPlaySound(): Boolean = runBlocking {
+        app.getMusicService().isPlay
+    }
+
+    fun getCurrentSong(): Song = runBlocking {
+        return@runBlocking app.getMusicService().currentSong
+    }
+
+    fun getSongsListWithDB() = runBlocking {
+        return@runBlocking BaseListViewModel.Base().getListSongWithDB(false)
+    }
+
+    open fun notifyUser(outputText: String? = null){
         if (outputText !== null){
             Toast.makeText(app.applicationContext, outputText, Toast.LENGTH_SHORT).show()
         }

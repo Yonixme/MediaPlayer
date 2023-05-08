@@ -2,14 +2,16 @@ package com.example.fullproject.screens.musicplayer
 
 import android.net.Uri
 import android.os.CountDownTimer
+import android.util.Log
 import com.example.fullproject.App
 import com.example.fullproject.PlayerManager
-import com.example.fullproject.services.model.SongMusic
 import com.example.fullproject.screens.BaseMusicViewModel
+import com.example.fullproject.services.model.songpack.entities.Song
+import kotlinx.coroutines.runBlocking
 
 class MusicPlayerViewModel(private val app: App) : BaseMusicViewModel(app) {
-    var currentPosition: Long = 0
-    var song: SongMusic = SongMusic(Uri.parse("Empty"))
+
+    var song: Song = Song(Uri.parse("Empty"))
     lateinit var manager: PlayerManager
 
     // Create logic for any SDK version
@@ -26,51 +28,45 @@ class MusicPlayerViewModel(private val app: App) : BaseMusicViewModel(app) {
         startTimer()
     }
 
-    fun startSound(){
-        super.startSound(song)
-        setTimeSound(getCurrentTime())
-        startTimer()
-        updateData()
-        }
-
-    fun onSoundPause() {
-        super.onSoundPause(song)
+    override fun onSoundPause() {
+        super.onSoundPause()
         stopTimer()
         updateData()
     }
 
-    fun onSoundStop() {
-        super.onSoundStop(song)
+    override fun onSoundStop() {
+        super.onSoundStop()
         stopTimer()
         updateData()
-
     }
-
-
 
     fun setTimeSound(progress: Long) {
-        if (uriNotCorrect(song.uri)) return
-        app.soundServiceMusic.setTimeSound(progress)
+        if (uriNotCorrect(song)) return
+        app.getMusicService().setTimeSound(progress)
         updateData()
     }
 
     fun pauseTimeSound() {
-        super.pauseSound(song)
+        super.pauseSound()
         stopTimer()
     }
 
     fun continueTimeSound() {
-        super.continueSound(song)
+        super.continueSound()
         updateData()
         startTimer()
     }
     fun previouslySound(){
-        song = super.changeCurrentSong(song, -1)
+        super.previousSong()
+        song = app.getMusicService().currentSong
+        if (app.getMusicService().isPlay) startTimer()
         updateData()
     }
 
     fun nextSound(){
-        song = super.changeCurrentSong(song, 1)
+        super.nextSong()
+        song = app.getMusicService().currentSong
+        if (app.getMusicService().isPlay) startTimer()
         updateData()
     }
 
@@ -80,16 +76,25 @@ class MusicPlayerViewModel(private val app: App) : BaseMusicViewModel(app) {
         isTimerRun = false
     }
 
+    fun launchTimer(){
+        if (song == app.getMusicService().currentSong) startTimer()
+    }
+
+    override fun getCurrentPosition(): Long {
+        if(song == app.getMusicService().currentSong) return super.getCurrentPosition()
+        return 0L
+    }
+
     private fun startTimer(){
         if (isTimerRun) return
         countTimer = object : CountDownTimer(
-            app.soundServiceMusic.musicTimeInMillis - app.soundServiceMusic.currentPositionInMillis,
+            app.getMusicService().duration - app.getMusicService().currentTime,
             1000L) {
             override fun onTick(millisUntilFinished: Long) {
                 updateData()
             }
             override fun onFinish() {
-                onSoundStop()
+                nextSound()
                 updateData()
             }
         }
@@ -97,16 +102,12 @@ class MusicPlayerViewModel(private val app: App) : BaseMusicViewModel(app) {
         isTimerRun = true
     }
 
-    fun updateData(){
-        currentPosition = getCurrentTime()
-        manager.updateStateElement()
+    fun updateData() = runBlocking{
+        app.getMusicService().updateCurrentPosition()
+        manager.updateViewUI()
+    }
+
+    fun notifyUserWhatElementAddedLater(){
+        notifyUser("This Element will be added Later")
     }
 }
-
-
-
-
-
-
-
-

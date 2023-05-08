@@ -3,7 +3,11 @@ package com.example.fullproject.screens.musiclist
 import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
+import android.opengl.Visibility
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,10 +19,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.fullproject.*
-import com.example.fullproject.services.model.SongMusic
 import com.example.fullproject.databinding.FragmentMusicListBinding
 import com.example.fullproject.screens.BaseListViewModel
 import com.example.fullproject.services.model.songpack.entities.MetaDataSong
+import com.example.fullproject.services.model.songpack.entities.Song
+import com.example.fullproject.services.model.songpack.entities.SongPackage
 import com.example.fullproject.utils.factory
 
 class MusicListFragment : Fragment() {
@@ -31,6 +36,10 @@ class MusicListFragment : Fragment() {
         ::updateList
     )
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,45 +49,50 @@ class MusicListFragment : Fragment() {
         binding.requestPermission.setOnClickListener { ActivityCompat.requestPermissions(activity as Activity,
             arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
             PackageManager.PERMISSION_GRANTED) }
-        checkNeededPermission()
 
+        checkNeededPermission()
 
         binding.btnChangeDataInDb.setOnClickListener{
             activityNavigator().onDataBaseList()
         }
-
         return binding.root
     }
 
     override fun onStart() {
         super.onStart()
         adapter = SongAdapter(object: SongActionListener {
-            override fun onStartSound(song: SongMusic) {
+            override fun onStartSound(song: Song) {
                 viewModel.onSoundPlay(song)
-                viewModel.onError()
             }
 
-            override fun onPauseSound(song: SongMusic) {
-                viewModel.onSoundPause(song)
-                viewModel.onError(context!!.resources.getString(R.string.music_not_found_alert))
+            override fun onPauseSound() {
+                viewModel.onSoundPause()
             }
 
-            override fun onStopSound(song: SongMusic) {
-                viewModel.onSoundStop(song)
+            override fun onStopSound() {
+                viewModel.onSoundStop()
             }
 
-            override fun openMusicPlayer(song: SongMusic) {
-                val pushedSong = SongMusic(song.uri, song.isPlay)
-                viewModel.onMusicPlayer(song)
-                runWhenActive { activityNavigator().onMusicPlaylist(viewModel.getCurrentTime(), pushedSong) }
+            override fun openMusicPlayer(song: Song) {
+                val pushedSong = SongPackage(song.uri)
+                //viewModel.onMusicPlayer(song)
+                runWhenActive { activityNavigator().onMusicPlaylist(pushedSong) }
             }
 
             override fun onSetName() {
-                Toast.makeText(context, "This method will be added later", Toast.LENGTH_LONG).show()
+                viewModel.notifyUserWhatElementInCreating()
             }
 
-            override suspend fun getSong(): List<MetaDataSong> {
-                return BaseListViewModel.Base().getListSongWithDB(false)
+            override fun getSongListWithDB(): List<MetaDataSong> {
+                return viewModel.getSongsListWithDB()
+            }
+
+            override fun isPlaySound(): Boolean {
+                return viewModel.isPlaySound()
+            }
+
+            override fun getCurrentSong(): Song {
+                return viewModel.getCurrentSong()
             }
         })
         updateUI()
@@ -107,9 +121,7 @@ class MusicListFragment : Fragment() {
 
     private fun updateUI(){
         val list = viewModel.getListSong()
-        for (u in list)
-            adapter.listSong.add(SongMusic(u))
-
+        adapter.listSong = list
         val layoutManager = LinearLayoutManager(context)
         binding.ListMusic.layoutManager = layoutManager
         binding.ListMusic.adapter = adapter

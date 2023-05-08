@@ -38,12 +38,12 @@ class DataBaseListFragment : Fragment() {
     }
 
     private fun updateListSong(){
-        songAdapter= SongDBAdapter(object : SongDBActionListener{
+        songAdapter = SongDBAdapter(object : SongDBActionListener{
             override fun updateFlag(id: Long, flag: Boolean) {
                 viewModel.updateFlagAutoPlaySong(id, flag)
             }
 
-            override suspend fun getListSong(): List<MetaDataSong> {
+            override fun getListSong(): List<MetaDataSong> {
                return viewModel.getListSong(false)
             }
         })

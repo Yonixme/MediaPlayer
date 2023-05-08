@@ -9,8 +9,10 @@ import com.example.fullproject.services.model.dirpack.entities.Dir
 import com.example.fullproject.services.model.songpack.entities.MetaDataSong
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class DataBaseListViewModel(private val app: App) : ViewModel(){
 
@@ -31,11 +33,11 @@ class DataBaseListViewModel(private val app: App) : ViewModel(){
         return id
     }
 
-    suspend fun getListSong(onlyActive: Boolean): List<MetaDataSong>{
-        return BaseListViewModel.Base().getListSongWithDB(onlyActive)
+    fun getListSong(onlyActive: Boolean): List<MetaDataSong> = runBlocking(Dispatchers.IO){
+        return@runBlocking BaseListViewModel.Base().getListSongWithDB(onlyActive)
     }
 
-    suspend fun getListDir(onlyActive: Boolean): List<Dir>{
-        return BaseListViewModel.Base().getListDirWithDB(onlyActive)
+    fun getListDir(onlyActive: Boolean): List<Dir> = runBlocking(Dispatchers.IO){
+        return@runBlocking BaseListViewModel.Base().getListDirWithDB(onlyActive)
     }
 }

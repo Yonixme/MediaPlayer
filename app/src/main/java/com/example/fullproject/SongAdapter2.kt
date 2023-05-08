@@ -1,7 +1,5 @@
 package com.example.fullproject
 
-import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.fullproject.services.model.SongMusic
 import com.example.fullproject.databinding.SongItemBinding
 import com.example.fullproject.services.model.songpack.entities.MetaDataSong
-import com.example.fullproject.services.model.songpack.entities.Song
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -24,7 +21,7 @@ interface SongActionListener2{
 
     fun onSetName()
 
-    suspend fun getSong(): List<MetaDataSong>
+    fun getSongWithDB(): List<MetaDataSong>
 }
 
 class SongAdapter2 (private val songActionListener2: SongActionListener2):
@@ -36,7 +33,7 @@ class SongAdapter2 (private val songActionListener2: SongActionListener2):
 
         init {
             GlobalScope.launch {
-                listSong = songActionListener2.getSong()
+                listSong = songActionListener2.getSongWithDB()
                 for (l in listSong)
                     listUri.add(l.uri)
             }

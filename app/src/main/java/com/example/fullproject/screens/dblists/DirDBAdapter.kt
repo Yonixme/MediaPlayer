@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fullproject.databinding.BDataItemBinding
 import com.example.fullproject.services.model.dirpack.entities.Dir
-import com.example.fullproject.services.model.songpack.entities.MetaDataSong
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -22,10 +21,10 @@ class DirDBAdapter(
 ): RecyclerView.Adapter<DirDBAdapter.DirDBHolder>(), View.OnClickListener {
 
     class DirDBHolder(val binding: BDataItemBinding): RecyclerView.ViewHolder(binding.root)
-    private var listSong = listOf<Dir>()
+    private var listDir = listOf<Dir>()
 
     init {
-        GlobalScope.launch(Dispatchers.IO) { listSong = dirDBActionListener.getListDirs() }
+        GlobalScope.launch(Dispatchers.IO) { listDir = dirDBActionListener.getListDirs() }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DirDBHolder {
@@ -40,25 +39,25 @@ class DirDBAdapter(
     }
 
     override fun onBindViewHolder(holder: DirDBHolder, position: Int) {
-        val metaSong = listSong[position]
+        val dir = listDir[position]
 
         with(holder.binding){
-            item.tag = metaSong
-            itemMore.tag = metaSong
+            item.tag = dir
+            itemMore.tag = dir
 
-            nameItem.text = listSong[position].name ?: "Null"
+            nameItem.text = listDir[position].name ?: "Null"
             authorItem.visibility = View.GONE
-            uriItem.text = listSong[position].uri
-            isAddToList.isChecked = listSong[position].addToStackPlaying ?: true
+            uriItem.text = listDir[position].uri
+            isAddToList.isChecked = listDir[position].addToStackPlaying ?: true
             isAddToList.setOnCheckedChangeListener{ _, isChecked ->
-                dirDBActionListener.updateFlag(metaSong.id, isChecked)}
+                dirDBActionListener.updateFlag(dir.id, isChecked)}
         }
 
 
     }
 
     override fun getItemCount(): Int {
-        return listSong.size
+        return listDir.size
     }
 
     override fun onClick(v: View?) {

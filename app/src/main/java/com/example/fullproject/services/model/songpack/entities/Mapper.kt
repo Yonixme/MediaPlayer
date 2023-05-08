@@ -3,6 +3,7 @@ package com.example.fullproject.services.model
 import android.net.Uri
 import com.example.fullproject.services.model.songpack.entities.MetaDataSong
 import com.example.fullproject.services.model.songpack.entities.Song
+import com.example.fullproject.services.model.songpack.entities.SongPackage
 
 interface SongMapper<T> {
     fun map(): T
@@ -30,6 +31,12 @@ interface SongMapper<T> {
     class MDSongToSong(private val metaDataSong: MetaDataSong) : SongMapper<Song>{
         override fun map(): Song {
             return Song(Uri.parse(metaDataSong.uri))
+        }
+    }
+
+    class SongPackageToSong(private val songPackage: SongPackage): SongMapper<Song>{
+        override fun map(): Song {
+            return Song(songPackage.uri)
         }
     }
 }
