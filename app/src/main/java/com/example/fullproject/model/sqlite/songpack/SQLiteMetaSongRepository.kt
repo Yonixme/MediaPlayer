@@ -1,12 +1,11 @@
-package com.example.fullproject.services.model.songpack
+package com.example.fullproject.model.sqlite.songpack
 
 import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import android.os.Parcel
 import androidx.core.content.contentValuesOf
-import com.example.fullproject.services.model.songpack.entities.MetaDataSong
-import com.example.fullproject.services.model.sqlite.AppSQLiteContract.SongTable
+import com.example.fullproject.model.sqlite.songpack.entities.MetaDataSong
+import com.example.fullproject.model.sqlite.AppSQLiteContract.SongTable
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
@@ -14,7 +13,7 @@ import kotlinx.coroutines.withContext
 class SQLiteMetaSongRepository(
     private val db: SQLiteDatabase,
     private val ioDispatcher: CoroutineDispatcher
-) : MetaSongsRepository{
+) : MetaSongsRepository {
 
     override fun getSongs(onlyActive: Boolean): Flow<List<MetaDataSong>> {
         return flow{
@@ -41,7 +40,7 @@ class SQLiteMetaSongRepository(
             name = cursor.getString(cursor.getColumnIndexOrThrow(SongTable.COLUMN_NAME)),
             author = cursor.getString(cursor.getColumnIndexOrThrow(SongTable.COLUMN_AUTHOR)),
             description = cursor.getString(cursor.getColumnIndexOrThrow(SongTable.COLUMN_DESCRIPTION)),
-            addToStackPlaying = cursor.getInt(cursor.getColumnIndexOrThrow(SongTable.COLUMN_AUTOPLAY_MARKER)) != 0
+            addToStackPlaying = cursor.getInt(cursor.getColumnIndexOrThrow(SongTable.COLUMN_PLAY_MARKER)) != 0
         )
     }
 
@@ -50,17 +49,16 @@ class SQLiteMetaSongRepository(
                                           author: String?,
                                           description: String?,
                                           addToStackPlaying: Boolean){
-        db.insertWithOnConflict(
+        db.insert(
             SongTable.TABLE_NAME,
         null,
             contentValuesOf(
                 SongTable.COLUMN_URI to uri,
-                SongTable.TABLE_NAME to name,
+                SongTable.COLUMN_NAME to name,
                 SongTable.COLUMN_AUTHOR to author,
                 SongTable.COLUMN_DESCRIPTION to description,
-                SongTable.COLUMN_AUTOPLAY_MARKER to addToStackPlaying
-            ),
-            SQLiteDatabase.CONFLICT_REPLACE
+                SongTable.COLUMN_PLAY_MARKER to addToStackPlaying
+            )
         )
     }
 
@@ -72,7 +70,7 @@ class SQLiteMetaSongRepository(
         updateValueOfElementInTable(id, null, null, null, activeState)
     }
 
-    override suspend fun deleteSongObject(id: Long): Int = withContext(ioDispatcher){
+    override suspend fun deleteSongObject(id: Long) {
         db.delete(SongTable.TABLE_NAME, "${SongTable.COLUMN_ID} = ?", arrayOf(id.toString()))
     }
 
@@ -86,12 +84,15 @@ class SQLiteMetaSongRepository(
         if (name != null) mapWithUpdatedElement[SongTable.COLUMN_NAME] = name
         if (author != null) mapWithUpdatedElement[SongTable.COLUMN_AUTHOR] = author
         if (description != null) mapWithUpdatedElement[SongTable.COLUMN_DESCRIPTION] = description
-        if (addToStackPlaying != null) mapWithUpdatedElement[SongTable.COLUMN_AUTOPLAY_MARKER] = if (addToStackPlaying) 1 else 0
+        if (addToStackPlaying != null) mapWithUpdatedElement[SongTable.COLUMN_PLAY_MARKER] = if (addToStackPlaying) 1 else 0
 
-        val parcel = Parcel.obtain()
-        parcel.writeMap(mapWithUpdatedElement)
-        parcel.setDataPosition(0)
-        val content = ContentValues.CREATOR.createFromParcel(parcel)
+        val content = ContentValues(mapWithUpdatedElement.size)
+        for (key in mapWithUpdatedElement.keys) {
+            if (key == SongTable.COLUMN_PLAY_MARKER)
+                content.put(key, (mapWithUpdatedElement[key] as Int))
+            else
+                content.put(key, mapWithUpdatedElement[key].toString())
+        }
 
         db.updateWithOnConflict(
             SongTable.TABLE_NAME,
@@ -118,7 +119,7 @@ class SQLiteMetaSongRepository(
     private fun querySongsOfCursor(onlyActive: Boolean): Cursor {
         return if (onlyActive){
             val sql = "SELECT *" +
-                    " FROM ${SongTable.TABLE_NAME}" + " WHERE ${SongTable.COLUMN_AUTOPLAY_MARKER} = 1"
+                    " FROM ${SongTable.TABLE_NAME}" + " WHERE ${SongTable.COLUMN_PLAY_MARKER} = 1"
 
             db.rawQuery(sql, null)
         }else{

@@ -12,14 +12,11 @@ import com.example.fullproject.databinding.ActivityMainScreenBinding
 import com.example.fullproject.screens.dblists.DataBaseListFragment
 import com.example.fullproject.screens.musiclist.MusicListFragment
 import com.example.fullproject.screens.musicplayer.MusicPlayerFragment
-import com.example.fullproject.services.model.songpack.entities.SongPackage
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import com.example.fullproject.model.SongPackage
 
 
 class MainActivity : AppCompatActivity(), Navigator{
     private lateinit var binding: ActivityMainScreenBinding
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +43,7 @@ class MainActivity : AppCompatActivity(), Navigator{
         onBackPressed()
     }
 
-    override fun onMusicPlaylist(song:SongPackage) {
+    override fun onMusicPlaylist(song: SongPackage) {
         launchFragment(MusicPlayerFragment.newInstance(song))
     }
 

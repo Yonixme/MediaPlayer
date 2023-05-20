@@ -1,4 +1,4 @@
-package com.example.fullproject
+package com.example.fullproject.screens.musiclist.adapters
 
 import android.net.Uri
 import android.util.Log
@@ -9,10 +9,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
+import com.example.fullproject.R
 import com.example.fullproject.databinding.SongItemBinding
-import com.example.fullproject.services.model.songpack.entities.MetaDataSong
-import com.example.fullproject.services.model.songpack.entities.Song
-import kotlinx.coroutines.*
+import com.example.fullproject.model.sqlite.songpack.entities.MetaDataSong
+import com.example.fullproject.model.Song
 
 interface SongActionListener{
     fun onStartSound(song: Song)
@@ -36,7 +36,8 @@ class SongAdapter(
     private val songActionListener: SongActionListener
     ): RecyclerView.Adapter<SongAdapter.SongHolder>(), View.OnClickListener
 {
-    var musicInListPlayed = false
+    private var getNameWithDB = mutableListOf<Boolean>()
+    private var musicInListPlayed = false
     private var list = listOf<MetaDataSong>()
     private var listUri = mutableListOf<String?>()
 
@@ -57,6 +58,7 @@ class SongAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = SongItemBinding.inflate(inflater, parent, false)
+        getNameWithDB.add(true)
 
         binding.itemView.setOnClickListener(this)
         binding.itemMore.setOnClickListener(this)
@@ -67,26 +69,32 @@ class SongAdapter(
 
     override fun onBindViewHolder(holder: SongHolder, position: Int) {
         val song = listSong[position]
+
         Log.d("DataBaseURI", position.toString())
             with(holder.binding){
                 launchMusic.tag = song
                 itemMore.tag = song
                 itemView.tag = song
 
-                if(song.uri.path.toString() in listUri){
+                if(song.uri.path.toString() in listUri && list[listUri.indexOf(song.uri.path.toString())].addToStackPlaying
+                    && getNameWithDB[position]){
                     val index = listUri.indexOf(song.uri.path.toString())
-                    userNameTextView.text = list[index].name ?: Uri.parse(list[index].uri).lastPathSegment.toString()
-                    authorNameTextView.text = list[index].author ?: Uri.parse(list[index].uri).lastPathSegment.toString()
+
+                    userNameTextView.text = list[index].name
+                        ?: Uri.parse(list[index].uri).lastPathSegment.toString()
+                    authorNameTextView.text = list[index].author
+                        ?: Uri.parse(list[index].uri).lastPathSegment.toString()
+
                 }else{
                     userNameTextView.text = song.uri.lastPathSegment
                     authorNameTextView.text = "Author"
                 }
                 if (song == songActionListener.getCurrentSong() && songActionListener.isPlaySound()) {
                     launchMusic.setImageResource(R.drawable.ic_pause)
-                    indexLastMusic = position
+                    indexLastMusic = holder.adapterPosition
                     musicInListPlayed = true
-                }else
-                    launchMusic.setImageResource(R.drawable.ic_play)
+                }
+                else launchMusic.setImageResource(R.drawable.ic_play)
             }
     }
 
@@ -123,13 +131,17 @@ class SongAdapter(
 
     private fun showPopupMenu(view: View){
         val context = view.context
+        val song = view.tag as Song
+        val index = listSong.indexOf(song)
         val popupMenu = PopupMenu(context, view)
 
-        popupMenu.menu.add(0, set_Name, Menu.NONE, "set name for music")
+        popupMenu.menu.add(0, SET_NAME_ID, Menu.NONE, "set name for music")
 
         popupMenu.setOnMenuItemClickListener {
             when(it.itemId){
-                set_Name -> {
+                SET_NAME_ID -> {
+                    getNameWithDB[index] = !getNameWithDB[index]
+                    notifyItemChanged(index)
                     songActionListener.onSetName()
                 }
             }
@@ -138,16 +150,7 @@ class SongAdapter(
         popupMenu.show()
     }
 
-    private suspend fun initLists() = withContext(Dispatchers.IO){
-        Repositories.metaSongsRepository.getSongs(true)
-            .collect {
-                list = it
-            }
-        for (s in list)
-            listUri.add(Uri.parse(s.uri).lastPathSegment.toString())
-    }
-
     companion object{
-        private const val set_Name = 1
+        private const val SET_NAME_ID = 1
     }
 }

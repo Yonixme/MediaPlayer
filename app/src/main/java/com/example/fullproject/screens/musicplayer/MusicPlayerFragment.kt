@@ -12,9 +12,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.fullproject.*
 import com.example.fullproject.databinding.FragmentMusicPlayerBinding
-import com.example.fullproject.businesslogic.millisToMinute
-import com.example.fullproject.services.model.SongMapper
-import com.example.fullproject.services.model.songpack.entities.SongPackage
+import com.example.fullproject.screens.viewmodel.MusicPlayerViewModel
+import com.example.fullproject.utils.millisToMinute
+import com.example.fullproject.model.songpack.entities.SongMapper
+import com.example.fullproject.model.SongPackage
+import com.example.fullproject.utils.activityNavigator
 import com.example.fullproject.utils.factory
 
 class MusicPlayerFragment : Fragment(){
@@ -28,7 +30,7 @@ class MusicPlayerFragment : Fragment(){
         super.onCreate(savedInstanceState)
 
         viewModel.song = SongMapper.SongPackageToSong(requireArguments().getParcelable(CHOOSED_SONG)!!).map()
-        viewModel.manager = object : PlayerManager{ override fun updateViewUI() { updateUI() } }
+        viewModel.manager = object : PlayerManager { override fun updateViewUI() { updateUI() } }
     }
 
     override fun onCreateView(
@@ -63,11 +65,11 @@ class MusicPlayerFragment : Fragment(){
         }
 
         binding.playlist.setOnClickListener{
-            viewModel.notifyUserWhatElementAddedLater()
+            activityNavigator().onDataBaseList()
         }
 
         binding.setting.setOnClickListener{
-            viewModel.notifyUserWhatElementAddedLater()
+            viewModel.onItemMoreClick(it)
         }
 
         binding.timeView.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -114,17 +116,17 @@ class MusicPlayerFragment : Fragment(){
             binding.playOrPause.setImageResource(R.drawable.ic_play)
         }
 
-        if(binding.nameMusicHeader.text != viewModel.song.uri.lastPathSegment)
-            binding.nameMusicHeader.text = viewModel.song.uri.lastPathSegment
+        if(binding.nameMusicHeader.text != viewModel.getNameField())
+            binding.nameMusicHeader.text = viewModel.getNameField()
 
-        if(binding.nameMusicPlaying.text != viewModel.song.uri.lastPathSegment)
-            binding.nameMusicPlaying.text = viewModel.song.uri.lastPathSegment
+        if(binding.nameMusicPlaying.text != viewModel.getAuthorField())
+            binding.nameMusicPlaying.text = viewModel.getAuthorField()
     }
 
 
     companion object{
         @JvmStatic
-        val CHOOSED_SONG = "Choosed song"
+        private val CHOOSED_SONG = "Choosed song"
 
         @JvmStatic
         fun newInstance(song: SongPackage): MusicPlayerFragment {

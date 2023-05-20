@@ -37,7 +37,6 @@
                 android:layout_marginTop="4dp"
                 android:lines="1"
                 android:textColor="@color/black"
-                android:textAllCaps="true"
                 android:textAlignment="center"
                 android:textSize="14sp"
                 tools:text="@string/nameMusic"/>
@@ -49,7 +48,6 @@
                 android:ellipsize="end"
                 android:lines="1"
                 android:textAlignment="center"
-                android:textAllCaps="true"
                 android:textColor="@color/black"
                 android:textSize="10sp"
                 tools:text="@string/author_txt" />

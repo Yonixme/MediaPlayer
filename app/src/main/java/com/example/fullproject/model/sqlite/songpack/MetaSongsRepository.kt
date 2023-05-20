@@ -1,6 +1,6 @@
-package com.example.fullproject.services.model.songpack
+package com.example.fullproject.model.sqlite.songpack
 
-import com.example.fullproject.services.model.songpack.entities.MetaDataSong
+import com.example.fullproject.model.sqlite.songpack.entities.MetaDataSong
 import kotlinx.coroutines.flow.Flow
 
 interface MetaSongsRepository {
@@ -13,7 +13,7 @@ interface MetaSongsRepository {
     suspend fun createSongObject(uri: String, name: String?, author: String?,
                                  description: String?, addToStackPlaying: Boolean)
 
-    suspend fun deleteSongObject(id: Long): Int
+    suspend fun deleteSongObject(id: Long)
 
     suspend fun findSongIdByURI(uri: String): Long
 }

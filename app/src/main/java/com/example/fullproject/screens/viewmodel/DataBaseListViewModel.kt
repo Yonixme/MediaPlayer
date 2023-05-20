@@ -1,15 +1,14 @@
-package com.example.fullproject.screens.dblists
+package com.example.fullproject.screens.viewmodel
 
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fullproject.App
-import com.example.fullproject.screens.BaseListViewModel
-import com.example.fullproject.services.model.dirpack.entities.Dir
-import com.example.fullproject.services.model.songpack.entities.MetaDataSong
+import com.example.fullproject.Repositories
+import com.example.fullproject.model.sqlite.dirpack.entities.Dir
+import com.example.fullproject.model.sqlite.songpack.entities.MetaDataSong
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -39,5 +38,27 @@ class DataBaseListViewModel(private val app: App) : ViewModel(){
 
     fun getListDir(onlyActive: Boolean): List<Dir> = runBlocking(Dispatchers.IO){
         return@runBlocking BaseListViewModel.Base().getListDirWithDB(onlyActive)
+    }
+
+    fun deleteSongElement(id: Long) = runBlocking{
+        Repositories.metaSongsRepository.deleteSongObject(id)
+    }
+
+    fun deleteDirElement(id: Long) = runBlocking{
+        Repositories.dirRepository.deleteDirObject(id)
+    }
+
+    fun writeDirInDB(uri: String,
+                     name: String?,
+                     addToStackPlaying: Boolean) = runBlocking {
+                         Repositories.dirRepository.createDirObject(uri, name, addToStackPlaying, false)
+    }
+
+    fun writeSongInDB(uri: String,
+                      name: String?,
+                      author: String?,
+                      addToStackPlaying: Boolean
+    ) = runBlocking {
+        Repositories.metaSongsRepository.createSongObject(uri, name, author, null, addToStackPlaying)
     }
 }

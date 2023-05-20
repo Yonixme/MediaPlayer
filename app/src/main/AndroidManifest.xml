@@ -30,7 +30,7 @@
         </activity>
 
         <service
-            android:name=".services.ServiceMusic"
+            android:name=".model.services.ServiceMusic"
             android:enabled="true" />
     </application>
 

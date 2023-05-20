@@ -6,13 +6,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
-import android.util.Log
-import com.example.fullproject.services.ServiceMusic
-import com.example.fullproject.services.model.dirpack.entities.Dir
-import com.example.fullproject.services.model.songpack.entities.MetaDataSong
-import kotlinx.coroutines.*
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
+import com.example.fullproject.model.services.ServiceMusic
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 
 class App: Application() {
     private var mService = ServiceMusic()
@@ -54,7 +50,7 @@ class App: Application() {
         mBound = false
     }
 
-    fun getMusicService(): ServiceMusic{
+    fun getMusicService(): ServiceMusic {
         return mService
     }
 }

@@ -2,11 +2,11 @@ package com.example.fullproject
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import com.example.fullproject.services.model.dirpack.DirRepository
-import com.example.fullproject.services.model.dirpack.SQLiteDirRepository
-import com.example.fullproject.services.model.songpack.SQLiteMetaSongRepository
-import com.example.fullproject.services.model.songpack.MetaSongsRepository
-import com.example.fullproject.services.model.sqlite.AppSQLiteHelper
+import com.example.fullproject.model.sqlite.dirpack.DirRepository
+import com.example.fullproject.model.sqlite.dirpack.SQLiteDirRepository
+import com.example.fullproject.model.sqlite.songpack.SQLiteMetaSongRepository
+import com.example.fullproject.model.sqlite.songpack.MetaSongsRepository
+import com.example.fullproject.model.sqlite.AppSQLiteHelper
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 

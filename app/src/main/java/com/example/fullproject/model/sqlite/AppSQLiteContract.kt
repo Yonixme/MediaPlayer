@@ -1,4 +1,4 @@
-package com.example.fullproject.services.model.sqlite
+package com.example.fullproject.model.sqlite
 
 object AppSQLiteContract {
     object SongTable{
@@ -8,7 +8,7 @@ object AppSQLiteContract {
         const val COLUMN_NAME = "name"
         const val COLUMN_AUTHOR = "author"
         const val COLUMN_DESCRIPTION = "description"
-        const val COLUMN_AUTOPLAY_MARKER = "is_autoplay_marker"
+        const val COLUMN_PLAY_MARKER = "is_play_marker"
     }
 
     object DirTable{

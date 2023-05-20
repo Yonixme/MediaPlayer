@@ -1,4 +1,4 @@
-package com.example.fullproject.services.model.sqlite
+package com.example.fullproject.model.sqlite
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase

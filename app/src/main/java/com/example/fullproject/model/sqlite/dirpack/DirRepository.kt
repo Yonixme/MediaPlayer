@@ -1,6 +1,6 @@
-package com.example.fullproject.services.model.dirpack
+package com.example.fullproject.model.sqlite.dirpack
 
-import com.example.fullproject.services.model.dirpack.entities.Dir
+import com.example.fullproject.model.sqlite.dirpack.entities.Dir
 import kotlinx.coroutines.flow.Flow
 
 interface DirRepository {
@@ -12,5 +12,5 @@ interface DirRepository {
 
     suspend fun createDirObject(uri: String, name: String?, addToStackPlaying: Boolean?, isPrimaryDir: Boolean?)
 
-    suspend fun deleteDirObject(id: Long): Int
+    suspend fun deleteDirObject(id: Long)
 }

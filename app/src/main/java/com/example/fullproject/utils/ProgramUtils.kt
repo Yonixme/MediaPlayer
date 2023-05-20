@@ -1,4 +1,9 @@
-package com.example.fullproject.businesslogic
+package com.example.fullproject.utils
+
+import androidx.fragment.app.Fragment
+import com.example.fullproject.App
+import com.example.fullproject.Navigator
+import com.example.fullproject.screens.viewmodel.FactoryViewModel
 
 fun millisToMinute(progress: Int): String {
     var seconds:Int = progress / 1000
@@ -49,3 +54,9 @@ fun equalsWithSupportedFormat(format: String): Boolean{
     }
     return isSupportFormat
 }
+
+fun Fragment.activityNavigator(): Navigator {
+    return requireActivity() as Navigator
+}
+
+fun Fragment.factory() = FactoryViewModel(requireContext().applicationContext as App)

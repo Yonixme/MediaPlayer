@@ -3,27 +3,24 @@ package com.example.fullproject.screens.musiclist
 import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
-import android.opengl.Visibility
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.fullproject.*
 import com.example.fullproject.databinding.FragmentMusicListBinding
-import com.example.fullproject.screens.BaseListViewModel
-import com.example.fullproject.services.model.songpack.entities.MetaDataSong
-import com.example.fullproject.services.model.songpack.entities.Song
-import com.example.fullproject.services.model.songpack.entities.SongPackage
+import com.example.fullproject.screens.viewmodel.MusicListViewModel
+import com.example.fullproject.model.sqlite.songpack.entities.MetaDataSong
+import com.example.fullproject.model.Song
+import com.example.fullproject.model.SongPackage
+import com.example.fullproject.screens.musiclist.adapters.SongActionListener
+import com.example.fullproject.screens.musiclist.adapters.SongAdapter
+import com.example.fullproject.utils.activityNavigator
 import com.example.fullproject.utils.factory
 
 class MusicListFragment : Fragment() {
@@ -35,10 +32,6 @@ class MusicListFragment : Fragment() {
         ActivityResultContracts.RequestPermission(),
         ::updateList
     )
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -75,12 +68,11 @@ class MusicListFragment : Fragment() {
 
             override fun openMusicPlayer(song: Song) {
                 val pushedSong = SongPackage(song.uri)
-                //viewModel.onMusicPlayer(song)
                 runWhenActive { activityNavigator().onMusicPlaylist(pushedSong) }
             }
 
             override fun onSetName() {
-                viewModel.notifyUserWhatElementInCreating()
+                viewModel.notifyUserWhatElementWasTouched()
             }
 
             override fun getSongListWithDB(): List<MetaDataSong> {

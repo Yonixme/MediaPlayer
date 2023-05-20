@@ -4,7 +4,7 @@ CREATE TABLE "songs"(
 	"name"				TEXT ,
 	"author" 			TEXT ,
 	"description" 		Text,
-	"is_autoplay_marker" 	Integer,
+	"is_play_marker" 	Integer,
 	UNIQUE("name", "author")
 );
 
@@ -21,10 +21,10 @@ INSERT INTO "directories" ("uri", "name_dir",
     VALUES
 	    ("/storage/emulated/0/Download", "Download", 1, 1),
 	    ("/storage/emulated/0/Music", "Music", 1, 1),
-	    ("/storage/emulated/0/Ringtone", "Ringtone", 0, 1);
+	    ("/storage/emulated/0/Ringtones", "Ringtone", 0, 1);
 
 INSERT INTO "songs" ("uri", "name",
-     "author", "description", "is_autoplay_marker")
+     "author", "description", "is_play_marker")
      VALUES
     	("/storage/emulated/0/Download/Luke-Bergs-Bliss.mp3", "First_name_music", NULL,
     	"This is first music what I add in DATABASE", 1),

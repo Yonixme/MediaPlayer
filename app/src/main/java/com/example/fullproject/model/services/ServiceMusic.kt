@@ -1,4 +1,4 @@
-package com.example.fullproject.services
+package com.example.fullproject.model.services
 
 import android.app.Service
 import android.content.Context
@@ -10,15 +10,16 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import com.example.fullproject.Repositories
-import com.example.fullproject.businesslogic.equalsWithSupportedFormat
-import com.example.fullproject.businesslogic.getFormatFile
-import com.example.fullproject.services.model.songpack.entities.Song
-import com.example.fullproject.services.model.SongMapper
-import com.example.fullproject.services.model.dirpack.entities.Dir
-import com.example.fullproject.services.model.songpack.entities.MetaDataSong
+import com.example.fullproject.model.Song
+import com.example.fullproject.model.songpack.entities.SongMapper
+import com.example.fullproject.model.sqlite.dirpack.entities.Dir
+import com.example.fullproject.model.sqlite.songpack.entities.MetaDataSong
+import com.example.fullproject.utils.equalsWithSupportedFormat
+import com.example.fullproject.utils.getFormatFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import java.io.File
+
 
 class ServiceMusic() : Service() {
     private lateinit var audioManager: AudioManager
@@ -28,7 +29,6 @@ class ServiceMusic() : Service() {
 
     var songs: MutableList<Song> = mutableListOf()
         private set
-
     var currentSong: Song = SongMapper.Base(Uri.parse(" ")).map()
         private set
     var lastSong: Song = SongMapper.Base(Uri.parse(" ")).map()
@@ -39,6 +39,8 @@ class ServiceMusic() : Service() {
         private set
     var currentTime = 0L
         private set
+    var isAudioFocusLose = false
+        private set
 
     private val binder = MyServiceBinder()
 
@@ -47,22 +49,9 @@ class ServiceMusic() : Service() {
     }
 
     inner class MyServiceBinder() : Binder() {
-        fun myService(): ServiceMusic{
+        fun myService(): ServiceMusic {
             return this@ServiceMusic
         }
-    }
-
-    private fun checkAudioFocusStartStartSound(song: Song)= run {
-        when(getAuFocus()){
-            AudioManager.AUDIOFOCUS_GAIN -> startSound(song)
-        }
-    }
-
-    @Suppress("DEPRECATION")
-    private fun getAuFocus(): Int{
-        afListener = AFListener(currentSong, "sss")
-        return audioManager.requestAudioFocus(afListener,
-            AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
     }
 
     inner class AFListener(private val song: Song, private val str: String) :
@@ -72,21 +61,25 @@ class ServiceMusic() : Service() {
             val logText: String = when(focusChange){
                 AudioManager.AUDIOFOCUS_LOSS -> {
                     pauseSound()
+                    isAudioFocusLose = true
                     "AUDIO_FOCUS_LOSS"
                 }
 
                 AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
                     pauseSound()
+                    isAudioFocusLose = true
                     "AUDIO_FOCUS_LOSS_TRANSIENT"
                 }
 
                 AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
                     pauseSound()
+                    isAudioFocusLose = true
                     "AUDIO_FOCUS_LOSS_TRANSIENT_CAN_DUCK"
                 }
 
                 AudioManager.AUDIOFOCUS_GAIN -> {
-                    startSound(song)
+                    startSound(currentSong)
+                    isAudioFocusLose = false
                     "AUDIO_FOCUS_GAIN"
                 }
 
@@ -100,13 +93,35 @@ class ServiceMusic() : Service() {
     override fun onCreate() {
         super.onCreate()
         Repositories.init(this@ServiceMusic.applicationContext)
-            //audioManager = application.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        audioManager = application.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         updateData()
+        afListener = AFListener(currentSong, "sss")
+        audioManager.requestAudioFocus(afListener,
+            AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         return START_NOT_STICKY
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        audioManager.abandonAudioFocus { afListener }
+    }
+
+//    @Suppress("DEPRECATION")
+//    private fun getAuFocus(): Int{
+//        return audioManager.requestAudioFocus(afListener,
+//            AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
+//    }
+//
+//    private fun checkAudioFocusStartSound(song: Song)= run {
+//        when(getAuFocus()){
+//            AudioManager.AUDIOFOCUS_GAIN -> startSound(song)
+//
+//            AudioManager.AUDIOFOCUS_LOSS -> pauseSound()
+//        }
+//    }
 
     private fun createMusic(song: Song){
         lastSong = if (mp == null) song else currentSong
@@ -116,34 +131,33 @@ class ServiceMusic() : Service() {
     }
 
     private fun startSound(song: Song) {
-        if (song != currentSong) createMusic(song)
+        if (song != currentSong || mp == null) createMusic(song)
         if(isPlay)mp?.start()
     }
 
     fun onPlay(song: Song){
-        //checkAudioFocusStartStartSound(song)
         startSound(song)
         mp?.start()
         isPlay = true
     }
 
     fun onStop(){
+        if (mp == null) return
         mp?.stop()
-//        mp?.reset()
         mp?.release()
         isPlay = false
         currentTime = 0L
+        mp = null
     }
 
     fun onSoundPause() {
         if (mp == null) return
-        pauseSound()
-        //audioManager.abandonAudioFocus { afListener }
+        mp!!.pause()
+        isPlay = false
     }
 
     private fun pauseSound(){
-        mp?.pause()
-        isPlay = false
+        if (isPlay) mp!!.pause()
     }
 
     fun setTimeSound(progress: Long){
@@ -165,28 +179,22 @@ class ServiceMusic() : Service() {
 
     fun nextSound(){
         changeCurrentSong(1)
-        Log.d("Debug123", "next in service")
     }
 
     fun previousSound(){
         changeCurrentSong(-1)
-        Log.d("Debug123", "prev in service")
     }
 
     private fun changeCurrentSong(moveBy: Int){
-        Log.d("Debug123", "change")
+        if(currentSong.uri.toString().isBlank() && songs.size > 0) currentSong = songs[0]
         val curId = songs.indexOf(currentSong)
         if ((curId + moveBy == songs.size) or (curId + moveBy < 0)) return
-        //lastSong = currentSong
+        Log.d("ddddddd", "app.getMusicService().isPlay.toString()dddddddddddddd")
         val newMusicIndex = curId + moveBy
-        Log.d("Debug123", "pause")
         val isP = isPlay
         onStop()
-//        currentSong = songs[newMusicIndex]
-        Log.d("Debug123", "play")
         isPlay = isP
         startSound(songs[newMusicIndex])
-        continueTimeSound()
     }
 
     fun updateCurrentPosition() {
@@ -222,15 +230,10 @@ class ServiceMusic() : Service() {
         val listOFMusic = mutableListOf<File>()
         val listFile = mutableListOf<File>()
         val uris = mutableListOf<Song>()
-
         val list = getDir(true)
-        for (l in list){
-            listFile.add(File(l.uri))
-        }
-        for(f in listFile){
-            if (f.isDirectory && f.listFiles() != null) listOFMusic.addAll(f.listFiles()!!)
-        }
 
+        for (l in list) listFile.add(File(l.uri))
+        for(f in listFile) if (f.isDirectory && f.listFiles() != null) listOFMusic.addAll(f.listFiles()!!)
         for (u in listOFMusic) {
             if (equalsWithSupportedFormat(getFormatFile(u.name)))
                 uris.add(SongMapper.Base(Uri.fromFile(u)).map())

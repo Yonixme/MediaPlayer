@@ -28,6 +28,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/name_item"
                 android:layout_width="match_parent"
@@ -38,10 +39,10 @@
                 android:textAllCaps="true"
                 android:textAlignment="center"
                 android:textSize="12sp"
-                tools:hint="@string/enter_the_name"/>
+                android:hint="@string/enter_the_name"/>
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/uri_author"
+                android:id="@+id/author_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
@@ -50,7 +51,7 @@
                 android:textAllCaps="true"
                 android:textColor="@color/black"
                 android:textSize="11sp"
-                tools:hint="Enter the author" />
+                android:hint="@string/enter_the_author" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/uri_item"
@@ -60,9 +61,8 @@
                 android:lines="1"
                 android:textAlignment="center"
                 android:textAllCaps="true"
-                android:textColor="@color/black"
                 android:textSize="11sp"
-                tools:hint="@string/enter_the_uri" />
+                android:hint="@string/enter_the_uri" />
         </LinearLayout>
 
         <LinearLayout

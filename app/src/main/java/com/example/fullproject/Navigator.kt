@@ -1,11 +1,6 @@
 package com.example.fullproject
 
-import androidx.fragment.app.Fragment
-import com.example.fullproject.services.model.songpack.entities.SongPackage
-
-fun Fragment.activityNavigator(): Navigator{
-    return requireActivity() as Navigator
-}
+import com.example.fullproject.model.SongPackage
 
 interface Navigator {
     fun goBack()

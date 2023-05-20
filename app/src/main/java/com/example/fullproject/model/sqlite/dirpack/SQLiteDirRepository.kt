@@ -1,11 +1,11 @@
-package com.example.fullproject.services.model.dirpack
+package com.example.fullproject.model.sqlite.dirpack
 
 import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import android.os.Parcel
-import com.example.fullproject.services.model.dirpack.entities.Dir
-import com.example.fullproject.services.model.sqlite.AppSQLiteContract
+import androidx.core.content.contentValuesOf
+import com.example.fullproject.model.sqlite.dirpack.entities.Dir
+import com.example.fullproject.model.sqlite.AppSQLiteContract
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -73,17 +73,19 @@ class SQLiteDirRepository(
         if (name != null) mapWithUpdatedElement[AppSQLiteContract.DirTable.COLUMN_NAME] = name
         if (addToStackPlaying != null) mapWithUpdatedElement[AppSQLiteContract.DirTable.COLUMN_ADD_IN_LIST_MARKER] = if (addToStackPlaying) 1 else 0
 
-        val parcel = Parcel.obtain()
-        parcel.writeMap(mapWithUpdatedElement)
-        parcel.setDataPosition(0)
-        val content = ContentValues.CREATOR.createFromParcel(parcel)
+        val content = ContentValues(mapWithUpdatedElement.size)
+        for (key in mapWithUpdatedElement.keys){
+            if (key == AppSQLiteContract.DirTable.COLUMN_NAME)
+                content.put(key, mapWithUpdatedElement[key].toString())
+            if (key == AppSQLiteContract.DirTable.COLUMN_ADD_IN_LIST_MARKER)
+                content.put(key, (mapWithUpdatedElement[key] as Int))
+        }
 
-        db.updateWithOnConflict(
+        db.update(
             AppSQLiteContract.DirTable.TABLE_NAME,
             content,
             "${AppSQLiteContract.DirTable.COLUMN_ID} = ?",
-            arrayOf(id.toString()),
-            SQLiteDatabase.CONFLICT_IGNORE
+            arrayOf(id.toString())
         )
     }
 
@@ -93,11 +95,19 @@ class SQLiteDirRepository(
         addToStackPlaying: Boolean?,
         isPrimaryDir: Boolean?
     ) {
-        TODO("Not yet implemented")
+        db.insert(
+            AppSQLiteContract.DirTable.TABLE_NAME,
+            null,
+            contentValuesOf(
+                AppSQLiteContract.DirTable.COLUMN_URI to uri,
+                AppSQLiteContract.DirTable.COLUMN_NAME to name,
+                AppSQLiteContract.DirTable.COLUMN_ADD_IN_LIST_MARKER to addToStackPlaying,
+                AppSQLiteContract.DirTable.COLUMN_DEFAULT_DIR_MARKER to isPrimaryDir
+            )
+        )
     }
 
-    override suspend fun deleteDirObject(id: Long): Int {
-        TODO("Not yet implemented")
+    override suspend fun deleteDirObject(id: Long){
+        db.delete(AppSQLiteContract.DirTable.TABLE_NAME, "${AppSQLiteContract.SongTable.COLUMN_ID} = ?", arrayOf(id.toString()))
     }
-
 }

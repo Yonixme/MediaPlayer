@@ -156,8 +156,8 @@ tools:context=".screens.musicplayer.MusicPlayerFragment">
 
         <ImageView
             android:id="@+id/stop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:padding="10dp"
             android:src="@drawable/ic_stop"
             android:soundEffectsEnabled="false"
@@ -170,8 +170,8 @@ tools:context=".screens.musicplayer.MusicPlayerFragment">
 
         <ImageView
             android:id="@+id/previous"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:padding="10dp"
             android:src="@drawable/ic_previous"
             android:contentDescription="@string/imageD"
@@ -198,8 +198,8 @@ tools:context=".screens.musicplayer.MusicPlayerFragment">
 
         <ImageView
             android:id="@+id/next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:src="@drawable/ic_next"
             android:padding="10dp"
             android:contentDescription="@string/imageD"
@@ -212,10 +212,12 @@ tools:context=".screens.musicplayer.MusicPlayerFragment">
 
         <ImageView
             android:id="@+id/playlist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_playlist"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:padding="5dp"
+            android:src="@drawable/ic_playlist_add"
             android:soundEffectsEnabled="false"
+            android:alpha="0.5"
             android:contentDescription="@string/imageD"
             android:background="?android:attr/selectableItemBackground"
             app:layout_constraintBottom_toBottomOf="parent"
