@@ -19,28 +19,39 @@ fun millisToMinute(progress: Int): String {
 }
 
 fun getFormatFile(string: String): String{
-    val format = string.substring(string.length - 4, string.length)
-
-    return when{
-        format[2] == '.' -> {
-            format.substring(format.length - 2, format.length)
-        }
-        format[1] == '.' -> {
-            format.substring(format.length - 3, format.length)
-        }
-        format[0] == '.' -> {
-            format
-        }
-        else -> {
-            "No Support Format"
-        }
+    val maxCharCount = 5
+    val format = string.substring(string.length - maxCharCount, string.length)
+//    return when{
+//        format[3] == '.' ->{
+//            format.substring(format.length - 2, format.length)
+//        }
+//        format[2] == '.' -> {
+//            format.substring(format.length - 3, format.length)
+//        }
+//        format[1] == '.' -> {
+//            format.substring(format.length - 4, format.length)
+//        }
+//        format[0] == '.' -> {
+//            format
+//        }
+//        else -> {
+//            "No Support Format"
+//        }
+//    }
+    var indexFirstChar = -1
+    var i = 0
+    for (c in format){
+        if (c == '.') indexFirstChar = i
+        i++
     }
+    if (indexFirstChar == -1) return "No Support Format"
+    return format.substring(format.length - (maxCharCount - indexFirstChar), format.length)
 }
 
 fun equalsWithSupportedFormat(format: String): Boolean{
     var isSupportFormat = false
     val arrayFormat = arrayOf(".AA", ".AAC", ".AC3",
-        ".ADX", ".AHX", ".AIFF", ".APE", ".AU", ".AUD",
+        ".ADX", ".AHX", ".APE", ".AU", ".AUD",
         ".DMF", ".DTS", ".DXD", ".FLAC",
         ".MMF", ".MOD", ".MP1", ".MP2", ".MP3",
         ".MP4", ".MPC", ".Opus", ".RA", ".TTA",

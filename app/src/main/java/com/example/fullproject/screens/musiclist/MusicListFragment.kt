@@ -15,11 +15,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.fullproject.databinding.FragmentMusicListBinding
 import com.example.fullproject.screens.viewmodel.MusicListViewModel
-import com.example.fullproject.model.sqlite.songpack.entities.MetaDataSong
-import com.example.fullproject.model.Song
-import com.example.fullproject.model.SongPackage
-import com.example.fullproject.screens.musiclist.adapters.SongActionListener
-import com.example.fullproject.screens.musiclist.adapters.SongAdapter
+import com.example.fullproject.model.songpack.entities.MetaDataSong
+import com.example.fullproject.model.songpack.entities.Song
+import com.example.fullproject.model.songpack.entities.SongPackage
 import com.example.fullproject.utils.activityNavigator
 import com.example.fullproject.utils.factory
 
@@ -39,9 +37,10 @@ class MusicListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMusicListBinding.inflate(inflater, container, false)
-        binding.requestPermission.setOnClickListener { ActivityCompat.requestPermissions(activity as Activity,
+
+        /*binding.requestPermission.setOnClickListener { ActivityCompat.requestPermissions(activity as Activity,
             arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-            PackageManager.PERMISSION_GRANTED) }
+            PackageManager.PERMISSION_GRANTED) }*/
 
         checkNeededPermission()
 
@@ -91,13 +90,10 @@ class MusicListFragment : Fragment() {
     }
 
     private fun updateList(granted: Boolean){
-        if (granted)
-        {
+        if (granted) {
             binding.requestPermission.visibility = View.GONE
             updateUI()
-        }
-        else
-        {
+        } else {
             if(!shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE))
                 binding.requestPermission.visibility = View.VISIBLE
             else

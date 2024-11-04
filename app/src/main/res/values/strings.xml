@@ -19,4 +19,5 @@
     <string name="add_dir">Add Dir</string>
     <string name="uri_item_db">Uri</string>
     <string name="enter_the_author">Enter the author(Ignore for Dir)</string>
+    <string name="author">Author</string>
 </resources>

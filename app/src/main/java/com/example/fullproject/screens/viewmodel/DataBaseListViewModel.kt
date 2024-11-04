@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fullproject.App
 import com.example.fullproject.Repositories
-import com.example.fullproject.model.sqlite.dirpack.entities.Dir
-import com.example.fullproject.model.sqlite.songpack.entities.MetaDataSong
+import com.example.fullproject.model.dirpack.entities.Dir
+import com.example.fullproject.model.songpack.entities.MetaDataSong
 
 import kotlinx.coroutines.Dispatchers
 

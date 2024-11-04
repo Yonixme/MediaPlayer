@@ -10,10 +10,10 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import com.example.fullproject.Repositories
-import com.example.fullproject.model.Song
+import com.example.fullproject.model.songpack.entities.Song
 import com.example.fullproject.model.songpack.entities.SongMapper
-import com.example.fullproject.model.sqlite.dirpack.entities.Dir
-import com.example.fullproject.model.sqlite.songpack.entities.MetaDataSong
+import com.example.fullproject.model.dirpack.entities.Dir
+import com.example.fullproject.model.songpack.entities.MetaDataSong
 import com.example.fullproject.utils.equalsWithSupportedFormat
 import com.example.fullproject.utils.getFormatFile
 import kotlinx.coroutines.Dispatchers
@@ -139,6 +139,7 @@ class ServiceMusic() : Service() {
         startSound(song)
         mp?.start()
         isPlay = true
+        Log.d("AudioStream", "($currentSong): play")
     }
 
     fun onStop(){
@@ -148,12 +149,14 @@ class ServiceMusic() : Service() {
         isPlay = false
         currentTime = 0L
         mp = null
+        Log.d("AudioStream", "($currentSong): stop")
     }
 
     fun onSoundPause() {
         if (mp == null) return
         mp!!.pause()
         isPlay = false
+        Log.d("AudioStream", "($currentSong): pause")
     }
 
     private fun pauseSound(){
@@ -163,6 +166,7 @@ class ServiceMusic() : Service() {
     fun setTimeSound(progress: Long){
         currentTime = progress
         mp?.seekTo(progress.toInt())
+        Log.d("AudioStream", "($currentSong): new time in millis$")
     }
 
     fun pauseTimeSound(){
@@ -175,6 +179,7 @@ class ServiceMusic() : Service() {
         if (isPlay) {
             mp?.start()
         }
+
     }
 
     fun nextSound(){
@@ -235,7 +240,7 @@ class ServiceMusic() : Service() {
         for (l in list) listFile.add(File(l.uri))
         for(f in listFile) if (f.isDirectory && f.listFiles() != null) listOFMusic.addAll(f.listFiles()!!)
         for (u in listOFMusic) {
-            if (equalsWithSupportedFormat(getFormatFile(u.name)))
+            if (equalsWithSupportedFormat(getFormatFile(u.path.toString())))
                 uris.add(SongMapper.Base(Uri.fromFile(u)).map())
         }
 

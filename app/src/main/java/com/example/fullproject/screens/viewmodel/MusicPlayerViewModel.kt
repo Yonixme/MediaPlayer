@@ -8,7 +8,8 @@ import android.widget.PopupMenu
 import com.example.fullproject.App
 import com.example.fullproject.R
 import com.example.fullproject.screens.musicplayer.PlayerManager
-import com.example.fullproject.model.Song
+import com.example.fullproject.model.songpack.entities.Song
+import com.example.fullproject.utils.millisToMinute
 import kotlinx.coroutines.runBlocking
 
 class MusicPlayerViewModel(private val app: App) : BaseMusicViewModel(app) {
@@ -140,6 +141,10 @@ class MusicPlayerViewModel(private val app: App) : BaseMusicViewModel(app) {
             return@setOnMenuItemClickListener true
         }
         popupMenu.show()
+    }
+
+    fun milToMinute(mil: Long): String{
+        return millisToMinute(mil.toInt())
     }
 
     private fun startTimerForUpdateUI(){

@@ -12,7 +12,7 @@ import com.example.fullproject.databinding.ActivityMainScreenBinding
 import com.example.fullproject.screens.dblists.DataBaseListFragment
 import com.example.fullproject.screens.musiclist.MusicListFragment
 import com.example.fullproject.screens.musicplayer.MusicPlayerFragment
-import com.example.fullproject.model.SongPackage
+import com.example.fullproject.model.songpack.entities.SongPackage
 
 
 class MainActivity : AppCompatActivity(), Navigator{
@@ -23,6 +23,8 @@ class MainActivity : AppCompatActivity(), Navigator{
         binding = ActivityMainScreenBinding.inflate(layoutInflater).also { setContentView(it.root) }
         Repositories.init(applicationContext)
         val handler = Handler(Looper.getMainLooper())
+        Log.d("In MainActivity", "onCreate")
+
 
         object : CountDownTimer(500L, 500L){
             override fun onTick(millisUntilFinished: Long) = Unit
@@ -39,7 +41,7 @@ class MainActivity : AppCompatActivity(), Navigator{
     }
 
     override fun goBack() {
-        @Suppress("DEPRECATION")
+        @Suppress("DEPRECATION  ")
         onBackPressed()
     }
 

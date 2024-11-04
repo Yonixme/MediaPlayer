@@ -1,6 +1,6 @@
-package com.example.fullproject.model.sqlite.songpack
+package com.example.fullproject.model.songpack
 
-import com.example.fullproject.model.sqlite.songpack.entities.MetaDataSong
+import com.example.fullproject.model.songpack.entities.MetaDataSong
 import kotlinx.coroutines.flow.Flow
 
 interface MetaSongsRepository {

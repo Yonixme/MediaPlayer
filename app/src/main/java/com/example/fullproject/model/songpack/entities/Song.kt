@@ -1,4 +1,4 @@
-package com.example.fullproject.model
+package com.example.fullproject.model.songpack.entities
 
 import android.net.Uri
 import android.os.Parcelable

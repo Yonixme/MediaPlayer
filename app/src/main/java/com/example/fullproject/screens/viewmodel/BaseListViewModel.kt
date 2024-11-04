@@ -1,8 +1,8 @@
 package com.example.fullproject.screens.viewmodel
 
 import com.example.fullproject.Repositories
-import com.example.fullproject.model.sqlite.dirpack.entities.Dir
-import com.example.fullproject.model.sqlite.songpack.entities.MetaDataSong
+import com.example.fullproject.model.dirpack.entities.Dir
+import com.example.fullproject.model.songpack.entities.MetaDataSong
 
 interface BaseListViewModel {
     suspend fun getListSongWithDB(onlyActive: Boolean): List<MetaDataSong>

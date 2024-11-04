@@ -15,7 +15,7 @@ import com.example.fullproject.databinding.FragmentMusicPlayerBinding
 import com.example.fullproject.screens.viewmodel.MusicPlayerViewModel
 import com.example.fullproject.utils.millisToMinute
 import com.example.fullproject.model.songpack.entities.SongMapper
-import com.example.fullproject.model.SongPackage
+import com.example.fullproject.model.songpack.entities.SongPackage
 import com.example.fullproject.utils.activityNavigator
 import com.example.fullproject.utils.factory
 
@@ -28,6 +28,7 @@ class MusicPlayerFragment : Fragment(){
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         viewModel.song = SongMapper.SongPackageToSong(requireArguments().getParcelable(CHOOSED_SONG)!!).map()
         viewModel.manager = object : PlayerManager { override fun updateViewUI() { updateUI() } }
@@ -100,15 +101,20 @@ class MusicPlayerFragment : Fragment(){
     fun updateUI(){
         binding.timeView.progress = viewModel.getCurrentPosition().toInt()
 
-        if(binding.currentTime.text != millisToMinute(viewModel.getCurrentPosition().toInt()))
-            binding.currentTime.text = millisToMinute(viewModel.getCurrentPosition().toInt())
+//        if(binding.currentTime.text != millisToMinute(viewModel.getCurrentPosition().toInt()))
+//            binding.currentTime.text = millisToMinute(viewModel.getCurrentPosition().toInt())
+//
+//        if(binding.timeAll.text != millisToMinute(viewModel.getDuration().toInt()))
+//            binding.timeAll.text = millisToMinute(viewModel.getDuration().toInt())
 
-        if(binding.timeAll.text != millisToMinute(viewModel.getDuration().toInt()))
-            binding.timeAll.text = millisToMinute(viewModel.getDuration().toInt())
+        if(binding.currentTime.text != viewModel.milToMinute(viewModel.getCurrentPosition()))
+            binding.currentTime.text = viewModel.milToMinute(viewModel.getCurrentPosition())
+
+        if(binding.timeAll.text != viewModel.milToMinute(viewModel.getDuration()))
+            binding.timeAll.text = viewModel.milToMinute(viewModel.getDuration())
 
         if(binding.timeView.max != viewModel.getDuration().toInt())
             binding.timeView.max = viewModel.getDuration().toInt()
-
 
         if(viewModel.isPlaySound()) {
             binding.playOrPause.setImageResource(R.drawable.ic_pause)

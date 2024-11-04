@@ -6,7 +6,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import com.example.fullproject.App
 import com.example.fullproject.R
-import com.example.fullproject.model.Song
+import com.example.fullproject.model.songpack.entities.Song
 import kotlinx.coroutines.runBlocking
 
 abstract class BaseMusicViewModel(private val app: App) : ViewModel() {

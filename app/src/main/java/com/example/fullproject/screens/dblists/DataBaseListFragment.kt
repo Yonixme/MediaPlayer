@@ -4,17 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.fullproject.databinding.FragmentDatabaseListBinding
 import com.example.fullproject.screens.viewmodel.DataBaseListViewModel
-import com.example.fullproject.model.sqlite.dirpack.entities.Dir
-import com.example.fullproject.model.sqlite.songpack.entities.MetaDataSong
-import com.example.fullproject.screens.dblists.adapters.DirDBActionListener
-import com.example.fullproject.screens.dblists.adapters.DirDBAdapter
-import com.example.fullproject.screens.dblists.adapters.SongDBActionListener
-import com.example.fullproject.screens.dblists.adapters.SongDBAdapter
+import com.example.fullproject.model.dirpack.entities.Dir
+import com.example.fullproject.model.songpack.entities.MetaDataSong
 import com.example.fullproject.utils.activityNavigator
 import com.example.fullproject.utils.factory
 
@@ -33,10 +30,6 @@ class DataBaseListFragment : Fragment() {
 
         binding.backBtn.setOnClickListener{
             activityNavigator().goBack()
-        }
-
-        binding.doneMusic.setOnClickListener{
-            updateUI()
         }
 
         binding.addItemInBd.addMusicBtn.setOnClickListener{
@@ -100,6 +93,10 @@ class DataBaseListFragment : Fragment() {
     }
 
     private fun updateUI(){
+        binding.addItemInBd.nameItem.setText("")
+        binding.addItemInBd.authorItem.setText("")
+        binding.addItemInBd.uriItem.setText("/storage/emulated/0/")
+        binding.addItemInBd.isAddToList.isChecked = false
         updateListSong()
         updateListDir()
     }

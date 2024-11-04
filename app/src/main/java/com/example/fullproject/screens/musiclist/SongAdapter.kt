@@ -1,4 +1,4 @@
-package com.example.fullproject.screens.musiclist.adapters
+package com.example.fullproject.screens.musiclist
 
 import android.net.Uri
 import android.util.Log
@@ -11,8 +11,8 @@ import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fullproject.R
 import com.example.fullproject.databinding.SongItemBinding
-import com.example.fullproject.model.sqlite.songpack.entities.MetaDataSong
-import com.example.fullproject.model.Song
+import com.example.fullproject.model.songpack.entities.MetaDataSong
+import com.example.fullproject.model.songpack.entities.Song
 
 interface SongActionListener{
     fun onStartSound(song: Song)

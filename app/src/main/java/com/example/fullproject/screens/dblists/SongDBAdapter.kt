@@ -1,4 +1,4 @@
-package com.example.fullproject.screens.dblists.adapters
+package com.example.fullproject.screens.dblists
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -9,28 +9,28 @@ import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fullproject.R
 import com.example.fullproject.databinding.BDataItemBinding
-import com.example.fullproject.model.sqlite.dirpack.entities.Dir
+import com.example.fullproject.model.songpack.entities.MetaDataSong
 
-interface DirDBActionListener{
-    fun getListDirs(): List<Dir>
+interface SongDBActionListener{
+    fun getListSong(): List<MetaDataSong>
 
     fun updateFlag(id: Long, flag: Boolean)
 
     fun deleteElement(id: Long)
 }
 
-class DirDBAdapter(
-    private val dirDBActionListener: DirDBActionListener
-): RecyclerView.Adapter<DirDBAdapter.DirDBHolder>(), View.OnClickListener {
+class SongDBAdapter(
+    private val songDBActionListener: SongDBActionListener
+    ):RecyclerView.Adapter<SongDBAdapter.SongDBHolder>(), View.OnClickListener {
 
-    class DirDBHolder(val binding: BDataItemBinding): RecyclerView.ViewHolder(binding.root)
-    private var listDir = listOf<Dir>()
+    class SongDBHolder(val binding: BDataItemBinding): RecyclerView.ViewHolder(binding.root)
+    private var listSong = listOf<MetaDataSong>()
 
     init {
-        listDir = dirDBActionListener.getListDirs()
+         listSong = songDBActionListener.getListSong()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DirDBHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongDBHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = BDataItemBinding.inflate(inflater, parent, false)
 
@@ -38,38 +38,37 @@ class DirDBAdapter(
         binding.item.setOnClickListener(this)
 
 
-        return DirDBHolder(binding)
+        return SongDBHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: DirDBHolder, position: Int) {
-        val dir = listDir[position]
+    override fun onBindViewHolder(holder: SongDBHolder, position: Int) {
+        val metaSong = listSong[position]
 
         with(holder.binding){
-            item.tag = dir
-            itemMore.tag = dir
+            item.tag = metaSong
+            itemMore.tag = metaSong
 
-            nameItem.text = listDir[position].name ?: "Null"
-            authorItem.visibility = View.GONE
-            uriItem.text = listDir[position].uri
-            if(dir.isPrimaryDir == true) itemMore.visibility = View.INVISIBLE
-            isAddToList.isChecked = listDir[position].addToStackPlaying ?: true
+            nameItem.text = listSong[position].name ?: "Null"
+            authorItem.text = listSong[position].author ?: "Null"
+            uriItem.text = listSong[position].uri
+            isAddToList.isChecked = listSong[position].addToStackPlaying
             isAddToList.setOnCheckedChangeListener{ _, isChecked ->
-                dirDBActionListener.updateFlag(dir.id, isChecked)}
+                songDBActionListener.updateFlag(metaSong.id, isChecked)}
         }
 
 
     }
 
     override fun getItemCount(): Int {
-        return listDir.size
+        return listSong.size
     }
 
     override fun onClick(v: View) {
-        val dir = v.tag as Dir
+        val metaSong = v.tag as MetaDataSong
 
         when(v.id){
             R.id.item_more ->{
-                showPopupMenu(v, dir)
+                showPopupMenu(v, metaSong)
             }
             else ->{
 
@@ -77,17 +76,16 @@ class DirDBAdapter(
         }
     }
 
-    private fun showPopupMenu(view: View, dir: Dir){
+    private fun showPopupMenu(view: View, song: MetaDataSong){
         val context: Context = view.context
         val popupMenu = PopupMenu(context, view)
         popupMenu.menu.add(0, DELETE_ID, Menu.NONE, "Delete")
 
-
         popupMenu.setOnMenuItemClickListener {
             when(it.itemId){
                 DELETE_ID -> {
-                    dirDBActionListener.deleteElement(dir.id)
-                    listDir = dirDBActionListener.getListDirs()
+                    songDBActionListener.deleteElement(song.id)
+                    listSong = songDBActionListener.getListSong()
                     notifyDataSetChanged()
                 }
             }

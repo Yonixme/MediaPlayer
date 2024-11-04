@@ -1,6 +1,6 @@
 package com.example.fullproject
 
-import com.example.fullproject.model.SongPackage
+import com.example.fullproject.model.songpack.entities.SongPackage
 
 interface Navigator {
     fun goBack()

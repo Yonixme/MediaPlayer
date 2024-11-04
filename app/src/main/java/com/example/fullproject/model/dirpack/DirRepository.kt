@@ -1,6 +1,6 @@
-package com.example.fullproject.model.sqlite.dirpack
+package com.example.fullproject.model.dirpack
 
-import com.example.fullproject.model.sqlite.dirpack.entities.Dir
+import com.example.fullproject.model.dirpack.entities.Dir
 import kotlinx.coroutines.flow.Flow
 
 interface DirRepository {

@@ -1,10 +1,10 @@
-package com.example.fullproject.model.sqlite.songpack
+package com.example.fullproject.model.songpack
 
 import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import androidx.core.content.contentValuesOf
-import com.example.fullproject.model.sqlite.songpack.entities.MetaDataSong
+import com.example.fullproject.model.songpack.entities.MetaDataSong
 import com.example.fullproject.model.sqlite.AppSQLiteContract.SongTable
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*

@@ -1,9 +1,6 @@
 package com.example.fullproject.model.songpack.entities
 
 import android.net.Uri
-import com.example.fullproject.model.Song
-import com.example.fullproject.model.SongPackage
-import com.example.fullproject.model.sqlite.songpack.entities.MetaDataSong
 
 interface SongMapper<T> {
     fun map(): T

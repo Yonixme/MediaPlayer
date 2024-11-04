@@ -2,7 +2,7 @@ package com.example.fullproject.screens.viewmodel
 
 import android.util.Log
 import com.example.fullproject.App
-import com.example.fullproject.model.Song
+import com.example.fullproject.model.songpack.entities.Song
 import kotlinx.coroutines.runBlocking
 
 class MusicListViewModel(private val app: App) : BaseMusicViewModel(app) {
@@ -20,4 +20,6 @@ class MusicListViewModel(private val app: App) : BaseMusicViewModel(app) {
     fun notifyUserWhatElementWasTouched(){
         notifyUser("Name was updated")
     }
+
+
 }

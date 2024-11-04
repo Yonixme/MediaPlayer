@@ -1,10 +1,10 @@
-package com.example.fullproject.model.sqlite.dirpack
+package com.example.fullproject.model.dirpack
 
 import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import androidx.core.content.contentValuesOf
-import com.example.fullproject.model.sqlite.dirpack.entities.Dir
+import com.example.fullproject.model.dirpack.entities.Dir
 import com.example.fullproject.model.sqlite.AppSQLiteContract
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
