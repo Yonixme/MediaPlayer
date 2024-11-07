@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity(), Navigator{
         val handler = Handler(Looper.getMainLooper())
         Log.d("In MainActivity", "onCreate")
 
-
         object : CountDownTimer(500L, 500L){
             override fun onTick(millisUntilFinished: Long) = Unit
             override fun onFinish() {
