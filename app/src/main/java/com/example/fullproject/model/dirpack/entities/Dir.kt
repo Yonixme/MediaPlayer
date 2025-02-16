@@ -1,4 +1,0 @@
-package com.example.fullproject.model.dirpack.entities
-
-
-data class Dir (val id: Long, val uri: String, val name: String?, val addToStackPlaying: Boolean?, val isPrimaryDir: Boolean?)

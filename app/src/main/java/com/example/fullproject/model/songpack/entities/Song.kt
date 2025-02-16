@@ -8,3 +8,4 @@ data class Song(val uri: Uri)
 
 @Parcelize
 data class SongPackage(val uri: Uri): Parcelable
+

@@ -16,8 +16,8 @@
 
         <CheckBox
             android:id="@+id/is_add_to_list"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_marginStart="8dp"
             android:padding="8dp"
             android:layout_gravity="center"/>
@@ -50,7 +50,7 @@
                 android:textAlignment="center"
                 android:textAllCaps="true"
                 android:textColor="@color/black"
-                android:textSize="10sp"
+                android:textSize="12sp"
                 tools:text="@string/author_txt" />
 
             <TextView
@@ -61,7 +61,7 @@
                 android:lines="1"
                 android:textAlignment="center"
                 android:textColor="@color/black"
-                android:textSize="8sp"
+                android:textSize="11sp"
                 tools:text="@string/uri_item_db" />
         </LinearLayout>
 

@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".screens.dblists.newr.DataBaseListFragment">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -47,7 +48,6 @@
             android:layout_height="50dp"
             android:padding="10dp"
             android:visibility="gone"
-            android:src="@drawable/ic_baseline_done_50"
             android:background="?android:attr/selectableItemBackground"
             android:contentDescription="@string/imageD"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -120,7 +120,6 @@
             android:layout_height="50dp"
             android:padding="10dp"
             android:visibility="gone"
-            android:src="@drawable/ic_baseline_done_50"
             android:background="?android:attr/selectableItemBackground"
             android:contentDescription="@string/imageD"
             app:layout_constraintBottom_toBottomOf="parent"

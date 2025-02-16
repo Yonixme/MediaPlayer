@@ -5,14 +5,13 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
 xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
-tools:context=".screens.musicplayer.MusicPlayerFragment">
+tools:context=".screens.musicplayer.newr.MusicPlayerFragment">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/ic_header"
         app:layout_constraintBottom_toTopOf="@id/imageView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -68,8 +67,7 @@ tools:context=".screens.musicplayer.MusicPlayerFragment">
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:contentDescription="@string/imageD"
-        android:scaleType="centerCrop"
-        android:src="@drawable/image1"
+        android:src="@drawable/music_image"
         app:layout_constraintBottom_toTopOf="@+id/playing"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -80,7 +78,6 @@ tools:context=".screens.musicplayer.MusicPlayerFragment">
         android:visibility="visible"
         android:layout_width="0dp"
         android:layout_height="110dp"
-        android:background="@drawable/ic_bottomim"
         app:layout_constraintBottom_toTopOf="@id/footer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -147,7 +144,6 @@ tools:context=".screens.musicplayer.MusicPlayerFragment">
         android:id="@+id/footer"
         android:layout_width="0dp"
         android:layout_height="70dp"
-        android:background="@drawable/ic_footer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -206,12 +202,12 @@ tools:context=".screens.musicplayer.MusicPlayerFragment">
             android:background="?android:attr/selectableItemBackground"
             android:soundEffectsEnabled="false"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/playlist"
+            app:layout_constraintEnd_toStartOf="@id/on_db_screen"
             app:layout_constraintStart_toEndOf="@id/playOrPause"
             app:layout_constraintTop_toTopOf="@id/footer" />
 
         <ImageView
-            android:id="@+id/playlist"
+            android:id="@+id/on_db_screen"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:padding="5dp"

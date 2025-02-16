@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".screens.musiclist.newr.MusicListFragment">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -29,13 +30,13 @@
             app:layout_constraintBottom_toTopOf="@id/line"/>
 
         <ImageView
-            android:id="@+id/btn_change_data_in_db"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:id="@+id/open_screen_lists_db"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:padding="10dp"
-            android:layout_marginEnd="5dp"
+            android:layout_margin="5dp"
             android:visibility="visible"
-            android:src="@drawable/ic_baseline_add_30"
+            android:src="@drawable/add_icon"
             android:background="?android:attr/selectableItemBackground"
             android:contentDescription="@string/imageD"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FullProject</string>
+    <string name="app_name">Media player</string>
     <string name="music">music</string>
     <string name="nameMusic">Name of music</string>
     <string name="artist">Artist</string>
@@ -20,4 +20,13 @@
     <string name="uri_item_db">Uri</string>
     <string name="enter_the_author">Enter the author(Ignore for Dir)</string>
     <string name="author">Author</string>
+    <string name="your_music_list_loading">Your music list Loading</string>
+    <string name="is_empty">is empty</string>
+    <string name="to_have_song">to have %1$d song</string>
+    <string name="to_have_songs">to have %1$d songs</string>
+    <string name="your_music_list">Your music list %1$s</string>
+    <string name="unnamed">Unnamed</string>
+    <string name="delete">Delete</string>
+    <string name="root_path">/storage/emulated/0/</string>
+    <string name="skip">(skip)</string>
 </resources>

@@ -2,41 +2,30 @@ package com.example.fullproject
 
 
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.fullproject.databinding.ActivityMainScreenBinding
-import com.example.fullproject.screens.dblists.DataBaseListFragment
-import com.example.fullproject.screens.musiclist.MusicListFragment
-import com.example.fullproject.screens.musicplayer.MusicPlayerFragment
+import com.example.fullproject.screens.dblists.oldr.DataBaseListFragmentOLD
+import com.example.fullproject.screens.musicplayer.oldr.MusicPlayerFragmentOLD
 import com.example.fullproject.model.songpack.entities.SongPackage
+import dagger.hilt.android.AndroidEntryPoint
 
 
+/*
 class MainActivity : AppCompatActivity(), Navigator{
     private lateinit var binding: ActivityMainScreenBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainScreenBinding.inflate(layoutInflater).also { setContentView(it.root) }
-        Repositories.init(applicationContext)
-        val handler = Handler(Looper.getMainLooper())
-        Log.d("In MainActivity", "onCreate")
+        DBRepositories.init(applicationContext)
 
-        object : CountDownTimer(500L, 500L){
-            override fun onTick(millisUntilFinished: Long) = Unit
-            override fun onFinish() {
-                handler.post{
-                    Log.d("DataBaseURI", "sss")
-                    supportFragmentManager
-                        .beginTransaction()
-                        .add(R.id.fragmentContainer, MusicListFragment())
-                        .commit()
-                }
-            }
-        }.start()
+        if (supportFragmentManager.backStackEntryCount == 0 ){
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragmentContainer, MusicListFragmentOLD())
+                .commit()
+        }
     }
 
     override fun goBack() {
@@ -45,7 +34,7 @@ class MainActivity : AppCompatActivity(), Navigator{
     }
 
     override fun onMusicPlaylist(song: SongPackage) {
-        launchFragment(MusicPlayerFragment.newInstance(song))
+        launchFragment(MusicPlayerFragmentOLD.newInstance(song))
     }
 
     private fun launchFragment(fragment: Fragment){
@@ -56,5 +45,42 @@ class MainActivity : AppCompatActivity(), Navigator{
             .commit()
     }
 
-    override fun onDataBaseList() { launchFragment(DataBaseListFragment()) }
+    override fun onDataBaseList() { launchFragment(DataBaseListFragmentOLD()) }
+}*/
+
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity(), Navigator{
+    private lateinit var binding: ActivityMainScreenBinding
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainScreenBinding.inflate(layoutInflater).also { setContentView(it.root) }
+
+//        if (supportFragmentManager.backStackEntryCount == 0 ){
+//            supportFragmentManager
+//                .beginTransaction()
+//                .add(R.id.fragmentContainer, MusicListFragmentOLD())
+//                .commit()
+//        }
+    }
+
+    override fun goBack() {
+        @Suppress("DEPRECATION  ")
+        onBackPressed()
+    }
+
+    override fun onMusicPlaylist(song: SongPackage) {
+        launchFragment(MusicPlayerFragmentOLD.newInstance(song))
+    }
+
+    private fun launchFragment(fragment: Fragment){
+        supportFragmentManager
+            .beginTransaction()
+            .addToBackStack(null)
+            .replace(R.id.fragmentContainer, fragment)
+            .commit()
+    }
+
+    override fun onDataBaseList() { launchFragment(DataBaseListFragmentOLD()) }
 }

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/musicListFragment">
+    <fragment
+        android:id="@+id/musicListFragment"
+        android:name="com.example.fullproject.screens.musiclist.newr.MusicListFragment"
+        android:label="fragment_music_list"
+        tools:layout="@layout/fragment_music_list" >
+        <action
+            android:id="@+id/action_musicListFragment_to_dataBaseListFragment"
+            app:destination="@id/dataBaseListFragment" />
+        <action
+            android:id="@+id/action_musicListFragment_to_musicPlayerFragment"
+            app:destination="@id/musicPlayerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/dataBaseListFragment"
+        android:name="com.example.fullproject.screens.dblists.newr.DataBaseListFragment"
+        android:label="fragment_database_list"
+        tools:layout="@layout/fragment_database_list" />
+    <fragment
+        android:id="@+id/musicPlayerFragment"
+        android:name="com.example.fullproject.screens.musicplayer.newr.MusicPlayerFragment"
+        android:label="fragment_music_player"
+        tools:layout="@layout/fragment_music_player" >
+        <action
+            android:id="@+id/action_musicPlayerFragment_to_dataBaseListFragment"
+            app:destination="@id/dataBaseListFragment" />
+        <argument
+            android:name="uri"
+            app:argType="string" />
+    </fragment>
+</navigation>
