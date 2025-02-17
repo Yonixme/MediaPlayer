@@ -1,9 +1,9 @@
 package com.example.fullproject.sources.local
 
 import android.net.Uri
-import com.example.fullproject.model.room.directory.entities.DirectoryNew
-import com.example.fullproject.model.room.song.SongSource
-import com.example.fullproject.model.room.song.entities.SongNew
+import com.example.fullproject.model.directory.entities.DirectoryNew
+import com.example.fullproject.model.song.SongSource
+import com.example.fullproject.model.song.entities.Song
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -15,11 +15,11 @@ class MediaSource @Inject constructor(
 
     override fun getAudioFileFromDirectories(
         directories: List<DirectoryNew>,
-        songsFromDb: List<SongNew>
-    ): List<SongNew> {
+        songsFromDb: List<Song>
+    ): List<Song> {
         val listOFMusic = mutableListOf<File>()
         val listFile = mutableListOf<File>()
-        val uris = mutableListOf<SongNew>()
+        val uris = mutableListOf<Song>()
 
         for (directory in directories) listFile.add(File(directory.uri))
         for (file in listFile) if (file.isDirectory && file.listFiles() != null) listOFMusic.addAll(
@@ -55,8 +55,8 @@ class MediaSource @Inject constructor(
         return format.substring(format.length - (maxCharCount - indexFirstChar), format.length)
     }
 
-    private fun defaultSongNew(uri: String): SongNew {
-        return SongNew(
+    private fun defaultSongNew(uri: String): Song {
+        return Song(
             id = -1,
             uri = uri,
             name = null,
@@ -65,7 +65,7 @@ class MediaSource @Inject constructor(
         )
     }
 
-    private fun findURIInList(uri: String, list: List<SongNew>): SongNew? {
+    private fun findURIInList(uri: String, list: List<Song>): Song? {
         val song = list.filter { songInList -> songInList.uri == uri }
         return if (song.isNotEmpty()) song.first() else null
     }

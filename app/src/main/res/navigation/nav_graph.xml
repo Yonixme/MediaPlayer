@@ -6,7 +6,7 @@
     app:startDestination="@id/musicListFragment">
     <fragment
         android:id="@+id/musicListFragment"
-        android:name="com.example.fullproject.screens.musiclist.newr.MusicListFragment"
+        android:name="com.example.fullproject.screens.musiclist.MusicListFragment"
         android:label="fragment_music_list"
         tools:layout="@layout/fragment_music_list" >
         <action
@@ -18,12 +18,12 @@
     </fragment>
     <fragment
         android:id="@+id/dataBaseListFragment"
-        android:name="com.example.fullproject.screens.dblists.newr.DataBaseListFragment"
+        android:name="com.example.fullproject.screens.dblists.DataBaseListFragment"
         android:label="fragment_database_list"
         tools:layout="@layout/fragment_database_list" />
     <fragment
         android:id="@+id/musicPlayerFragment"
-        android:name="com.example.fullproject.screens.musicplayer.newr.MusicPlayerFragment"
+        android:name="com.example.fullproject.screens.musicplayer.MusicPlayerFragment"
         android:label="fragment_music_player"
         tools:layout="@layout/fragment_music_player" >
         <action

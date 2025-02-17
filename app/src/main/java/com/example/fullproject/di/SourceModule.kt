@@ -1,6 +1,6 @@
 package com.example.fullproject.di
 
-import com.example.fullproject.model.room.song.SongSource
+import com.example.fullproject.model.song.SongSource
 import com.example.fullproject.sources.local.MediaSource
 import dagger.Binds
 import dagger.Module

@@ -1,13 +1,11 @@
 package com.example.fullproject.di
 
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
 import androidx.room.Room
-import com.example.fullproject.model.database.AppSQLiteHelper
-import com.example.fullproject.model.room.database.AppDatabaseNew
-import com.example.fullproject.model.room.database.DatabaseConfig
-import com.example.fullproject.model.room.directory.database.DirectoryDao
-import com.example.fullproject.model.room.song.database.SongDao
+import com.example.fullproject.model.database.AppDatabase
+import com.example.fullproject.model.database.DatabaseConfig
+import com.example.fullproject.model.directory.database.DirectoryDao
+import com.example.fullproject.model.song.database.SongDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,24 +19,18 @@ object DatabaseModule{
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): SQLiteDatabase{
-        return AppSQLiteHelper(context).writableDatabase
-    }
-
-    @Provides
-    @Singleton
-    fun provideDatabaseNew(@ApplicationContext context: Context): AppDatabaseNew {
-        return Room.databaseBuilder(context, AppDatabaseNew::class.java, DatabaseConfig.DATABASE_NAME)
+    fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
+        return Room.databaseBuilder(context, AppDatabase::class.java, DatabaseConfig.DATABASE_NAME)
             .build()
     }
 
     @Provides
-    fun provideSongDao(databaseNew: AppDatabaseNew) : SongDao{
+    fun provideSongDao(databaseNew: AppDatabase) : SongDao {
         return databaseNew.songDao()
     }
 
     @Provides
-    fun provideDirectoryDao(databaseNew: AppDatabaseNew): DirectoryDao{
+    fun provideDirectoryDao(databaseNew: AppDatabase): DirectoryDao {
         return databaseNew.directoryDao()
     }
 }

@@ -30,7 +30,7 @@
         </activity>
 
         <service
-            android:name="com.example.fullproject.model.services.newr.MusicServiceNew"
+            android:name="com.example.fullproject.model.services.MusicService"
             android:foregroundServiceType="mediaPlayback" />
     </application>
 
