@@ -91,81 +91,9 @@ class MediaPlayerMusicController @Inject constructor(
             SongWithDetails(
                 song = song,
                 duration = mp.duration,
-                isPlaying = mp.isPlaying,
+                isPlaying = playingState,
                 currentPosition = mp.currentPosition
             )
         }
     }
 }
-/*
-
-@Singleton
-class MediaPlayerMusicController @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val musicInfoProvider: MusicInfoProvider
-) : MusicController {
-    private var mp: MediaPlayer? = null
-
-    override fun playMusic(uri: String) {
-        println("DebugPlay111 in controller")
-        if (mp == null) musicInfoProvider.changeCurrentMediaPlayer(uri)
-        val currentMP = getCurrentMediaPlayer() ?: return
-        if (currentMP.isPlaying) return
-        currentMP.start()
-    }
-
-    override fun pauseMusic() {
-        val currentMP = mp ?: return
-        if (!currentMP.isPlaying) return
-        mp!!.pause()
-    }
-
-    override fun stopMusic() {
-        if (mp == null) return
-        mp?.stop()
-        mp?.release()
-        mp = null
-    }
-
-    override fun setCurrentTimeInMillis(newTime: Int) {
-        mp?.seekTo(newTime)
-    }
-
-    private fun createMP(uri: String): MediaPlayer?{
-        val createdMP = try {
-            MediaPlayer.create(context, Uri.parse(uri))
-        } catch (e: Exception){
-            println("Error debug ${e.message}")
-            null
-        }
-        return createdMP
-    }
-
-    fun test(){
-        getCurrentMediaPlayer()?.start()
-    }
-
-    private fun getCurrentMediaPlayer() : MediaPlayer?{
-        return musicInfoProvider.getCurrentMediaPlayer()
-    }
-
-    override fun getCurrentPosition(): Int = mp?.currentPosition ?: 0
-
-    override fun getDuration(): Int = mp?.duration ?: 0
-
-    override fun getIsPlayingMusicState(): Boolean = mp?.isPlaying ?: false
-
-    override fun getInformationForSong(song: SongNew): SongWithDetails?{
-        val mp = createMP(song.uri)
-        return if (mp == null){
-            null
-        }else{
-            SongWithDetails(
-                song = song,
-                duration = mp.duration,
-                isPlaying = mp.isPlaying,
-                currentPosition = mp.currentPosition
-            )
-        }
-    }
-}*/

@@ -102,26 +102,31 @@ class MusicPlayerFragment : Fragment(R.layout.fragment_music_player) {
     private fun updateUI(){
         viewModel.currentSongState.observe(viewLifecycleOwner) { songUpdatingState ->
             when (songUpdatingState) {
-                is CustomSongState.Loading -> { drawUI() }
+                is CustomSongState.Loading -> drawUI()
+                is CustomSongState.Empty -> drawUI()
+                is CustomSongState.Error -> return@observe
+
                 is CustomSongState.Success -> {
-                    if (songUpdatingState.currentSong?.song?.uri == viewModel.selectedSong.value?.song?.uri) {
-                        observeOnUpdating = true
-                        if (!newSongSelected && songUpdatingState.currentSong?.song?.uri != null)
-                            viewModel.initSelectedSong(songUpdatingState.currentSong.song.uri)
+                    val newUri = songUpdatingState.currentSong?.song?.uri
+                    val selectedUri = viewModel.selectedSong.value?.song?.uri
+
+                    observeOnUpdating = observeOnUpdating || (newUri == selectedUri)
+
+                    if ((newSongSelected || observeOnUpdating) && newUri != null && newUri != selectedUri) {
+                        requireArguments().putString(ARG_URI, newUri)
+                        viewModel.initSelectedSong(newUri)
                     }
-                    if (newSongSelected && songUpdatingState.currentSong?.song?.uri != null) {
-                        requireArguments().putString(ARG_URI, songUpdatingState.currentSong.song.uri)
-                        viewModel.initSelectedSong(songUpdatingState.currentSong.song.uri)
-                        newSongSelected = false
-                    }
-                    if (viewModel.selectedSong.value?.song?.uri != songUpdatingState.currentSong?.song?.uri && !observeOnUpdating) {
-                        drawUI()
-                    } else {
-                        drawUI(valueForDrawing = songUpdatingState.currentSong )
+
+                    songUpdatingState.currentSong.takeIf { observeOnUpdating || newSongSelected}.let { songWithDetails->
+                        if (songWithDetails != null){
+                            drawUI(songWithDetails)
+                            println("Debug problem123 $songWithDetails")
+                        }else{
+                            drawUI()
+                            println("Debug problem123 $songWithDetails")
+                        }
                     }
                 }
-                is CustomSongState.Empty -> { drawUI() }
-                is CustomSongState.Error -> { }
             }
         }
 

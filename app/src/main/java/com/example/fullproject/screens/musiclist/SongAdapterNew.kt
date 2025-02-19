@@ -17,7 +17,6 @@ interface SongActionListenerNew{
 
     fun onStop(uri: String)
 
-    fun getIsPlaying() : Boolean
 
     fun openScreenWithDetails(uri: String)
 }

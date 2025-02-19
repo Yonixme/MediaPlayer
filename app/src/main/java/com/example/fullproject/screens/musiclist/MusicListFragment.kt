@@ -27,10 +27,19 @@ class MusicListFragment: Fragment(R.layout.fragment_music_list) {
     private lateinit var adapter: SongAdapterNew
     private val viewModel: MusicListViewModel by viewModels()
 
-    private val requestSinglePermission = registerForActivityResult(
-        ActivityResultContracts.RequestPermission(),
-        ::showRequestPermissionButton
-    )
+    private val requestMultiplePermissions = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val notificationsGranted = permissions[Manifest.permission.POST_NOTIFICATIONS] ?: false
+        val mediaGranted = permissions[Manifest.permission.READ_MEDIA_AUDIO] ?: false
+        val storageGranted = permissions[Manifest.permission.READ_EXTERNAL_STORAGE] ?: false
+
+        if (notificationsGranted && (mediaGranted || storageGranted)) {
+            binding.requestPermission.visibility = View.GONE
+        } else {
+            binding.requestPermission.visibility = View.VISIBLE
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -47,10 +56,6 @@ class MusicListFragment: Fragment(R.layout.fragment_music_list) {
 
             override fun onStop(uri: String) {
                 viewModel.onStop(uri)
-            }
-
-            override fun getIsPlaying(): Boolean {
-                return viewModel.getIsPlayingState()
             }
 
             override fun openScreenWithDetails(uri: String) {
@@ -109,35 +114,32 @@ class MusicListFragment: Fragment(R.layout.fragment_music_list) {
         }
     }
 
-    private fun checkNeededPermission(){
+    private fun checkNeededPermission() {
+        val permissionsToRequest = mutableListOf<String>()
+
         if (Build.VERSION.SDK_INT >= 33) {
-            if(ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.READ_MEDIA_AUDIO
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                binding.requestPermission.visibility = View.VISIBLE
-                binding.requestPermission.setOnClickListener {
-                    requestSinglePermission.launch(Manifest.permission.READ_MEDIA_AUDIO)
-                }
-            }else{
-                binding.requestPermission.visibility = View.GONE
+            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS)
+            }
+            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.READ_MEDIA_AUDIO)
             }
         } else {
-            if (ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                binding.requestPermission.visibility = View.VISIBLE
-                binding.requestPermission.setOnClickListener {
-                    requestSinglePermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-                }
-            }else{
-                binding.requestPermission.visibility = View.GONE
+            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE)
             }
         }
+
+        if (permissionsToRequest.isNotEmpty()) {
+            binding.requestPermission.visibility = View.VISIBLE
+            binding.requestPermission.setOnClickListener {
+                requestMultiplePermissions.launch(permissionsToRequest.toTypedArray())
+            }
+        } else {
+            binding.requestPermission.visibility = View.GONE
+        }
     }
+
 
     private fun updateUI(listSize: Int){
         val stringWithSizeOfListMusic =

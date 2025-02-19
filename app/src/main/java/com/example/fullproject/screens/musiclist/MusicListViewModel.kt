@@ -68,14 +68,10 @@ class MusicListViewModel @Inject constructor(
         musicServiceManager.onStop(uri)
     }
 
-    fun getIsPlayingState(): Boolean{
-        return musicServiceManager.getIsPlaying()
-    }
-
     override fun onCleared() {
         super.onCleared()
         println("Debug22 in viewModel $this")
-        musicServiceManager.unBindService()
+        //musicServiceManager.unBindService()
     }
 
     sealed class ScreenStateWithDetails{

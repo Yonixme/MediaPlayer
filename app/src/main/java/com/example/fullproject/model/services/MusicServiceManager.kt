@@ -4,8 +4,6 @@ import com.example.fullproject.model.song.entities.SongWithDetails
 import kotlinx.coroutines.flow.Flow
 
 interface MusicServiceManager {
-    //fun getSongListWithDetails(): Flow<List<SongWithDetails>?>
-
     fun getCurrentSongWithDetails(): Flow<CurrentSongState?>
 
     fun onPlay(uri: String)
@@ -16,12 +14,6 @@ interface MusicServiceManager {
 
     fun setCurrentTime(currentTime: Int)
 
-    fun getIsPlaying(): Boolean
-
-    fun bindService()
-
-    fun unBindService()
-
     fun updateSongState()
 
     fun pauseMusic(uri: String)
@@ -31,6 +23,10 @@ interface MusicServiceManager {
     fun nextSong(uri: String)
 
     fun previousSong(uri: String)
+
+    fun unBindService()
+
+    fun bindService()
 
     sealed class CurrentSongState{
         data object Loading : CurrentSongState()

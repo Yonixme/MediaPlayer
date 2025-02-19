@@ -4,11 +4,15 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Build
 import android.os.IBinder
 import com.example.fullproject.model.services.MusicServiceManager.CurrentSongState
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -19,11 +23,10 @@ import javax.inject.Singleton
 class MusicServiceManagerImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : MusicServiceManager {
-    private val customScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+    private val customScope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     private val _currentSong: MutableStateFlow<CurrentSongState> = MutableStateFlow(
         CurrentSongState.Loading)
-    val currentSongNew: Flow<CurrentSongState> = _currentSong
 
     private var musicService: MusicService? = null
     private var isBound = false
@@ -33,11 +36,11 @@ class MusicServiceManagerImpl @Inject constructor(
             val binder = service as MusicService.GetServiceBinder
             musicService = binder.getService()
             isBound = true
-
+            println("debug flow111 connect")
             customScope.launch {
-                println("check service $musicService")
                 musicService?.getCurrentSongFlow()?.collect{
                     songFromFlow ->
+                    println("debug flow111 $songFromFlow")
                     _currentSong.value = if (songFromFlow != null){
                         CurrentSongState.Success(songFromFlow)
                     }else{
@@ -48,13 +51,11 @@ class MusicServiceManagerImpl @Inject constructor(
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
+            println("debug flow111 disconnect")
             musicService = null
             isBound = false
+            customScope.coroutineContext.cancelChildren()
         }
-    }
-
-    init {
-        bindService()
     }
 
     override fun bindService(){
@@ -69,10 +70,11 @@ class MusicServiceManagerImpl @Inject constructor(
             println("Debug22 in manager $this")
             context.unbindService(serviceConnection)
             isBound = false
+            musicService = null
         }
     }
 
-    override fun getCurrentSongWithDetails(): Flow<CurrentSongState?> = _currentSong
+    override fun getCurrentSongWithDetails(): Flow<CurrentSongState> = _currentSong
 
     override fun onPlay(uri: String) {
         startServiceWithCommand(
@@ -93,6 +95,7 @@ class MusicServiceManagerImpl @Inject constructor(
             action = MusicService.COMMAND_ON_STOP_MUSIC,
             uri = uri
         )
+        unBindService()
     }
 
     override fun pauseMusic(uri: String) {
@@ -124,15 +127,16 @@ class MusicServiceManagerImpl @Inject constructor(
     }
 
     private fun startServiceWithCommand(action: String, uri: String){
+        if(musicService == null) bindService()
         println("Manager123: $action uri = $uri")
         val intent = Intent(context, MusicService::class.java)
         intent.action = action
         intent.putExtra(MusicService.ID_URI, uri)
-        context.startService(intent)
-    }
-
-    override fun getIsPlaying(): Boolean {
-        return musicService?.getIsPlayingState() ?: false
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent)
+        } else {
+            context.startService(intent)
+        }
     }
 
     override fun setCurrentTime(currentTime: Int) {

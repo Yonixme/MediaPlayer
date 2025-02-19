@@ -1,6 +1,5 @@
 package com.example.fullproject.model.song.entities
 
-import android.media.MediaPlayer
 
 data class SongWithDetails(
     val song: Song,
