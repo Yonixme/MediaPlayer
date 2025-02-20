@@ -18,7 +18,7 @@ interface MusicController {
 
     fun stopMusic()
 
-    fun setCurrentTimeInMillis(newTime: Int)
+    fun setCurrentTimeInMillis(newTime: Int, block: () -> Unit)
 
     fun setActionOnFinish(block: () -> Unit)
 

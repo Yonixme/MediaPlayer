@@ -140,10 +140,12 @@ class MusicServiceManagerImpl @Inject constructor(
     }
 
     override fun setCurrentTime(currentTime: Int) {
+        if(musicService == null) bindService()
         musicService?.setCurrentTime(currentTime)
     }
 
     override fun updateSongState() {
+        if(musicService == null) bindService()
         musicService?.updateSongState()
     }
 

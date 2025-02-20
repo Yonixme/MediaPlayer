@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -30,11 +31,11 @@ class MusicListFragment: Fragment(R.layout.fragment_music_list) {
     private val requestMultiplePermissions = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        val notificationsGranted = permissions[Manifest.permission.POST_NOTIFICATIONS] ?: false
-        val mediaGranted = permissions[Manifest.permission.READ_MEDIA_AUDIO] ?: false
+        val notificationsGranted = if(Build.VERSION.SDK_INT >= 33) permissions[Manifest.permission.POST_NOTIFICATIONS] ?: false else true
+        val mediaGranted = if(Build.VERSION.SDK_INT >= 33) permissions[Manifest.permission.READ_MEDIA_AUDIO] ?: false else true
         val storageGranted = permissions[Manifest.permission.READ_EXTERNAL_STORAGE] ?: false
 
-        if (notificationsGranted && (mediaGranted || storageGranted)) {
+        if (notificationsGranted && (mediaGranted && storageGranted)) {
             binding.requestPermission.visibility = View.GONE
         } else {
             binding.requestPermission.visibility = View.VISIBLE

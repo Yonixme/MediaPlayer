@@ -9,9 +9,6 @@ import android.content.Intent
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
-import androidx.core.app.NotificationCompat
-import com.example.fullproject.MusicBroadcast
-import com.example.fullproject.R
 import com.example.fullproject.model.services.notification.NotificationHelper
 import com.example.fullproject.model.song.MusicRepository
 import com.example.fullproject.model.song.provider.controller.MusicController
@@ -57,7 +54,18 @@ class MusicService : Service(){
                         _autoPlayListSongs.value = filteredList
                     }
             }
+
+            launch {
+                _currentSongFlow.collect{
+                    if (foregroundIsActive) {
+                        //todo replace in operation methods
+                        println("in notification123")
+                        notificationHelper.updateNotification(it)
+                    }
+                }
+            }
         }
+
 //        foregroundIsActive = true
 //        startForeground(1, notificationHelper.createNotification())
 
@@ -80,19 +88,13 @@ class MusicService : Service(){
             _currentSongFlow.value = musicInfoProvider.getInformationForSong(newSong)
         }
         if (!foregroundIsActive) {
+            println("create foreground 2222")
             val currentSong = _currentSongFlow.value
             startForeground(1, notificationHelper.createNotification(currentSong))
             foregroundIsActive = true
         }
 
-        customScope.launch {
-            _currentSongFlow.collect{
-                if (foregroundIsActive) {
-                    //todo replace in operation methods
-                    notificationHelper.updateNotification(it)
-                }
-            }
-        }
+
         when (intent.action) {
             COMMAND_ON_PLAY_MUSIC -> onPlayMusic()
             COMMAND_ON_PAUSE_MUSIC -> onPauseMusic()
@@ -103,15 +105,27 @@ class MusicService : Service(){
             COMMAND_ON_STOP_MUSIC -> {
                 onStopMusic()
                 if (foregroundIsActive){
+                    println("destroy 12342 foreground")
                     if (Build.VERSION.SDK_INT < 24)
                         stopForeground(true)
                     else
                         stopForeground(STOP_FOREGROUND_REMOVE)
                     foregroundIsActive = false
-                    stopSelf()
                 }
+                stopSelf()
             }
-            else -> stopSelf()
+            else -> {
+                onStopMusic()
+                if (foregroundIsActive){
+                    println("destroy 12342 foreground")
+                    if (Build.VERSION.SDK_INT < 24)
+                        stopForeground(true)
+                    else
+                        stopForeground(STOP_FOREGROUND_REMOVE)
+                    foregroundIsActive = false
+                }
+                stopSelf()
+            }
         }
         return START_NOT_STICKY
     }
@@ -127,10 +141,10 @@ class MusicService : Service(){
     }
 
     override fun onDestroy() {
-        //onStopMusic()
-        println("destroy 12342 ")
-        customScope.coroutineContext.cancel()
         super.onDestroy()
+        //onStopMusic()
+        println("destroy 12342 Service")
+        customScope.coroutineContext.cancel()
     }
 
     private fun onPlayMusic(){
@@ -155,6 +169,7 @@ class MusicService : Service(){
         _currentSongFlow.value = newSong?.copy(
             isPlaying = musicController.getIsPlayingMusicState(),
             currentPosition = musicController.getCurrentPosition())
+
     }
 
     private fun onStopMusic(){
@@ -195,7 +210,10 @@ class MusicService : Service(){
     fun getCurrentSongFlow(): Flow<SongWithDetails?> = _currentSongFlow
 
     fun setCurrentTime(currentTime: Int){
-        musicController.setCurrentTimeInMillis(currentTime)
+        musicController.setCurrentTimeInMillis(currentTime){
+            nextSong()
+            updateSongState()
+        }
     }
 
     fun updateSongState(){
@@ -212,24 +230,24 @@ class MusicService : Service(){
     private fun previousSong(fromAutoPlayList: Boolean = false) = changeCurrentSong(-1, fromAutoPlayList)
 
     private fun changeCurrentSong(direction: Int, fromAutoPlayList: Boolean) {
-        val currentSong = _currentSongFlow.value?.song ?: throw IllegalStateException("Custom error Current song is null")
-        val musicList = _listSongs.value ?: throw IllegalStateException("Custom error Music list is empty")
+        val currentSong = _currentSongFlow.value?.song ?: return
+        val musicList = _listSongs.value ?: return
         val autoPlayList = _autoPlayListSongs.value ?: emptyList()
 
         val currentList = if (fromAutoPlayList) autoPlayList else musicList
 
         val currentIndex = currentList.indexOfFirst { it.uri == currentSong.uri }
-        if (currentIndex == -1) throw IllegalStateException("Custom error Current song not found in list")
+        if (currentIndex == -1) return
 
         if ((direction == 1 && currentIndex >= currentList.lastIndex) ||
-            (direction == -1 && currentIndex <= 0)) throw IndexOutOfBoundsException("Custom error No more songs in this direction")
+            (direction == -1 && currentIndex <= 0)) return
 
         val newIndex = currentIndex + direction
 
         val newSong = if (fromAutoPlayList) {
             findNextInAutoPlayList(musicList, autoPlayList, musicList[newIndex], direction)
         } else {
-            musicList.getOrNull(newIndex) ?: throw IndexOutOfBoundsException("Custom error Invalid song index")
+            musicList.getOrNull(newIndex) ?: return
         }
 
         musicController.changeSong(newSong.uri)

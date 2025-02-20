@@ -1,91 +1,74 @@
 package com.example.fullproject.sources.local
 
+import android.content.Context
 import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import com.example.fullproject.model.directory.entities.DirectoryNew
 import com.example.fullproject.model.song.SongSource
 import com.example.fullproject.model.song.entities.Song
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class MediaSource @Inject constructor(
-
+    @ApplicationContext private val context: Context
 ) : SongSource {
 
     override fun getAudioFileFromDirectories(
         directories: List<DirectoryNew>,
         songsFromDb: List<Song>
     ): List<Song> {
-        val listOFMusic = mutableListOf<File>()
-        val listFile = mutableListOf<File>()
-        val uris = mutableListOf<Song>()
-
-        for (directory in directories) listFile.add(File(directory.uri))
-        for (file in listFile) if (file.isDirectory && file.listFiles() != null) listOFMusic.addAll(
-            file.listFiles()!!
-        )
-
-        for (mediaFile in listOFMusic) {
-            if (equalsWithSupportedFormat(getFormatFile(mediaFile.path.toString()))) {
-                val uri = Uri.fromFile(mediaFile).toString()
-
-                val song = findURIInList(
-                    uri = uri,
-                    list = songsFromDb
-                ) ?: defaultSongNew(uri)
-
-                uris.add(song)
+        val songsMap = songsFromDb.associateBy { it.uri }
+        return directories
+            .flatMap { directory ->
+                getFilesFromDirectory(File(directory.uri))
+                    .filter { isSupportedAudioFile(it) }
+                    .mapNotNull { file ->
+                        val uri = getContentUri(file) ?: return@mapNotNull null
+                        songsMap[uri] ?: createDefaultSong(uri, file.name)
+                    }
             }
-        }
-        return uris
     }
 
-    private fun getFormatFile(string: String): String {
-        val maxCharCount = 5
-        val format = string.substring(string.length - maxCharCount, string.length)
-
-        var indexFirstChar = -1
-        var i = 0
-        for (c in format) {
-            if (c == '.') indexFirstChar = i
-            i++
-        }
-        if (indexFirstChar == -1) return "No Support Format"
-        return format.substring(format.length - (maxCharCount - indexFirstChar), format.length)
+    private fun getFilesFromDirectory(directory: File): Sequence<File> {
+        return directory.walk()
+            .onEnter { it.isDirectory && it.listFiles()?.isNotEmpty() ?: false }
+            .filter { it.isFile }
     }
 
-    private fun defaultSongNew(uri: String): Song {
+    private fun isSupportedAudioFile(file: File): Boolean {
+        val extension = file.extension.lowercase()
+        return SUPPORTED_FORMATS.contains(extension)
+    }
+
+    private fun getContentUri(file: File): String {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            MediaStore.getMediaUri(context, Uri.fromFile(file)).toString()
+        } else {
+            Uri.fromFile(file).toString()
+        }
+    }
+
+    private fun createDefaultSong(uri: String, fileName: String): Song {
         return Song(
             id = -1,
             uri = uri,
-            name = null,
+            name = fileName.substringBeforeLast('.'),
             author = null,
             disEnableAutoPlay = false
         )
     }
 
-    private fun findURIInList(uri: String, list: List<Song>): Song? {
-        val song = list.filter { songInList -> songInList.uri == uri }
-        return if (song.isNotEmpty()) song.first() else null
-    }
-
-    private fun equalsWithSupportedFormat(format: String): Boolean{
-        var isSupportFormat = false
-        val arrayFormat = arrayOf(".AA", ".AAC", ".AC3",
-            ".ADX", ".AHX", ".APE", ".AU", ".AUD",
-            ".DMF", ".DTS", ".DXD", ".FLAC",
-            ".MMF", ".MOD", ".MP1", ".MP2", ".MP3",
-            ".MP4", ".MPC", ".Opus", ".RA", ".TTA",
-            ".VOC", ".VOX", ".VQF", ".WAV", ".WMA",
-            ".XM", ".CD", ".MQA")
-        for(f in arrayFormat){
-            if(format == f || format == f.lowercase()){
-                isSupportFormat = true
-                break
-            }
-        }
-        return isSupportFormat
+    private companion object {
+        val SUPPORTED_FORMATS = setOf(
+            "aa", "aac", "ac3", "adx", "ahx", "ape", "au", "aud",
+            "dmf", "dts", "dxd", "flac", "mmf", "mod", "mp1", "mp2",
+            "mp3", "mp4", "mpc", "opus", "ra", "tta", "voc", "vox",
+            "vqf", "wav", "wma", "xm", "cd", "mqa"
+        )
     }
 }
 //    fun getAllMediaFiles(): List<MediaFile> {

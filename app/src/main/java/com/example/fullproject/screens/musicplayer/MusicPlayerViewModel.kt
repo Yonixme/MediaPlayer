@@ -24,8 +24,6 @@ class MusicPlayerViewModel @Inject constructor(
     private val musicRepository: MusicRepository
 ): ViewModel() {
     private var timerJob: Job? = null
-    private var newSongSelected: Boolean = false
-    private var observeOnUpdating = false
 
     private val _selectedSong: MutableLiveData<SongWithDetails?> = MutableLiveData(null)
     val selectedSong: LiveData<SongWithDetails?> = _selectedSong
@@ -108,9 +106,11 @@ class MusicPlayerViewModel @Inject constructor(
     }
 
     fun startUpdatingTimer(){
+        println("Debug in fragment111 timer = $timerJob")
         if (timerJob == null) {
             timerJob = CoroutineScope(Dispatchers.Default).launch {
                 while (true) {
+                    println("timer start 222")
                     musicServiceManager.updateSongState()
                     delay(1000L)
                 }

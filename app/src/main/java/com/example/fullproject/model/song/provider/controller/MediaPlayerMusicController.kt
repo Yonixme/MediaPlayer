@@ -42,8 +42,11 @@ class MediaPlayerMusicController @Inject constructor(
         playingState = false
     }
 
-    override fun setCurrentTimeInMillis(newTime: Int) {
+    override fun setCurrentTimeInMillis(newTime: Int, block: () -> Unit) {
         mp?.seekTo(newTime)
+        mp?.setOnCompletionListener {
+            block.invoke()
+        }
     }
 
     override fun setActionOnFinish(block: () -> Unit) {
