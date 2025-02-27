@@ -1,6 +1,7 @@
 package com.example.fullproject.screens.dblists
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.fullproject.R
 import com.example.fullproject.databinding.FragmentDatabaseListBinding
-import com.example.fullproject.model.directory.entities.DirectoryNew
+import com.example.fullproject.model.directory.entities.Directory
 import com.example.fullproject.model.song.entities.Song
 import com.example.fullproject.screens.dblists.DataBaseListViewModel.*
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,6 +51,7 @@ class DataBaseListFragment : Fragment(R.layout.fragment_database_list) {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentDatabaseListBinding.inflate(inflater, container, false)
+        println("debug 22333 start ${viewModel.songNotSavedYet}")
         setupButtonsOnScreen()
         setupAdapters()
         observeListsInViewModel()
@@ -63,12 +65,13 @@ class DataBaseListFragment : Fragment(R.layout.fragment_database_list) {
         }
 
         binding.addItemInBd.addMusicBtn.setOnClickListener {
-            addSongToDatabase()
+            println("debug 22333 ${viewModel.songNotSavedYet}")
+            //addSongToDatabase()
         }
 
-        binding.addItemInBd.addDirBtn.setOnClickListener {
-            addDirectoryToDatabase()
-        }
+//        binding.addItemInBd.addDirBtn.setOnClickListener {
+//            addDirectoryToDatabase()
+//        }
     }
 
     private fun setupAdapters() {
@@ -80,7 +83,8 @@ class DataBaseListFragment : Fragment(R.layout.fragment_database_list) {
     }
 
     private fun observeListsInViewModel() {
-        viewModel.listSongs.observe(viewLifecycleOwner) { songDbState ->
+        viewModel.listSavedSongs.observe(viewLifecycleOwner) { songDbState ->
+            Log.d("searching bug", "fragment saved + $songDbState")
             when (songDbState) {
                 is ReadingSongDbState.Loading -> listDbSongInLoadingState()
                 is ReadingSongDbState.Success -> updateDbListSongOnScreen(songDbState.listSong)
@@ -119,12 +123,13 @@ class DataBaseListFragment : Fragment(R.layout.fragment_database_list) {
     }
 
     private fun updateDbListSongOnScreen(listSong: List<Song>) {
+        Log.d("searching bug", "fragment saved + $listSong")
         songAdapter.listOfSongs = listSong
     }
 
     private fun listDbSongInLoadingState() { }
 
-    private fun updateDbListDirectoriesOnScreen(directories: List<DirectoryNew>) {
+    private fun updateDbListDirectoriesOnScreen(directories: List<Directory>) {
         directoryAdapter.listOfDirectories = directories
     }
 

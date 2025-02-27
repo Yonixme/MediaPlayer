@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.widget.RemoteViews
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -21,6 +22,7 @@ import com.example.fullproject.model.services.MusicService.Companion.COMMAND_ON_
 import com.example.fullproject.model.services.MusicService.Companion.COMMAND_ON_STOP_MUSIC
 import com.example.fullproject.model.services.MusicService.Companion.COMMAND_PREVIOUS_SONG
 import com.example.fullproject.model.song.entities.SongWithDetails
+import com.example.fullproject.utils.convertMillisToMinute
 
 
 class NotificationHelper(
@@ -72,6 +74,30 @@ class NotificationHelper(
 
         val uri = if (songWithDetails?.song?.uri != null) Uri.parse(songWithDetails.song.uri).lastPathSegment
         else songWithDetails?.song?.uri
+        val currentTimeInMinute = convertMillisToMinute(songWithDetails?.currentPosition ?: 0)
+        val durationInMinute = convertMillisToMinute(songWithDetails?.duration ?: 0)
+
+        val bigRemoteViews = RemoteViews(context.packageName, R.layout.custom_notification_big).apply {
+            setTextViewText(R.id.text, "$uri \t $currentTimeInMinute/$durationInMinute")
+            setImageViewResource(R.id.icon, android.R.drawable.ic_media_play)
+        }
+
+
+        listOf(bigRemoteViews).forEach { views ->
+            views.apply {
+                setOnClickPendingIntent(R.id.btn_prev, previousIntent)
+                setImageViewResource(R.id.btn_prev, R.drawable.ic_previous)
+
+                setOnClickPendingIntent(R.id.btn_pause, launchIntent)
+                setImageViewResource(R.id.btn_pause, launchSource)
+
+                setOnClickPendingIntent(R.id.btn_next, nextIntent)
+                setImageViewResource(R.id.btn_next, R.drawable.ic_next)
+
+                setOnClickPendingIntent(R.id.btn_stop, stopIntent)
+                setImageViewResource(R.id.btn_stop, R.drawable.ic_stop)
+            }
+        }
 
         return NotificationCompat.Builder(context, channelId)
             .setContentTitle(titleText)
@@ -87,49 +113,9 @@ class NotificationHelper(
             .setStyle(androidx.media.app.NotificationCompat.MediaStyle()
                 .setShowActionsInCompactView(0, 1, 2)
             )
+            .setCustomBigContentView(bigRemoteViews)
             .build()
 
-//        val smallRemoteViews = RemoteViews(context.packageName, R.layout.custom_notification).apply {
-//            setTextViewText(R.id.title, "Music Player")
-//            setTextViewText(R.id.text, "$uri   ${songWithDetails?.isPlaying}")
-//            setImageViewResource(R.id.icon, android.R.drawable.ic_media_play)
-//
-//            // Приховуємо зайві кнопки для компактного вигляду
-//            setViewVisibility(R.id.btn_stop, View.GONE)
-//        }
-//
-//        // Розширений макет
-//        val bigRemoteViews = RemoteViews(context.packageName, R.layout.custom_notification_big).apply {
-//            setTextViewText(R.id.title, "Music Player")
-//            setTextViewText(R.id.text, "$uri   ${songWithDetails?.isPlaying}")
-//            setImageViewResource(R.id.icon, android.R.drawable.ic_media_play)
-//        }
-//
-//        // Налаштування кліків для обох макетів
-//        listOf(smallRemoteViews, bigRemoteViews).forEach { views ->
-//            views.apply {
-//                setOnClickPendingIntent(R.id.btn_prev, previousIntent)
-//                setImageViewResource(R.id.btn_prev, R.drawable.ic_previous)
-//
-//                setOnClickPendingIntent(R.id.btn_pause, launchIntent)
-//                setImageViewResource(R.id.btn_pause, launchSource)
-//
-//                setOnClickPendingIntent(R.id.btn_next, nextIntent)
-//                setImageViewResource(R.id.btn_next, R.drawable.ic_next)
-//
-//                setOnClickPendingIntent(R.id.btn_stop, stopIntent)
-//                setImageViewResource(R.id.btn_stop, R.drawable.ic_stop)
-//            }
-//        }
-//
-//        return NotificationCompat.Builder(context, channelId)
-//            .setSmallIcon(android.R.drawable.ic_media_play)
-//            .setCustomContentView(smallRemoteViews) // Згорнутий стан
-//            .setCustomBigContentView(bigRemoteViews) // Розширений стан
-//            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-//            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-//            .setDefaults(0)
-//            .build()
     }
 
     fun updateNotification(songWithDetails: SongWithDetails?) {

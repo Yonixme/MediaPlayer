@@ -9,11 +9,8 @@ import com.example.fullproject.model.services.MusicServiceManager.CurrentSongSta
 import com.example.fullproject.model.song.MusicRepository
 import com.example.fullproject.model.song.entities.SongWithDetails
 import com.example.fullproject.model.song.provider.infoprovider.MusicInfoProvider
+import com.example.fullproject.utils.convertMillisToMinute
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,7 +20,6 @@ class MusicPlayerViewModel @Inject constructor(
     private val musicInfoProvider: MusicInfoProvider,
     private val musicRepository: MusicRepository
 ): ViewModel() {
-    private var timerJob: Job? = null
 
     private val _selectedSong: MutableLiveData<SongWithDetails?> = MutableLiveData(null)
     val selectedSong: LiveData<SongWithDetails?> = _selectedSong
@@ -33,17 +29,33 @@ class MusicPlayerViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            launch {
-                musicRepository.getListSongsFromDevice().collect{list->
-                    val updatedSelectedSong = list?.firstOrNull{
-                        it.uri == selectedSong.value?.song?.uri
-                    }
-                    if (updatedSelectedSong != _selectedSong.value?.song){
-                        if (updatedSelectedSong == null) {
-                            _selectedSong.value = null
-                        }else{
-                            _selectedSong.value =
-                                musicInfoProvider.getInformationForSong(updatedSelectedSong)
+//            launch {
+//                musicRepository.getListSongsFromDevice().collect{list->
+//                    val updatedSelectedSong = list?.firstOrNull{
+//                        it.uri == selectedSong.value?.song?.uri
+//                    }
+//                    if (updatedSelectedSong != _selectedSong.value?.song){
+//                        if (updatedSelectedSong == null) {
+//                            _selectedSong.value = null
+//                        }else{
+//                            _selectedSong.value =
+//                                musicInfoProvider.getInformationForSong(updatedSelectedSong)
+//                        }
+//                    }
+//                }
+//            }
+
+            launch{
+                musicRepository.getListSongsFromDevice().collect{state ->
+                    when(state){
+                        MusicRepository.SongDbState.Empty -> { _selectedSong.value = null }
+                        MusicRepository.SongDbState.Loading -> { _selectedSong.value = null }
+                        is MusicRepository.SongDbState.Success -> {
+                            val updatedSelectedSong = state.songs.firstOrNull{
+                                it.uri == selectedSong.value?.song?.uri
+                            }
+                            if (updatedSelectedSong == _selectedSong.value?.song) return@collect
+                            _selectedSong.value = if (updatedSelectedSong != null) musicInfoProvider.getInformationForSong(updatedSelectedSong) else null
                         }
                     }
                 }
@@ -79,20 +91,17 @@ class MusicPlayerViewModel @Inject constructor(
     }
 
     fun onPlay(){
-        if (timerJob == null) startUpdatingTimer()
         println("debug123 in viewModel ${getSelectedURI()}")
         val selectURI = getSelectedURI() ?: return
         musicServiceManager.onPlay(selectURI)
     }
 
     fun onPause(){
-        if (timerJob != null) stopTimer()
         val selectURI = getSelectedURI() ?: return
         musicServiceManager.onPause(selectURI)
     }
 
     fun onStop(){
-        if (timerJob != null) stopTimer()
         val selectURI = getSelectedURI() ?: return
         musicServiceManager.onStop(selectURI)
     }
@@ -103,26 +112,6 @@ class MusicPlayerViewModel @Inject constructor(
 
     fun setCurrentTime(currentPosition: Int){
         musicServiceManager.setCurrentTime(currentPosition)
-    }
-
-    fun startUpdatingTimer(){
-        println("Debug in fragment111 timer = $timerJob")
-        if (timerJob == null) {
-            timerJob = CoroutineScope(Dispatchers.Default).launch {
-                while (true) {
-                    println("timer start 222")
-                    musicServiceManager.updateSongState()
-                    delay(1000L)
-                }
-            }
-        }
-    }
-
-    fun stopTimer(){
-        if (timerJob != null) {
-            timerJob?.cancel()
-            timerJob = null
-        }
     }
 
     fun pauseMusic(){
@@ -136,33 +125,17 @@ class MusicPlayerViewModel @Inject constructor(
     }
 
     fun nextSong(){
-        if (timerJob == null) startUpdatingTimer()
         val selectURI = getSelectedURI() ?: return
         musicServiceManager.nextSong(selectURI)
     }
 
     fun previousSong(){
-        if (timerJob == null) startUpdatingTimer()
         val selectURI = getSelectedURI() ?: return
         musicServiceManager.previousSong(selectURI)
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        stopTimer()
-    }
-
     fun millisToMinute(progress: Int): String {
-        var seconds:Int = progress / 1000
-
-        val minute: Int
-        if (seconds >= 60) {
-            minute = seconds / 60
-            seconds %= 60
-        } else minute = 0
-
-        return if (seconds >= 10) "$minute:$seconds"
-        else "$minute:0$seconds"
+        return convertMillisToMinute(progress)
     }
 
     sealed class CustomSongState{

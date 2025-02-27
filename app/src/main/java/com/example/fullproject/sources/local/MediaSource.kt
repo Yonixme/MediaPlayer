@@ -1,76 +1,142 @@
 package com.example.fullproject.sources.local
 
-import android.content.Context
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
-import com.example.fullproject.model.directory.entities.DirectoryNew
+import com.example.fullproject.model.directory.entities.Directory
 import com.example.fullproject.model.song.SongSource
 import com.example.fullproject.model.song.entities.Song
-import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MediaSource @Inject constructor(
-    @ApplicationContext private val context: Context
-) : SongSource {
+class MediaSource @Inject constructor() : SongSource {
 
     override fun getAudioFileFromDirectories(
-        directories: List<DirectoryNew>,
+        directories: List<Directory>,
         songsFromDb: List<Song>
     ): List<Song> {
-        val songsMap = songsFromDb.associateBy { it.uri }
-        return directories
-            .flatMap { directory ->
-                getFilesFromDirectory(File(directory.uri))
-                    .filter { isSupportedAudioFile(it) }
-                    .mapNotNull { file ->
-                        val uri = getContentUri(file) ?: return@mapNotNull null
-                        songsMap[uri] ?: createDefaultSong(uri, file.name)
-                    }
-            }
-    }
+        val musicFiles = directories
+            .map { File(it.uri) }
+            .filter { it.isDirectory }
+            .flatMap { it.listFiles()?.toList() ?: emptyList() }
+            .filter { file -> isSupportedFormat(getFileExtension(Uri.fromFile(file).path!!)) }
 
-    private fun getFilesFromDirectory(directory: File): Sequence<File> {
-        return directory.walk()
-            .onEnter { it.isDirectory && it.listFiles()?.isNotEmpty() ?: false }
-            .filter { it.isFile }
-    }
-
-    private fun isSupportedAudioFile(file: File): Boolean {
-        val extension = file.extension.lowercase()
-        return SUPPORTED_FORMATS.contains(extension)
-    }
-
-    private fun getContentUri(file: File): String {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            MediaStore.getMediaUri(context, Uri.fromFile(file)).toString()
-        } else {
-            Uri.fromFile(file).toString()
+        return musicFiles.map { file ->
+            val uri = Uri.fromFile(file).path!!
+            findSongByUri(uri, songsFromDb) ?: createDefaultSong(uri)
         }
+//        return musicFiles.map { file ->
+//            val uri = Uri.fromFile(file).toString()
+//            createDefaultSong(uri)
+//        }
     }
 
-    private fun createDefaultSong(uri: String, fileName: String): Song {
+    private fun getFileExtension(filePath: String): String {
+        return filePath.substringAfterLast('.', "").lowercase()
+    }
+
+    private fun createDefaultSong(uri: String): Song {
         return Song(
             id = -1,
             uri = uri,
-            name = fileName.substringBeforeLast('.'),
+            name = null,
             author = null,
             disEnableAutoPlay = false
         )
     }
 
-    private companion object {
-        val SUPPORTED_FORMATS = setOf(
-            "aa", "aac", "ac3", "adx", "ahx", "ape", "au", "aud",
-            "dmf", "dts", "dxd", "flac", "mmf", "mod", "mp1", "mp2",
-            "mp3", "mp4", "mpc", "opus", "ra", "tta", "voc", "vox",
-            "vqf", "wav", "wma", "xm", "cd", "mqa"
+    private fun findSongByUri(uri: String, list: List<Song>): Song? {
+        return list.find { it.uri == uri }
+    }
+
+    private fun isSupportedFormat(extension: String): Boolean {
+        val supportedFormats = setOf(
+            "aa", "aac", "ac3", "adx", "ahx", "ape", "au", "aud", "dmf", "dts",
+            "dxd", "flac", "mmf", "mod", "mp1", "mp2", "mp3", "mp4", "mpc", "opus",
+            "ra", "tta", "voc", "vox", "vqf", "wav", "wma", "xm", "cd", "mqa"
         )
+        return extension in supportedFormats
     }
 }
+
+//
+//@Singleton
+//class MediaSource @Inject constructor(
+//    @ApplicationContext private val context: Context
+//) : SongSource {
+//
+//    override fun getAudioFileFromDirectories(
+//        directories: List<DirectoryNew>,
+//        songsFromDb: List<Song>
+//    ): List<Song> {
+//        println("debug in source start")
+//        if (shouldSkipQuery()) {
+//            println("debug in source if")
+//            return emptyList()
+//        }
+//        println("debug in source after if")
+//
+//        val mediaFiles = mutableListOf<Song>()
+//
+//        for (directory in directories) {
+//            val dirFile = getDirectoryFile(directory.uri)
+//            if (dirFile?.isDirectory == true) {
+//                val files = dirFile.listFiles()?.filter { isSupportedFormat(it.extension) } ?: emptyList()
+//                for (file in files) {
+//                    val uri = Uri.fromFile(file).toString()
+//                    val song = findSongByUri(uri, songsFromDb) ?: createDefaultSong(uri, file.name)
+//                    mediaFiles.add(song)
+//                }
+//            }
+//        }
+//        mediaFiles.forEach {
+//            println("debug in source $it")
+//        }
+//
+//        return mediaFiles
+//    }
+//
+//    private fun getDirectoryFile(uri: String): File? {
+//        return when (uri) {
+//            "Download" -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+//            "Music" -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
+//            else -> File(uri).takeIf { it.exists() }
+//        }
+//    }
+//
+//    private fun shouldSkipQuery(): Boolean {
+//        return if (Build.VERSION.SDK_INT <= 32) {
+//            ContextCompat.checkSelfPermission(
+//                context, Manifest.permission.READ_EXTERNAL_STORAGE
+//            ) != PackageManager.PERMISSION_GRANTED
+//        } else false
+//    }
+//
+//    private fun createDefaultSong(uri: String, name: String): Song {
+//        return Song(
+//            id = -1,
+//            uri = uri,
+//            name = name,
+//            author = null,
+//            disEnableAutoPlay = false
+//        )
+//    }
+//
+//    private fun findSongByUri(uri: String, list: List<Song>): Song? {
+//        return list.find { it.uri == uri }
+//    }
+//
+//    private fun isSupportedFormat(mimeType: String): Boolean {
+//        return mimeType.startsWith("audio/")
+//    }
+//
+//    companion object {
+//        private const val REQUEST_CODE = 1001
+//    }
+//}
+
+
+////////////////////////////////////////////////////
 //    fun getAllMediaFiles(): List<MediaFile> {
 //        // Not having permission on < 33 makes the app crash
 //        // when attempting to query

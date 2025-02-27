@@ -81,7 +81,7 @@ class SongDBAdapter(
 
             if (song.disEnableAutoPlay) {
                 nameItem.text = buildString {
-                    append(itemView.context.getString(R.string.unnamed))
+                    append(song.name ?: itemView.context.getString(R.string.unnamed))
                     append(itemView.context.getString(R.string.skip))
                 }
             }else{

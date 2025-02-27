@@ -87,12 +87,10 @@ class MusicPlayerFragment : Fragment(R.layout.fragment_music_player) {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                viewModel.stopTimer()
                 viewModel.pauseMusic()
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                viewModel.startUpdatingTimer()
                 viewModel.continueMusic()
             }
         }
@@ -140,7 +138,6 @@ class MusicPlayerFragment : Fragment(R.layout.fragment_music_player) {
         println("Debug in fragment111 $defaultValue")
         if (defaultValue.isPlaying) {
             binding.playOrPause.setImageResource(R.drawable.ic_pause)
-            viewModel.startUpdatingTimer()
         }
         else
             binding.playOrPause.setImageResource(R.drawable.ic_play)

@@ -2,6 +2,7 @@
     <string name="app_name">Media player</string>
     <string name="music">music</string>
     <string name="nameMusic">Name of music</string>
+    <string name="nameDir">Name of directory</string>
     <string name="artist">Artist</string>
     <string name="imageD">No image</string>
     <string name="startTime">00:00</string>
@@ -18,7 +19,7 @@
     <string name="add_music">Add Music</string>
     <string name="add_dir">Add Dir</string>
     <string name="uri_item_db">Uri</string>
-    <string name="enter_the_author">Enter the author(Ignore for Dir)</string>
+    <string name="enter_the_author">Enter the author</string>
     <string name="author">Author</string>
     <string name="your_music_list_loading">Your music list Loading</string>
     <string name="is_empty">is empty</string>
@@ -29,4 +30,13 @@
     <string name="delete">Delete</string>
     <string name="root_path">/storage/emulated/0/</string>
     <string name="skip">(skip)</string>
+    <string name="cancel">cancel</string>
+    <string name="permission_needed_title">Permission</string>
+    <string name="permission_needed_message">The program requires certain permissions to function. Please grant the necessary access rights to proceed</string>
+    <string name="continue_text">continue</string>
+    <string name="permission_denied_forever_title">Permissions denied</string>
+    <string name="permission_denied_forever_message">Please open the settings and grant consent for the necessary permissions</string>
+    <string name="open_settings">open setting</string>
+    <string name="_00_00_00_00">00:00/00:00</string>
+    <string name="current_time_and_duration">%1$s/%2$s</string>
 </resources>

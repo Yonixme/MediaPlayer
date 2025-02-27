@@ -73,13 +73,13 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/header_music"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header_dir"
         app:layout_constraintVertical_bias="0"
         app:layout_constraintVertical_chainStyle="spread_inside"
         tools:itemCount="3"
-        tools:listitem="@layout/b_data_item" />
+        tools:listitem="@layout/dir_item_db" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header_music"
@@ -153,7 +153,7 @@
         android:id="@+id/add_item_in_bd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        layout="@layout/add_in_bd_data_view"
+        layout="@layout/adding_song_in_bd_data_view"
         app:layout_constraintTop_toBottomOf="@id/list_music"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

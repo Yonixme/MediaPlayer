@@ -1,5 +1,6 @@
 package com.example.fullproject.screens.musiclist
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.fullproject.model.services.MusicServiceManager
 import com.example.fullproject.model.services.MusicServiceManager.CurrentSongState
 import com.example.fullproject.model.song.MusicRepository
+import com.example.fullproject.model.song.entities.Song
 import com.example.fullproject.model.song.entities.SongWithDetails
 import com.example.fullproject.model.song.provider.infoprovider.MusicInfoProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,29 +30,57 @@ class MusicListViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+//            launch {
+//                combine(
+//                    musicRepository.getListSongsFromDevice(),
+//                    musicServiceManager.getCurrentSongWithDetails()
+//                ) { listSongsFromDevice, currentSongDetailsState ->
+//                    val updatedList = listSongsFromDevice?.mapNotNull { song ->
+//                        if (song.uri == (currentSongDetailsState as? CurrentSongState.Success)?.currentSong?.song?.uri) {
+//                            currentSongDetailsState.currentSong
+//                        } else {
+//                            musicInfoProvider.getInformationForSong(song)
+//                                ?: return@combine
+//                        }
+//                    } ?: emptyList()
+//
+//                    _listSongWithDetails.value = if (updatedList.isNotEmpty()) {
+//                        ScreenStateWithDetails.Success(updatedList)
+//                    } else if(currentSongDetailsState is CurrentSongState.Loading){
+//                        ScreenStateWithDetails.Loading
+//                    }else{
+//                        ScreenStateWithDetails.Empty
+//                    }
+//                }.catch { e ->
+//                    _listSongWithDetails.value = ScreenStateWithDetails.Error(e.toString())
+//                }.collect{}
+//            }
+
             launch {
                 combine(
                     musicRepository.getListSongsFromDevice(),
                     musicServiceManager.getCurrentSongWithDetails()
-                ) { listSongsFromDevice, currentSongDetailsState ->
-                    val updatedList = listSongsFromDevice?.mapNotNull { song ->
-                        if (song.uri == (currentSongDetailsState as? CurrentSongState.Success)?.currentSong?.song?.uri) {
-                            currentSongDetailsState.currentSong
-                        } else {
-                            musicInfoProvider.getInformationForSong(song)
-                                ?: return@combine
+                ) { state, currentSongDetailsState ->
+                    when (state) {
+                        MusicRepository.SongDbState.Empty -> _listSongWithDetails.value = ScreenStateWithDetails.Empty
+                        MusicRepository.SongDbState.Loading -> _listSongWithDetails.value = ScreenStateWithDetails.Loading
+                        is MusicRepository.SongDbState.Success -> {
+                            val updatedList = state.songs.mapNotNull { song ->
+                                if (song.uri == (currentSongDetailsState as? CurrentSongState.Success)?.currentSong?.song?.uri) {
+                                    currentSongDetailsState.currentSong
+                                } else {
+                                    musicInfoProvider.getInformationForSong(song)
+                                }
+                            }
+                            _listSongWithDetails.value = if (updatedList.isNotEmpty()) {
+                                ScreenStateWithDetails.Success(updatedList)
+                            } else if(currentSongDetailsState is CurrentSongState.Loading){
+                                ScreenStateWithDetails.Loading
+                            }else{
+                                ScreenStateWithDetails.Empty
+                            }
                         }
-                    } ?: emptyList()
-
-                    _listSongWithDetails.value = if (updatedList.isNotEmpty()) {
-                        ScreenStateWithDetails.Success(updatedList)
-                    } else if(currentSongDetailsState is CurrentSongState.Loading){
-                        ScreenStateWithDetails.Loading
-                    }else{
-                        ScreenStateWithDetails.Empty
                     }
-                }.catch { e ->
-                    _listSongWithDetails.value = ScreenStateWithDetails.Error(e.toString())
                 }.collect{}
             }
         }
@@ -68,10 +98,15 @@ class MusicListViewModel @Inject constructor(
         musicServiceManager.onStop(uri)
     }
 
+    fun loadSongs() {
+        viewModelScope.launch {
+            musicRepository.refreshSongsFromDevice()
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         println("Debug22 in viewModel $this")
-        //musicServiceManager.unBindService()
     }
 
     sealed class ScreenStateWithDetails{

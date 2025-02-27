@@ -5,7 +5,5 @@
     <View
         android:id="@+id/line"
         android:layout_width="match_parent"
-        android:layout_height="6dp"
-        android:alpha="0.2"
-        android:background="@color/black" />
+        android:layout_height="6dp"/>
 </LinearLayout>

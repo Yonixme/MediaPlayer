@@ -2,7 +2,7 @@ package com.example.fullproject.model.directory.database
 
 import com.example.fullproject.model.directory.database.entities.DirectoryDbEntity
 import com.example.fullproject.model.directory.entities.InputDirectoryData
-import com.example.fullproject.model.directory.entities.DirectoryNew
+import com.example.fullproject.model.directory.entities.Directory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -12,7 +12,7 @@ import javax.inject.Singleton
 class RoomDirectoryRepository @Inject constructor(
     private val directoryDao: DirectoryDao
 ) : DbDirectoryRepository {
-    override fun getAllDirectories(): Flow<List<DirectoryNew?>> {
+    override fun getAllDirectories(): Flow<List<Directory?>> {
         return directoryDao.getAllDirectories()
             .map { list ->
                 list.map {
@@ -29,7 +29,7 @@ class RoomDirectoryRepository @Inject constructor(
         directoryDao.insertDirectory(DirectoryDbEntity.fromInputDirectoryData(inputDirectoryData))
     }
 
-    override suspend fun updateValueForDirectory(directory: DirectoryNew) {
+    override suspend fun updateValueForDirectory(directory: Directory) {
         directoryDao.updateValueForDirectory(DirectoryDbEntity.fromDirectory(directory))
     }
 }

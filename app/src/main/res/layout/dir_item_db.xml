@@ -26,6 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_gravity="center"
             android:orientation="vertical">
 
             <TextView
@@ -39,24 +40,14 @@
                 android:textAllCaps="true"
                 android:textAlignment="center"
                 android:textSize="14sp"
-                tools:text="@string/nameMusic"/>
-
-            <TextView
-                android:id="@+id/author_item"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:lines="1"
-                android:textAlignment="center"
-                android:textAllCaps="true"
-                android:textColor="@color/black"
-                android:textSize="12sp"
-                tools:text="@string/author_txt" />
+                tools:text="@string/nameDir"/>
 
             <TextView
                 android:id="@+id/uri_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:lines="1"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="11sp"

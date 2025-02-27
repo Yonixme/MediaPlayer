@@ -5,28 +5,23 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/itemView"
-    android:orientation="vertical">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        android:orientation="horizontal">
+    android:background="?android:attr/selectableItemBackground"
+    android:orientation="horizontal"
+    android:layout_margin="4dp">
 
         <ImageView
             android:id="@+id/launchMusic"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:padding="8dp"
-            android:layout_marginStart="8dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="8dp"
             tools:src="@drawable/ic_play"
+            android:layout_gravity="center"
             android:background="?android:attr/selectableItemBackground"
             android:contentDescription="@string/no_image" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
@@ -34,41 +29,44 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:layout_marginTop="4dp"
                 android:lines="1"
                 android:textColor="@color/black"
                 android:textAlignment="center"
                 android:textSize="14sp"
                 tools:text="@string/nameMusic"/>
 
-            <TextView
-                android:id="@+id/authorNameTextView"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:lines="1"
-                android:textAlignment="center"
-                android:textColor="@color/black"
-                android:textSize="10sp"
-                tools:text="@string/author_txt" />
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:id="@+id/authorNameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:layout_weight="1"
+                    android:lines="1"
+                    android:layout_gravity="center"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    tools:text="@string/author_txt" />
+
+                <TextView
+                    android:id="@+id/timeView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:lines="1"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    tools:text="@string/_00_00_00_00" />
+
+            </LinearLayout>
+
         </LinearLayout>
-
-        <ImageView
-            android:id="@+id/itemMore"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="10dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:contentDescription="@string/no_image"
-            android:padding="11dp"
-            android:src="@drawable/ic_setting" />
     </LinearLayout>
-
-    <View
-        android:id="@+id/line"
-        android:layout_width="match_parent"
-        android:layout_height="6sp"
-        android:background="@color/black"
-        android:alpha="0.1"/>
-
-</LinearLayout>

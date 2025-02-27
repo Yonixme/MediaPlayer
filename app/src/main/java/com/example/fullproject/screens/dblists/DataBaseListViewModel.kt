@@ -1,11 +1,12 @@
 package com.example.fullproject.screens.dblists
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fullproject.model.directory.DirectoryRepository
-import com.example.fullproject.model.directory.entities.DirectoryNew
+import com.example.fullproject.model.directory.entities.Directory
 import com.example.fullproject.model.directory.entities.InputDirectoryData
 import com.example.fullproject.model.song.MusicRepository
 import com.example.fullproject.model.song.entities.SongData
@@ -21,36 +22,75 @@ class DataBaseListViewModel @Inject constructor(
     private val directoryRepository: DirectoryRepository
 ) : ViewModel() {
 
-    private val _listSongs = MutableLiveData<ReadingSongDbState>(ReadingSongDbState.Loading)
-    val listSongs: LiveData<ReadingSongDbState> get() = _listSongs
+    private val _listSavedSongs = MutableLiveData<ReadingSongDbState>(ReadingSongDbState.Loading)
+    val listSavedSongs: LiveData<ReadingSongDbState> get() = _listSavedSongs
 
     private val _listDirectories = MutableLiveData<ReadingDirectoryDbState>(ReadingDirectoryDbState.Loading)
     val listDirectories: LiveData<ReadingDirectoryDbState> get() = _listDirectories
 
+    private val _songNotSavedYet = mutableListOf<Song>()
+    val songNotSavedYet get() = _songNotSavedYet.toList()
+
     init {
         viewModelScope.launch {
             launch {
-                directoryRepository.getListAllDirectory()
-                    .collect{ listDirectoriesFromDb ->
-                        _listDirectories.value = if (listDirectoriesFromDb != null){
-                            ReadingDirectoryDbState.Success(listDirectoriesFromDb)
-                        }else{
-                            ReadingDirectoryDbState.Empty
+                directoryRepository.getDirectoriesState()
+                    .collect{state ->
+                        _listDirectories.value = when(state){
+                            is DirectoryRepository.DirectoryDbState.Loading -> {
+                                ReadingDirectoryDbState.Loading
+                            }
+                            is DirectoryRepository.DirectoryDbState.Empty -> {
+                                ReadingDirectoryDbState.Empty
+                            }
+                            is DirectoryRepository.DirectoryDbState.Success -> {
+                                ReadingDirectoryDbState.Success(state.directories)
+                            }
                         }
                     }
             }
 
+//            launch {
+//                musicRepository.getListSavedSongs()
+//                    .collect{ listSongsFromDb ->
+//                        _listSavedSongs.value = if (listSongsFromDb != null){
+//                            ReadingSongDbState.Success(listSongsFromDb)
+//                        }else{
+//                            ReadingSongDbState.Empty
+//                        }
+//                    }
+//            }
+//
+//            launch {
+//                musicRepository.getListSongsNotSavedYet().collect{newSongs ->
+//                    if (_songNotSavedYet == newSongs) return@collect
+//                    println("debug 22333 viewmodel ${newSongs}")
+//                    _songNotSavedYet.clear()
+//                    _songNotSavedYet.addAll(newSongs ?: listOf())
+//                }
+//            }
             launch {
-                musicRepository.getListSavedSongs()
-                    .collect{ listSongsFromDb ->
-                        _listSongs.value = if (listSongsFromDb != null){
-                            println("Song123 in songs flow block")
-                            ReadingSongDbState.Success(listSongsFromDb)
-                        }else{
-                            println("Song123 in songs is empty")
-                            ReadingSongDbState.Empty
+                musicRepository.getListSavedSongs().collect{state->
+                    _listSavedSongs.value = when(state){
+                        is MusicRepository.SongDbState.Empty -> ReadingSongDbState.Empty
+                        is MusicRepository.SongDbState.Loading -> ReadingSongDbState.Loading
+                        is MusicRepository.SongDbState.Success -> ReadingSongDbState.Success(state.songs)
+                    }
+                }
+            }
+
+            launch {
+                musicRepository.getListSongsNotSavedYet().collect{state ->
+                    when(state){
+                        is MusicRepository.SongDbState.Empty -> _songNotSavedYet.clear()
+                        is MusicRepository.SongDbState.Loading -> _songNotSavedYet.clear()
+                        is MusicRepository.SongDbState.Success -> {
+                            if (_songNotSavedYet == state) return@collect
+                            _songNotSavedYet.clear()
+                            _songNotSavedYet.addAll(state.songs)
                         }
                     }
+                }
             }
         }
     }
@@ -75,20 +115,20 @@ class DataBaseListViewModel @Inject constructor(
     fun updateFlagAddPlaylistDir(uri: String, isChecked: Boolean){
         viewModelScope.launch(Dispatchers.IO) {
             val updatedDirectory = findDirectoryByURI(uri)?.copy(disEnableForReading = isChecked)
-            if (updatedDirectory == null) return@launch
+                ?: return@launch
 
             directoryRepository.updateDirectory(updatedDirectory)
         }
     }
 
-    private fun findDirectoryByURI(uri: String): DirectoryNew? {
+    private fun findDirectoryByURI(uri: String): Directory? {
         return (_listDirectories.value as? ReadingDirectoryDbState.Success)
             ?.listDirectories
             ?.firstOrNull { it.uri == uri }
     }
 
     private fun findSongByURI(uri: String): Song? {
-        return (_listSongs.value as? ReadingSongDbState.Success)
+        return (_listSavedSongs.value as? ReadingSongDbState.Success)
             ?.listSong
             ?.firstOrNull { it.uri == uri }
     }
@@ -144,7 +184,7 @@ class DataBaseListViewModel @Inject constructor(
 
     sealed class ReadingDirectoryDbState{
         data object Loading : ReadingDirectoryDbState()
-        data class Success(val listDirectories: List<DirectoryNew>): ReadingDirectoryDbState()
+        data class Success(val listDirectories: List<Directory>): ReadingDirectoryDbState()
         data class Error(val massage: String) : ReadingDirectoryDbState()
         data object Empty: ReadingDirectoryDbState()
     }

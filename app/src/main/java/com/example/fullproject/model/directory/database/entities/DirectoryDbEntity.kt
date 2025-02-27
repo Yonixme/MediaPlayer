@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.example.fullproject.model.directory.entities.InputDirectoryData
-import com.example.fullproject.model.directory.entities.DirectoryNew
+import com.example.fullproject.model.directory.entities.Directory
 
 @Entity(tableName = "directories",
     indices =[
@@ -19,8 +19,8 @@ data class DirectoryDbEntity(
     @ColumnInfo(name = "dis_enable_for_reading") val disEnableForReading: Boolean?,
     @ColumnInfo(name = "is_default_dir") val isDefaultDir: Boolean?
 ){
-    fun toDirectory(): DirectoryNew {
-        return DirectoryNew(
+    fun toDirectory(): Directory {
+        return Directory(
             id = id,
             uri = uri,
             name = name.orEmpty(),
@@ -30,13 +30,13 @@ data class DirectoryDbEntity(
     }
 
     companion object{
-        fun fromDirectory(directoryNew: DirectoryNew) : DirectoryDbEntity {
+        fun fromDirectory(directory: Directory) : DirectoryDbEntity {
             return DirectoryDbEntity(
-                id = directoryNew.id,
-                uri = directoryNew.uri,
-                name = directoryNew.name,
-                disEnableForReading = directoryNew.disEnableForReading,
-                isDefaultDir = directoryNew.isDefaultDir
+                id = directory.id,
+                uri = directory.uri,
+                name = directory.name,
+                disEnableForReading = directory.disEnableForReading,
+                isDefaultDir = directory.isDefaultDir
             )
         }
 

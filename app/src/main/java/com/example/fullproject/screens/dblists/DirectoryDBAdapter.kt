@@ -10,8 +10,8 @@ import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fullproject.R
-import com.example.fullproject.databinding.BDataItemBinding
-import com.example.fullproject.model.directory.entities.DirectoryNew
+import com.example.fullproject.databinding.DirItemDbBinding
+import com.example.fullproject.model.directory.entities.Directory
 
 interface DirectoryDBActionListener{
     fun updateFlag(uri: String, flag: Boolean)
@@ -20,8 +20,8 @@ interface DirectoryDBActionListener{
 }
 
 class DbDirectoryDiffCallBack(
-    private val oldList: List<DirectoryNew>,
-    private val newList: List<DirectoryNew>
+    private val oldList: List<Directory>,
+    private val newList: List<Directory>
 ): DiffUtil.Callback(){
     override fun getOldListSize(): Int = oldList.size
 
@@ -48,7 +48,7 @@ class DirectoryDBAdapter(
     private val dirDBActionListener: DirectoryDBActionListener
 ) : RecyclerView.Adapter<DirectoryDBAdapter.DirectoryDBHolder>(), View.OnClickListener{
 
-    var listOfDirectories: List<DirectoryNew> = emptyList()
+    var listOfDirectories: List<Directory> = emptyList()
         set(newValue){
             val diffCallback = DbDirectoryDiffCallBack(field, newValue)
             val diffResult = DiffUtil.calculateDiff(diffCallback)
@@ -56,13 +56,13 @@ class DirectoryDBAdapter(
             diffResult.dispatchUpdatesTo(this)
         }
 
-    class DirectoryDBHolder(val binding: BDataItemBinding): RecyclerView.ViewHolder(binding.root)
+    class DirectoryDBHolder(val binding: DirItemDbBinding): RecyclerView.ViewHolder(binding.root)
 
     override fun getItemCount(): Int = listOfDirectories.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DirectoryDBHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = BDataItemBinding.inflate(inflater, parent, false)
+        val binding = DirItemDbBinding.inflate(inflater, parent, false)
 
 
         binding.itemMore.setOnClickListener(this)
@@ -81,7 +81,6 @@ class DirectoryDBAdapter(
 
             nameItem.text = directory.name ?: itemView.context.getString(R.string.unnamed)
 
-            authorItem.visibility = View.GONE
             uriItem.text = directory.uri
             if(directory.isDefaultDir) itemMore.visibility = View.INVISIBLE
             else itemMore.visibility = View.VISIBLE
@@ -105,7 +104,7 @@ class DirectoryDBAdapter(
 
 
     override fun onClick(v: View) {
-        val dir = v.tag as DirectoryNew
+        val dir = v.tag as Directory
         when(v.id){
             R.id.item_more ->{
                 showPopupMenu(v, dir)
@@ -114,7 +113,7 @@ class DirectoryDBAdapter(
         }
     }
 
-    private fun showPopupMenu(view: View, dir: DirectoryNew){
+    private fun showPopupMenu(view: View, dir: Directory){
         val context: Context = view.context
         val popupMenu = PopupMenu(context, view)
         popupMenu.menu.add(0, DELETE_ID, Menu.NONE, "Delete")

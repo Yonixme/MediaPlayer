@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.fullproject.R
 import com.example.fullproject.databinding.SongItemBinding
 import com.example.fullproject.model.song.entities.SongWithDetails
+import com.example.fullproject.utils.convertMillisToMinute
 
 interface SongActionListenerNew{
     fun onPlay(uri: String)
@@ -67,7 +68,6 @@ class SongAdapterNew(
         val binding = SongItemBinding.inflate(inflater, parent, false)
 
         binding.itemView.setOnClickListener(this)
-        binding.itemMore.setOnClickListener(this)
         binding.launchMusic.setOnClickListener(this)
 
         return SongHolder(binding)
@@ -79,11 +79,15 @@ class SongAdapterNew(
         Log.d("DataBaseURI", position.toString())
         with(holder.binding) {
             launchMusic.tag = songWithDetails
-            itemMore.tag = songWithDetails
             itemView.tag = songWithDetails
 
             userNameTextView.text = songWithDetails.song.name ?: songWithDetails.song.uri
             authorNameTextView.text = songWithDetails.song.author ?: itemView.context.getString(R.string.author)
+            timeView.text = itemView.context.getString(
+                R.string.current_time_and_duration,
+                convertMillisToMinute(songWithDetails.currentPosition),
+                convertMillisToMinute(songWithDetails.duration)
+            )
 
             if (songWithDetails.isPlaying)
                 launchMusic.setImageResource(R.drawable.ic_pause)
