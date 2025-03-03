@@ -19,12 +19,7 @@ class DirectoryRepository @Inject constructor(
 ) {
     private val customScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    private val _listOfAllDirectories = MutableStateFlow<List<Directory>?>(null)
-
-    private val _listOfActiveDirectories = MutableStateFlow<List<Directory>?>(null)
-
     private val _directoryState: MutableStateFlow<DirectoryDbState> = MutableStateFlow(DirectoryDbState.Loading)
-
     private val _activeDirectoryState: MutableStateFlow<DirectoryDbState> = MutableStateFlow(DirectoryDbState.Loading)
 
     init {
@@ -38,7 +33,6 @@ class DirectoryRepository @Inject constructor(
                 if (mappedListAllDirectories.isNotEmpty()){
                     _directoryState.value = DirectoryDbState.Success(mappedListAllDirectories)
 
-                    _listOfAllDirectories.value = mappedListAllDirectories
                     val filteredActiveDirectories = mappedListAllDirectories.filter { directory -> !directory.disEnableForReading }
                     if (filteredActiveDirectories != (_activeDirectoryState.value as? DirectoryDbState.Success)?.directories)
                         _activeDirectoryState.value =  DirectoryDbState.Success(filteredActiveDirectories)
@@ -56,9 +50,6 @@ class DirectoryRepository @Inject constructor(
         }
     }
 
-    fun getListAllDirectory(): Flow<List<Directory>?> = _listOfAllDirectories
-
-    fun getListOfActiveDirectory(): Flow<List<Directory>?> = _listOfActiveDirectories
 
     fun getDirectoriesState() : Flow<DirectoryDbState> = _directoryState
 

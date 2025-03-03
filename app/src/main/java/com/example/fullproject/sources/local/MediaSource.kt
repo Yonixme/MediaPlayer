@@ -25,10 +25,6 @@ class MediaSource @Inject constructor() : SongSource {
             val uri = Uri.fromFile(file).path!!
             findSongByUri(uri, songsFromDb) ?: createDefaultSong(uri)
         }
-//        return musicFiles.map { file ->
-//            val uri = Uri.fromFile(file).toString()
-//            createDefaultSong(uri)
-//        }
     }
 
     private fun getFileExtension(filePath: String): String {

@@ -1,6 +1,8 @@
 package com.example.fullproject.screens.dblists
 
+import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -31,6 +33,13 @@ class DataBaseListViewModel @Inject constructor(
     private val _songNotSavedYet = mutableListOf<Song>()
     val songNotSavedYet get() = _songNotSavedYet.toList()
 
+    private val _toastMessage = MutableLiveData<Event<String>>()
+    val toastMessage: LiveData<Event<String>> = _toastMessage
+
+    fun showToast(message: String) {
+        _toastMessage.postValue(Event(message))
+    }
+
     init {
         viewModelScope.launch {
             launch {
@@ -49,26 +58,6 @@ class DataBaseListViewModel @Inject constructor(
                         }
                     }
             }
-
-//            launch {
-//                musicRepository.getListSavedSongs()
-//                    .collect{ listSongsFromDb ->
-//                        _listSavedSongs.value = if (listSongsFromDb != null){
-//                            ReadingSongDbState.Success(listSongsFromDb)
-//                        }else{
-//                            ReadingSongDbState.Empty
-//                        }
-//                    }
-//            }
-//
-//            launch {
-//                musicRepository.getListSongsNotSavedYet().collect{newSongs ->
-//                    if (_songNotSavedYet == newSongs) return@collect
-//                    println("debug 22333 viewmodel ${newSongs}")
-//                    _songNotSavedYet.clear()
-//                    _songNotSavedYet.addAll(newSongs ?: listOf())
-//                }
-//            }
             launch {
                 musicRepository.getListSavedSongs().collect{state->
                     _listSavedSongs.value = when(state){
@@ -146,16 +135,24 @@ class DataBaseListViewModel @Inject constructor(
     }
 
     fun writeDirectoryInDB(uri: String,
-                     name: String?,
-                     disEnableForReading: Boolean) {
+                           name: String?,
+                           disEnableForReading: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            directoryRepository.addDirectory(
-                InputDirectoryData(
-                uri = uri,
-                name = name,
-                disEnableForReading = disEnableForReading
+            try {
+                directoryRepository.addDirectory(
+                    InputDirectoryData(
+                        uri = uri,
+                        name = name,
+                        disEnableForReading = disEnableForReading
+                    )
                 )
-            )
+            }
+            catch (e: Exception){
+                if (e is SQLiteConstraintException)
+                    showToast("An element with this URI is already in the database.")
+                else
+                    showToast("Adding in db failed $e")
+            }
         }
     }
 
@@ -165,13 +162,20 @@ class DataBaseListViewModel @Inject constructor(
                       disEnableAutoPlay: Boolean
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            musicRepository.addSongInDb(
-                SongData(
-                    uri = uri,
-                    name = name,
-                    author = author,
-                    disEnableAutoPlay = disEnableAutoPlay)
-            )
+            try {
+                musicRepository.addSongInDb(
+                    SongData(
+                        uri = uri,
+                        name = name,
+                        author = author,
+                        disEnableAutoPlay = disEnableAutoPlay)
+                )
+            }catch (e: Exception){
+                if (e is SQLiteConstraintException)
+                    showToast("An element with this URI is already in the database.")
+                else
+                    showToast("Adding in db failed $e")
+            }
         }
     }
 

@@ -9,7 +9,7 @@ import com.example.fullproject.model.services.MusicServiceManager.CurrentSongSta
 import com.example.fullproject.model.song.MusicRepository
 import com.example.fullproject.model.song.entities.SongWithDetails
 import com.example.fullproject.model.song.provider.infoprovider.MusicInfoProvider
-import com.example.fullproject.utils.convertMillisToMinute
+import com.example.fullproject.screens.config.convertMillisToMinute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

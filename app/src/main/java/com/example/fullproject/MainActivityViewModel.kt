@@ -11,7 +11,6 @@ class MainActivityViewModel @Inject constructor(
 ) : ViewModel() {
 
     fun init(){
-
     }
 
     override fun onCleared() {

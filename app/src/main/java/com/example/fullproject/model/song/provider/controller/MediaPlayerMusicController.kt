@@ -3,6 +3,7 @@ package com.example.fullproject.model.song.provider.controller
 import android.content.Context
 import android.media.MediaPlayer
 import android.net.Uri
+import android.util.Log
 import com.example.fullproject.model.song.entities.SongWithDetails
 import com.example.fullproject.model.song.entities.Song
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -17,6 +18,7 @@ class MediaPlayerMusicController @Inject constructor(
     private var playingState: Boolean = false
 
     override fun playMusic(uri: String) {
+        Log.d("searching bug", "music controller + $uri")
         if (mp == null) {
             mp = createMP(uri)
         }

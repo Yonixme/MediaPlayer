@@ -1,19 +1,15 @@
 package com.example.fullproject.model.services
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import com.example.fullproject.model.services.notification.NotificationHelper
 import com.example.fullproject.model.song.MusicRepository
-import com.example.fullproject.model.song.provider.controller.MusicController
 import com.example.fullproject.model.song.entities.Song
 import com.example.fullproject.model.song.entities.SongWithDetails
+import com.example.fullproject.model.song.provider.controller.MusicController
 import com.example.fullproject.model.song.provider.infoprovider.MusicInfoProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -21,11 +17,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -49,15 +43,6 @@ class MusicService : Service(){
     override fun onCreate() {
         super.onCreate()
         customScope.launch {
-//            launch {
-//                musicRepository.getListSongsFromDevice()
-//                    .collect{listSongFromDevice ->
-//                        _listSongs.value = listSongFromDevice
-//                        val filteredList = listSongFromDevice?.filter { song -> !song.disEnableAutoPlay }
-//                        _autoPlayListSongs.value = filteredList
-//                    }
-//            }
-
             launch {
                 musicRepository.getListSongsFromDevice().collect {state ->
                     when(state){
@@ -106,7 +91,6 @@ class MusicService : Service(){
             COMMAND_ON_STOP_MUSIC -> {
                 onStopMusic()
                 if (foregroundIsActive){
-                    println("destroy 12342 foreground")
                     if (Build.VERSION.SDK_INT < 24)
                         stopForeground(true)
                     else
@@ -118,7 +102,6 @@ class MusicService : Service(){
             else -> {
                 onStopMusic()
                 if (foregroundIsActive){
-                    println("destroy 12342 foreground")
                     if (Build.VERSION.SDK_INT < 24)
                         stopForeground(true)
                     else
@@ -133,7 +116,6 @@ class MusicService : Service(){
 
     override fun onDestroy() {
         super.onDestroy()
-        println("destroy 12342 Service")
         customScope.coroutineContext.cancel()
     }
 
@@ -192,15 +174,11 @@ class MusicService : Service(){
         return binder
     }
 
-    inner class GetServiceBinder() : Binder() {
+    inner class GetServiceBinder : Binder() {
         fun getService(): MusicService {
             return this@MusicService
         }
     }
-
-    private fun getListAutoPlaySongs() = _autoPlayListSongs.value
-
-    private fun getListSongs() = _listSongs.value
 
     fun getCurrentSongFlow(): Flow<SongWithDetails?> = _currentSongFlow
 
@@ -227,12 +205,8 @@ class MusicService : Service(){
     private fun changeCurrentSong(direction: Int, fromAutoPlayList: Boolean) {
 
         val currentSong = _currentSongFlow.value?.song ?: return
-        println("debug123 $currentSong")
         val musicList = _listSongs.value ?: return
-        println("debug123 $musicList")
         val autoPlayList = _autoPlayListSongs.value ?: emptyList()
-        println("debug123 $autoPlayList")
-
 
         val currentList = if (fromAutoPlayList) autoPlayList else musicList
 
@@ -245,7 +219,7 @@ class MusicService : Service(){
         val newIndex = currentIndex + direction
 
         val newSong = if (fromAutoPlayList) {
-            findNextInAutoPlayList(musicList, autoPlayList, musicList[newIndex], direction)
+            findNextInAutoPlayList(musicList, autoPlayList, musicList[newIndex], direction) ?: return
         } else {
             musicList.getOrNull(newIndex) ?: return
         }
@@ -259,9 +233,8 @@ class MusicService : Service(){
         autoPlayList: List<Song>,
         target: Song,
         direction: Int
-    ): Song {
+    ): Song? {
         val indexInList = listSongs.indexOfFirst { it.uri == target.uri }
-        if (indexInList == -1) throw IllegalStateException("Target song not found in main list")
 
         val nextAutoPlaySong = if (direction == 1) {
             listSongs.drop(indexInList + 1).firstOrNull { it in autoPlayList }
@@ -269,15 +242,13 @@ class MusicService : Service(){
             listSongs.take(indexInList).lastOrNull { it in autoPlayList }
         }
 
-        return nextAutoPlaySong ?: throw NoSuchElementException("No next autoplay song found")
+        return nextAutoPlaySong
     }
 
     private fun startUpdatingTimer(){
-        println("Debug in fragment111 timer = $timerJob")
         if (timerJob == null) {
             timerJob = CoroutineScope(Dispatchers.Default).launch {
                 while (true) {
-                    println("timer start 222")
                     updateSongState()
                     delay(1000L)
                 }
@@ -300,7 +271,6 @@ class MusicService : Service(){
         const val COMMAND_CONTINUE_PLAYING = "continue playing"
         const val COMMAND_NEXT_SONG = "next song"
         const val COMMAND_PREVIOUS_SONG = "previous song"
-
         const val ID_URI = "uri"
     }
 }

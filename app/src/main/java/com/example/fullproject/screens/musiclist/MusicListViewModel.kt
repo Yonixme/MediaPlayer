@@ -12,6 +12,7 @@ import com.example.fullproject.model.song.entities.Song
 import com.example.fullproject.model.song.entities.SongWithDetails
 import com.example.fullproject.model.song.provider.infoprovider.MusicInfoProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -26,36 +27,10 @@ class MusicListViewModel @Inject constructor(
     private val _listSongWithDetails = MutableLiveData<ScreenStateWithDetails>(
         ScreenStateWithDetails.Loading
     )
-    val listSongWithDetails: LiveData<ScreenStateWithDetails> get() = _listSongWithDetails
+    val listSongWithDetails: LiveData<ScreenStateWithDetails> = _listSongWithDetails
 
     init {
         viewModelScope.launch {
-//            launch {
-//                combine(
-//                    musicRepository.getListSongsFromDevice(),
-//                    musicServiceManager.getCurrentSongWithDetails()
-//                ) { listSongsFromDevice, currentSongDetailsState ->
-//                    val updatedList = listSongsFromDevice?.mapNotNull { song ->
-//                        if (song.uri == (currentSongDetailsState as? CurrentSongState.Success)?.currentSong?.song?.uri) {
-//                            currentSongDetailsState.currentSong
-//                        } else {
-//                            musicInfoProvider.getInformationForSong(song)
-//                                ?: return@combine
-//                        }
-//                    } ?: emptyList()
-//
-//                    _listSongWithDetails.value = if (updatedList.isNotEmpty()) {
-//                        ScreenStateWithDetails.Success(updatedList)
-//                    } else if(currentSongDetailsState is CurrentSongState.Loading){
-//                        ScreenStateWithDetails.Loading
-//                    }else{
-//                        ScreenStateWithDetails.Empty
-//                    }
-//                }.catch { e ->
-//                    _listSongWithDetails.value = ScreenStateWithDetails.Error(e.toString())
-//                }.collect{}
-//            }
-
             launch {
                 combine(
                     musicRepository.getListSongsFromDevice(),
@@ -72,10 +47,16 @@ class MusicListViewModel @Inject constructor(
                                     musicInfoProvider.getInformationForSong(song)
                                 }
                             }
+//                            _listSongWithDetails.value = if (updatedList.isNotEmpty()) {
+//                                ScreenStateWithDetails.Success(updatedList)
+//                            } else if(currentSongDetailsState is CurrentSongState.Loading){
+//                                ScreenStateWithDetails.Loading
+//                            }else{
+//                                ScreenStateWithDetails.Empty
+//                            }
+
                             _listSongWithDetails.value = if (updatedList.isNotEmpty()) {
                                 ScreenStateWithDetails.Success(updatedList)
-                            } else if(currentSongDetailsState is CurrentSongState.Loading){
-                                ScreenStateWithDetails.Loading
                             }else{
                                 ScreenStateWithDetails.Empty
                             }
@@ -87,10 +68,12 @@ class MusicListViewModel @Inject constructor(
     }
 
     fun onPlay(uri: String){
+        Log.d("searching bug", "in viewmodelplay + $uri")
         musicServiceManager.onPlay(uri)
     }
 
     fun onPause(uri: String){
+        Log.d("searching bug", "in viewmodelpause + $uri")
         musicServiceManager.onPause(uri)
     }
 
@@ -99,14 +82,10 @@ class MusicListViewModel @Inject constructor(
     }
 
     fun loadSongs() {
-        viewModelScope.launch {
+        Log.d("permission block", "viewModel")
+        viewModelScope.launch(Dispatchers.IO) {
             musicRepository.refreshSongsFromDevice()
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        println("Debug22 in viewModel $this")
     }
 
     sealed class ScreenStateWithDetails{

@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.fullproject.R
 import com.example.fullproject.databinding.SongItemBinding
 import com.example.fullproject.model.song.entities.SongWithDetails
-import com.example.fullproject.utils.convertMillisToMinute
+import com.example.fullproject.screens.config.convertMillisToMinute
 
 interface SongActionListenerNew{
     fun onPlay(uri: String)
@@ -101,6 +101,7 @@ class SongAdapterNew(
 
         when(v.id){
             R.id.launchMusic -> {
+                Log.d("searching bug", "in adapter + $songWithDetails")
                 if (songWithDetails.isPlaying){
                     songActionListener.onPause(songWithDetails.song.uri)
                 } else {

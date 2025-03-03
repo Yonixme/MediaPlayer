@@ -1,4 +1,4 @@
-package com.example.fullproject.utils
+package com.example.fullproject.screens.config
 
 fun convertMillisToMinute(progress: Int): String {
     var seconds:Int = progress / 1000

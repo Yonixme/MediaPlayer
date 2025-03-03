@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import com.example.fullproject.model.services.MusicServiceManager.CurrentSongState
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -36,11 +37,9 @@ class MusicServiceManagerImpl @Inject constructor(
             val binder = service as MusicService.GetServiceBinder
             musicService = binder.getService()
             isBound = true
-            println("debug flow111 connect")
             customScope.launch {
                 musicService?.getCurrentSongFlow()?.collect{
                     songFromFlow ->
-                    println("debug flow111 $songFromFlow")
                     _currentSong.value = if (songFromFlow != null){
                         CurrentSongState.Success(songFromFlow)
                     }else{
@@ -65,9 +64,7 @@ class MusicServiceManagerImpl @Inject constructor(
     }
 
     override fun unBindService(){
-        println("Debug22 in manager $this")
         if (isBound){
-            println("Debug22 in manager $this")
             context.unbindService(serviceConnection)
             isBound = false
             musicService = null
@@ -128,7 +125,6 @@ class MusicServiceManagerImpl @Inject constructor(
 
     private fun startServiceWithCommand(action: String, uri: String){
         if(musicService == null) bindService()
-        println("Manager123: $action uri = $uri")
         val intent = Intent(context, MusicService::class.java)
         intent.action = action
         intent.putExtra(MusicService.ID_URI, uri)

@@ -15,9 +15,9 @@
     <string name="music_not_found_alert">music not found</string>
     <string name="music_list">Music list</string>
     <string name="directories">Directories</string>
-    <string name="song">Song</string>
+    <string name="songs">Songs</string>
     <string name="add_music">Add Music</string>
-    <string name="add_dir">Add Dir</string>
+    <string name="add_dir">Add Directory</string>
     <string name="uri_item_db">Uri</string>
     <string name="enter_the_author">Enter the author</string>
     <string name="author">Author</string>

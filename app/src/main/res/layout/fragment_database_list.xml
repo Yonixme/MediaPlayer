@@ -37,32 +37,10 @@
             android:text="@string/directories"
             android:textColor="@color/black"
             android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@id/line_bottom_dir"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/done_dir"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:padding="10dp"
-            android:visibility="gone"
-            android:background="?android:attr/selectableItemBackground"
-            android:contentDescription="@string/imageD"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
-        <include
-            android:id="@+id/line_bottom_dir"
-            android:layout_width="match_parent"
-            android:layout_height="6dp"
-            layout="@layout/view_line1"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -71,7 +49,7 @@
         android:id="@+id/list_dir"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/header_music"
+        app:layout_constraintBottom_toTopOf="@id/add_dir_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -81,24 +59,16 @@
         tools:itemCount="3"
         tools:listitem="@layout/dir_item_db" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/header_music"
+    <Button
+        android:id="@+id/add_dir_btn"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_dir"
         app:layout_constraintTop_toBottomOf="@id/list_dir"
-        app:layout_constraintBottom_toTopOf="@id/list_music">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/print_music"/>
 
-        <include
-            android:id="@+id/line_top_music"
-            layout="@layout/view_line1"
-            android:layout_width="match_parent"
-            android:layout_height="6dp"
-            app:layout_constraintBottom_toTopOf="@id/print_music"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="spread_inside" />
 
         <TextView
             android:id="@+id/print_music"
@@ -106,57 +76,37 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
             android:lines="1"
-            android:text="@string/song"
+            android:layout_margin="10dp"
+            android:text="@string/songs"
             android:textColor="@color/black"
             android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@id/line_bottom_music"
+            app:layout_constraintBottom_toTopOf="@id/list_music"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/line_top_music" />
+            app:layout_constraintTop_toBottomOf="@id/add_dir_btn" />
 
-        <ImageView
-            android:id="@+id/done_music"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:padding="10dp"
-            android:visibility="gone"
-            android:background="?android:attr/selectableItemBackground"
-            android:contentDescription="@string/imageD"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
-        <include
-            android:id="@+id/line_bottom_music"
-            layout="@layout/view_line1"
-            android:layout_width="match_parent"
-            android:layout_height="6dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/print_music" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_music"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/add_item_in_bd"
+        app:layout_constraintBottom_toTopOf="@id/add_music_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header_music"
+        app:layout_constraintTop_toBottomOf="@id/print_music"
         tools:itemCount="3"
         tools:listitem="@layout/b_data_item"/>
 
-    <include
-        android:id="@+id/add_item_in_bd"
+    <Button
+        android:id="@+id/add_music_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        layout="@layout/adding_song_in_bd_data_view"
+        android:text="@string/add_music"
+        android:layout_marginBottom="20dp"
         app:layout_constraintTop_toBottomOf="@id/list_music"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

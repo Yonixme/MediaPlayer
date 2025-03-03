@@ -22,7 +22,7 @@ import com.example.fullproject.model.services.MusicService.Companion.COMMAND_ON_
 import com.example.fullproject.model.services.MusicService.Companion.COMMAND_ON_STOP_MUSIC
 import com.example.fullproject.model.services.MusicService.Companion.COMMAND_PREVIOUS_SONG
 import com.example.fullproject.model.song.entities.SongWithDetails
-import com.example.fullproject.utils.convertMillisToMinute
+import com.example.fullproject.screens.config.convertMillisToMinute
 
 
 class NotificationHelper(
