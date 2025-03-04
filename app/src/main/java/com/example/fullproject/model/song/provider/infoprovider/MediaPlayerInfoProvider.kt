@@ -14,10 +14,7 @@ import javax.inject.Singleton
 class MediaPlayerInfoProvider @Inject constructor(
     @ApplicationContext private val context: Context
 ) : MusicInfoProvider {
-    private var currentMP: MediaPlayer? = null
-    private var lastMP: MediaPlayer? = null
-
-    override fun createMediaPlayer(uri: String): MediaPlayer?{
+    private fun createMediaPlayer(uri: String): MediaPlayer?{
         val createdMP = try {
             MediaPlayer().apply {
                 setAudioAttributes(
@@ -48,15 +45,4 @@ class MediaPlayerInfoProvider @Inject constructor(
             )
         }
     }
-
-    override fun changeCurrentMediaPlayer(uri: String){
-        lastMP = currentMP
-        currentMP = createMediaPlayer(uri)
-    }
-
-    override fun getCurrentMediaPlayer(): MediaPlayer?{
-        return currentMP
-    }
-
-
 }

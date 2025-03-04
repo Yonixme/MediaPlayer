@@ -7,7 +7,6 @@ import com.example.fullproject.model.song.provider.infoprovider.MediaPlayerInfoP
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ServiceComponent
 import dagger.hilt.components.SingletonComponent
 
 @Module

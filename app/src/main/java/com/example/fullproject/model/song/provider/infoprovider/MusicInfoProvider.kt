@@ -8,10 +8,4 @@ interface MusicInfoProvider {
 
 
     fun getInformationForSong(song: Song): SongWithDetails?
-
-    fun getCurrentMediaPlayer(): MediaPlayer?
-
-    fun changeCurrentMediaPlayer(uri: String)
-
-    fun createMediaPlayer(uri: String): MediaPlayer?
 }
