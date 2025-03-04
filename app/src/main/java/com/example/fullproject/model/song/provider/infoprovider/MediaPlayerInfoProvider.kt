@@ -1,6 +1,7 @@
 package com.example.fullproject.model.song.provider.infoprovider
 
 import android.content.Context
+import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.net.Uri
 import com.example.fullproject.model.song.entities.Song
@@ -18,9 +19,17 @@ class MediaPlayerInfoProvider @Inject constructor(
 
     override fun createMediaPlayer(uri: String): MediaPlayer?{
         val createdMP = try {
-            MediaPlayer.create(context, Uri.parse(uri))
+            MediaPlayer().apply {
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .build()
+                )
+                setDataSource(context, Uri.parse(uri))
+                prepare()
+            }
         } catch (e: Exception){
-            println("Error debug ${e.message}")
             null
         }
         return createdMP

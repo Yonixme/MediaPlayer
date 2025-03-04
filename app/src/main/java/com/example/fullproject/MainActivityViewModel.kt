@@ -10,12 +10,10 @@ class MainActivityViewModel @Inject constructor(
     private val serviceManager: MusicServiceManager
 ) : ViewModel() {
 
-    fun init(){
-    }
+    fun bind() = Unit
 
     override fun onCleared() {
         super.onCleared()
-        println("destroy 12342 viewmodel")
         serviceManager.unBindService()
     }
 }

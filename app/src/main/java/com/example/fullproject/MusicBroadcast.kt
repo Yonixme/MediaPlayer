@@ -8,7 +8,6 @@ import com.example.fullproject.model.services.MusicService
 
 class MusicBroadcast() : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
-        println("destroy 12342 ${intent?.action}")
         intent?.action?.let {action ->
             val intentService = Intent(context, MusicService::class.java).apply {
                 this.action = action

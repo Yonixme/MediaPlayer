@@ -1,6 +1,5 @@
 package com.example.fullproject.model.directory
 
-import android.util.Log
 import com.example.fullproject.model.directory.database.DbDirectoryRepository
 import com.example.fullproject.model.directory.entities.InputDirectoryData
 import com.example.fullproject.model.directory.entities.Directory
@@ -40,12 +39,6 @@ class DirectoryRepository @Inject constructor(
                     _directoryState.value = DirectoryDbState.Empty
                     _activeDirectoryState.value = DirectoryDbState.Empty
                 }
-//
-//                _listOfAllDirectories.value = mappedListAllDirectories
-//                Log.d("debug 22333"," in  DirectoryRepository${mappedListAllDirectories.filter { directory -> !directory.disEnableForReading }}")
-//                val filteredActiveDirectories = mappedListAllDirectories.filter { directory -> !directory.disEnableForReading }
-//                if (filteredActiveDirectories != _listOfActiveDirectories.value)
-//                    _listOfActiveDirectories.value = filteredActiveDirectories
             }
         }
     }

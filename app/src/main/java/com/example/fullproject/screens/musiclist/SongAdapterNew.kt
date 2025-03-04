@@ -101,7 +101,6 @@ class SongAdapterNew(
 
         when(v.id){
             R.id.launchMusic -> {
-                Log.d("searching bug", "in adapter + $songWithDetails")
                 if (songWithDetails.isPlaying){
                     songActionListener.onPause(songWithDetails.song.uri)
                 } else {

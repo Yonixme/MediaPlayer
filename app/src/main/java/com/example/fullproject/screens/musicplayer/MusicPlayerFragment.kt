@@ -62,7 +62,7 @@ class MusicPlayerFragment : Fragment(R.layout.fragment_music_player) {
                     return
                 }
                 if (currentSongState.currentSong?.isPlaying == null) return
-                println("debug123 ${currentSongState.currentSong.isPlaying}")
+
                 if (currentSongState.currentSong.isPlaying){
                     viewModel.onPause()
                 }else{
@@ -118,10 +118,8 @@ class MusicPlayerFragment : Fragment(R.layout.fragment_music_player) {
                     songUpdatingState.currentSong.takeIf { observeOnUpdating || newSongSelected}.let { songWithDetails->
                         if (songWithDetails != null){
                             drawUI(songWithDetails)
-                            println("Debug problem123 $songWithDetails")
                         }else{
                             drawUI()
-                            println("Debug problem123 $songWithDetails")
                         }
                     }
                 }

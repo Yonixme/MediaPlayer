@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -23,7 +22,7 @@ import com.example.fullproject.R
 import com.example.fullproject.databinding.FragmentMusicListBinding
 import com.example.fullproject.model.song.entities.SongWithDetails
 import com.example.fullproject.screens.config.PermissionsSharedPreferences
-import com.example.fullproject.screens.musiclist.MusicListViewModel.*
+import com.example.fullproject.screens.musiclist.MusicListViewModel.ScreenStateWithDetails
 import com.example.fullproject.screens.musicplayer.MusicPlayerFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,11 +32,15 @@ class MusicListFragment : Fragment(R.layout.fragment_music_list) {
     private val viewModel: MusicListViewModel by viewModels()
     private lateinit var adapter: SongAdapterNew
 
-//    private val requestMultiplePermissions = registerForActivityResult(
-//        ActivityResultContracts.RequestMultiplePermissions()
-//    ) { permissions ->
-//        handlePermissionResult(permissions)
-//    }
+    private val requestMultiplePermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            val deniedPermissions = permissions.filter { !it.value }.keys.toTypedArray()
+
+            if (deniedPermissions.isEmpty()){
+                binding.requestPermission.visibility = View.GONE
+                viewModel.loadSongs()
+            }
+        }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -126,36 +129,12 @@ class MusicListFragment : Fragment(R.layout.fragment_music_list) {
 
     }
 
-    private val requestMultiplePermissions =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-            val deniedPermissions = permissions.filter { !it.value }.keys.toTypedArray()
-
-            if (deniedPermissions.isEmpty()){
-                binding.requestPermission.visibility = View.GONE
-                viewModel.loadSongs()
-            }
-        }
-
-
-
-//    private fun handlePermissionResult(permissions: Map<String, Boolean>) {
-//        val deniedPermissions = permissions.filter { !it.value }.keys.toTypedArray()
-//
-//        if (deniedPermissions.isEmpty()) {
-//            binding.requestPermission.visibility = View.GONE
-//            viewModel.loadSongs()
-//        } else {
-//            checkPermissionRationale(deniedPermissions)
-//        }
-//    }
-
-
     private fun buildPermissionsList(): Array<String> {
         val permissions = mutableListOf<String>()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             addPermissionIfNeeded(permissions, Manifest.permission.READ_MEDIA_AUDIO)
-            addPermissionIfNeeded(permissions, Manifest.permission.POST_NOTIFICATIONS) // Додаємо окремо для API 33+
+            addPermissionIfNeeded(permissions, Manifest.permission.POST_NOTIFICATIONS)
         } else {
             addPermissionIfNeeded(permissions, Manifest.permission.READ_EXTERNAL_STORAGE)
         }
@@ -181,7 +160,7 @@ class MusicListFragment : Fragment(R.layout.fragment_music_list) {
             .setPositiveButton(R.string.continue_text) { _, _ ->
                 requestMultiplePermissions.launch(permissions)
                 if (!PermissionsSharedPreferences.wasPermissionAsked(requireContext())) {
-                    PermissionsSharedPreferences.setPermissionAsked(requireContext(), true);
+                    PermissionsSharedPreferences.setPermissionAsked(requireContext(), true)
                 }
             }
             .setNegativeButton(R.string.cancel, null)

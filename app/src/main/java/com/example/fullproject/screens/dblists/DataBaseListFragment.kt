@@ -1,13 +1,11 @@
 package com.example.fullproject.screens.dblists
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.PopupWindow
 import android.widget.Toast
@@ -21,7 +19,8 @@ import com.example.fullproject.model.directory.entities.Directory
 import com.example.fullproject.model.song.entities.Song
 import com.example.fullproject.screens.components.AddingDirInDbDialog
 import com.example.fullproject.screens.components.AddingSongInDbDialog
-import com.example.fullproject.screens.dblists.DataBaseListViewModel.*
+import com.example.fullproject.screens.dblists.DataBaseListViewModel.ReadingDirectoryDbState
+import com.example.fullproject.screens.dblists.DataBaseListViewModel.ReadingSongDbState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -65,7 +64,6 @@ class DataBaseListFragment : Fragment(R.layout.fragment_database_list) {
         observeListsInViewModel()
         setupListenerChildFragments()
 
-        //updateUI()
         return binding.root
     }
 
@@ -123,7 +121,6 @@ class DataBaseListFragment : Fragment(R.layout.fragment_database_list) {
             return
         }
 
-        // val itemList = List(20) { "Елемент ${it + 1}" }
         val unsavedSongs = viewModel.songNotSavedYet.map { it.uri }
         val inflater = LayoutInflater.from(requireContext())
         val popupView = inflater.inflate(R.layout.popup_unsaved_song_list, null)
@@ -155,24 +152,13 @@ class DataBaseListFragment : Fragment(R.layout.fragment_database_list) {
     }
 
     private fun openAddSongDialog(uri:String) {
-//        val dialog = AddingSongInDbDialog.newInstance(uri).apply {
-//            onAddClickListener = { name, author, uri, disEnableAutoPlay ->
-//                if (uri.isNotEmpty()) {
-//                    viewModel.writeSongInDB(
-//                        name = name,
-//                        author = author,
-//                        uri = uri,
-//                        disEnableAutoPlay = disEnableAutoPlay)
-//                }
-//            }
-//        }
         val dialog = AddingSongInDbDialog.newInstance(uri)
-        dialog.show(childFragmentManager, "AddingSongInDbDialog")
+        dialog.show(childFragmentManager, getString(R.string.adding_song_in_db_dialog))
     }
 
     private fun openAddDirectoryDialog() {
         val dialog = AddingDirInDbDialog()
-        dialog.show(childFragmentManager, "AddingDirInDbDialog")
+        dialog.show(childFragmentManager, getString(R.string.adding_dir_in_db_dialog))
 
     }
 
@@ -186,7 +172,6 @@ class DataBaseListFragment : Fragment(R.layout.fragment_database_list) {
 
     private fun observeListsInViewModel() {
         viewModel.listSavedSongs.observe(viewLifecycleOwner) { songDbState ->
-            Log.d("searching bug", "fragment saved + $songDbState")
             when (songDbState) {
                 is ReadingSongDbState.Loading -> listDbSongInLoadingState()
                 is ReadingSongDbState.Success -> updateDbListSongOnScreen(songDbState.listSong)
@@ -205,44 +190,22 @@ class DataBaseListFragment : Fragment(R.layout.fragment_database_list) {
         }
     }
 
-//    private fun addSongToDatabase() {
-//        val name = binding.addItemInBd.nameItem.text.toString().takeIf { it.isNotBlank() }
-//        val author = binding.addItemInBd.authorItem.text.toString().takeIf { it.isNotBlank() }
-//        val uri = binding.addItemInBd.uriItem.text.toString()
-//        val disEnableAutoPlay = binding.addItemInBd.isAddToList.isChecked
-//
-//        viewModel.writeSongInDB(uri, name, author, disEnableAutoPlay)
-//        updateUI()
-//    }
-
-    private fun addDirectoryToDatabase() {
-//        val name = binding.addItemInBd.nameItem.text.toString().takeIf { it.isNotBlank() }
-//        val uri = binding.addItemInBd.uriItem.text.toString()
-//        val addToStack = binding.addItemInBd.isAddToList.isChecked
-
-//        viewModel.writeDirectoryInDB(uri, name, addToStack)
-//        updateUI()
-    }
-
     private fun updateDbListSongOnScreen(listSong: List<Song>) {
-        Log.d("searching bug", "fragment saved + $listSong")
+        binding.musicDbPb.visibility = View.GONE
         songAdapter.listOfSongs = listSong
     }
 
-    private fun listDbSongInLoadingState() { }
+    private fun listDbSongInLoadingState() {
+        binding.musicDbPb.visibility = View.VISIBLE
+    }
 
     private fun updateDbListDirectoriesOnScreen(directories: List<Directory>) {
+        binding.directoryDbPb.visibility = View.GONE
         directoryAdapter.listOfDirectories = directories
     }
 
-    private fun listDbDirectoryInLoadingState() { }
+    private fun listDbDirectoryInLoadingState() {
+        binding.directoryDbPb.visibility = View.VISIBLE
+    }
 
-//    private fun updateUI() {
-//        binding.addItemInBd.apply {
-//            nameItem.setText("")
-//            authorItem.setText("")
-//            uriItem.setText(getString(R.string.root_path))
-//            isAddToList.isChecked = false
-//        }
-//    }
 }

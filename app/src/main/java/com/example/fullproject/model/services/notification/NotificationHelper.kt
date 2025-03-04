@@ -43,8 +43,6 @@ class NotificationHelper(
             ).apply {
                 setSound(null, null)
                 enableVibration(false)
-                //lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-                //setShowBadge(false)
             }
             context.getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
         }
@@ -52,9 +50,7 @@ class NotificationHelper(
 
 
     fun createNotification(songWithDetails: SongWithDetails?): Notification{
-        //val playIntent = createPendingIntent(COMMAND_ON_PLAY_MUSIC)
-        //val pauseIntent = createPendingIntent(COMMAND_ON_PAUSE_MUSIC)
-        val titleText = songWithDetails?.song?.name ?: "Music Player"
+        val titleText = songWithDetails?.song?.name ?: context.getString(R.string.music_player)
         val stopIntent = createPendingIntent(COMMAND_ON_STOP_MUSIC)
         val nextIntent = createPendingIntent(COMMAND_NEXT_SONG)
         val previousIntent = createPendingIntent(COMMAND_PREVIOUS_SONG)
@@ -65,7 +61,6 @@ class NotificationHelper(
             else
                 createPendingIntent(COMMAND_ON_PLAY_MUSIC)
 
-        println("in notification123 $songWithDetails")
         val launchSource =
             if (songWithDetails?.isPlaying == true)
                 R.drawable.ic_pause

@@ -1,19 +1,20 @@
 package com.example.fullproject.screens.dblists
 
+import android.content.Context
 import android.database.sqlite.SQLiteConstraintException
-import android.util.Log
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fullproject.R
 import com.example.fullproject.model.directory.DirectoryRepository
 import com.example.fullproject.model.directory.entities.Directory
 import com.example.fullproject.model.directory.entities.InputDirectoryData
 import com.example.fullproject.model.song.MusicRepository
-import com.example.fullproject.model.song.entities.SongData
 import com.example.fullproject.model.song.entities.Song
+import com.example.fullproject.model.song.entities.SongData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DataBaseListViewModel @Inject constructor(
     private val musicRepository: MusicRepository,
-    private val directoryRepository: DirectoryRepository
+    private val directoryRepository: DirectoryRepository,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _listSavedSongs = MutableLiveData<ReadingSongDbState>(ReadingSongDbState.Loading)
@@ -36,7 +38,7 @@ class DataBaseListViewModel @Inject constructor(
     private val _toastMessage = MutableLiveData<Event<String>>()
     val toastMessage: LiveData<Event<String>> = _toastMessage
 
-    fun showToast(message: String) {
+    private fun showToast(message: String) {
         _toastMessage.postValue(Event(message))
     }
 
@@ -134,6 +136,13 @@ class DataBaseListViewModel @Inject constructor(
         }
     }
 
+    private fun showErrorWritingDb(e: Exception){
+        if (e is SQLiteConstraintException)
+            showToast(context.getString(R.string.already_in_the_database))
+        else
+            showToast(context.getString(R.string.adding_in_db_failed, e))
+    }
+
     fun writeDirectoryInDB(uri: String,
                            name: String?,
                            disEnableForReading: Boolean) {
@@ -148,10 +157,7 @@ class DataBaseListViewModel @Inject constructor(
                 )
             }
             catch (e: Exception){
-                if (e is SQLiteConstraintException)
-                    showToast("An element with this URI is already in the database.")
-                else
-                    showToast("Adding in db failed $e")
+                showErrorWritingDb(e)
             }
         }
     }
@@ -171,10 +177,7 @@ class DataBaseListViewModel @Inject constructor(
                         disEnableAutoPlay = disEnableAutoPlay)
                 )
             }catch (e: Exception){
-                if (e is SQLiteConstraintException)
-                    showToast("An element with this URI is already in the database.")
-                else
-                    showToast("Adding in db failed $e")
+                showErrorWritingDb(e)
             }
         }
     }

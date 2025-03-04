@@ -1,6 +1,5 @@
 package com.example.fullproject.screens.musiclist
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,12 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.fullproject.model.services.MusicServiceManager
 import com.example.fullproject.model.services.MusicServiceManager.CurrentSongState
 import com.example.fullproject.model.song.MusicRepository
-import com.example.fullproject.model.song.entities.Song
 import com.example.fullproject.model.song.entities.SongWithDetails
 import com.example.fullproject.model.song.provider.infoprovider.MusicInfoProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -47,13 +44,6 @@ class MusicListViewModel @Inject constructor(
                                     musicInfoProvider.getInformationForSong(song)
                                 }
                             }
-//                            _listSongWithDetails.value = if (updatedList.isNotEmpty()) {
-//                                ScreenStateWithDetails.Success(updatedList)
-//                            } else if(currentSongDetailsState is CurrentSongState.Loading){
-//                                ScreenStateWithDetails.Loading
-//                            }else{
-//                                ScreenStateWithDetails.Empty
-//                            }
 
                             _listSongWithDetails.value = if (updatedList.isNotEmpty()) {
                                 ScreenStateWithDetails.Success(updatedList)
@@ -68,12 +58,10 @@ class MusicListViewModel @Inject constructor(
     }
 
     fun onPlay(uri: String){
-        Log.d("searching bug", "in viewmodelplay + $uri")
         musicServiceManager.onPlay(uri)
     }
 
     fun onPause(uri: String){
-        Log.d("searching bug", "in viewmodelpause + $uri")
         musicServiceManager.onPause(uri)
     }
 
@@ -82,7 +70,6 @@ class MusicListViewModel @Inject constructor(
     }
 
     fun loadSongs() {
-        Log.d("permission block", "viewModel")
         viewModelScope.launch(Dispatchers.IO) {
             musicRepository.refreshSongsFromDevice()
         }

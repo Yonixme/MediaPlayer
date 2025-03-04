@@ -1,9 +1,9 @@
 package com.example.fullproject.model.song.provider.controller
 
 import android.content.Context
+import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.net.Uri
-import android.util.Log
 import com.example.fullproject.model.song.entities.SongWithDetails
 import com.example.fullproject.model.song.entities.Song
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -18,28 +18,23 @@ class MediaPlayerMusicController @Inject constructor(
     private var playingState: Boolean = false
 
     override fun playMusic(uri: String) {
-        Log.d("searching bug", "music controller + $uri")
         if (mp == null) {
-            mp = createMP(uri)
+            mp = createMP(uri) ?: return
         }
-        val currentMP = mp ?: return
         if (playingState) return
-
-        mp?.start()
+        mp?.start() ?: return
         playingState = true
     }
 
     override fun pauseMusic() {
-        val currentMP = mp ?: return
         if (!playingState) return
-        mp!!.pause()
+        mp?.pause() ?: return
         playingState = false
     }
 
     override fun stopMusic() {
-        if (mp == null) return
-        mp?.stop()
-        mp?.release()
+        mp?.stop() ?: return
+        mp?.release() ?: return
         mp = null
         playingState = false
     }
@@ -57,11 +52,19 @@ class MediaPlayerMusicController @Inject constructor(
         }
     }
 
-    private fun createMP(uri: String): MediaPlayer?{
+     private fun createMP(uri: String): MediaPlayer?{
         val createdMP = try {
-            MediaPlayer.create(context, Uri.parse(uri))
+            MediaPlayer().apply {
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .build()
+                )
+                setDataSource(context, Uri.parse(uri))
+                prepare()
+            }
         } catch (e: Exception){
-            println("Error debug ${e.message}")
             null
         }
         return createdMP
@@ -72,7 +75,7 @@ class MediaPlayerMusicController @Inject constructor(
     override fun getDuration(): Int = mp?.duration ?: 0
 
     override fun changeSong(uri: String){
-        if (mp != null) { stopMusic() }
+        stopMusic()
         playMusic(uri)
     }
 

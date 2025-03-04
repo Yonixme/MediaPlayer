@@ -59,6 +59,16 @@
         tools:itemCount="3"
         tools:listitem="@layout/dir_item_db" />
 
+    <ProgressBar
+        android:id="@+id/directory_db_pb"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/list_dir"
+        app:layout_constraintEnd_toEndOf="@id/list_dir"
+        app:layout_constraintTop_toTopOf="@id/list_dir"
+        app:layout_constraintBottom_toBottomOf="@id/list_dir"/>
+
     <Button
         android:id="@+id/add_dir_btn"
         android:layout_width="match_parent"
@@ -70,20 +80,20 @@
         app:layout_constraintBottom_toTopOf="@id/print_music"/>
 
 
-        <TextView
-            android:id="@+id/print_music"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
-            android:lines="1"
-            android:layout_margin="10dp"
-            android:text="@string/songs"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@id/list_music"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/add_dir_btn" />
+    <TextView
+        android:id="@+id/print_music"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:lines="1"
+        android:layout_margin="10dp"
+        android:text="@string/songs"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@id/list_music"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/add_dir_btn" />
 
 
 
@@ -97,6 +107,17 @@
         app:layout_constraintTop_toBottomOf="@id/print_music"
         tools:itemCount="3"
         tools:listitem="@layout/b_data_item"/>
+
+    <ProgressBar
+        android:id="@+id/music_db_pb"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/list_music"
+        app:layout_constraintEnd_toEndOf="@id/list_music"
+        app:layout_constraintTop_toTopOf="@id/list_music"
+        app:layout_constraintBottom_toBottomOf="@id/list_music"/>
+
 
     <Button
         android:id="@+id/add_music_btn"

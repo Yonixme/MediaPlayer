@@ -29,22 +29,6 @@ class MusicPlayerViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-//            launch {
-//                musicRepository.getListSongsFromDevice().collect{list->
-//                    val updatedSelectedSong = list?.firstOrNull{
-//                        it.uri == selectedSong.value?.song?.uri
-//                    }
-//                    if (updatedSelectedSong != _selectedSong.value?.song){
-//                        if (updatedSelectedSong == null) {
-//                            _selectedSong.value = null
-//                        }else{
-//                            _selectedSong.value =
-//                                musicInfoProvider.getInformationForSong(updatedSelectedSong)
-//                        }
-//                    }
-//                }
-//            }
-
             launch{
                 musicRepository.getListSongsFromDevice().collect{state ->
                     when(state){
@@ -91,7 +75,6 @@ class MusicPlayerViewModel @Inject constructor(
     }
 
     fun onPlay(){
-        println("debug123 in viewModel ${getSelectedURI()}")
         val selectURI = getSelectedURI() ?: return
         musicServiceManager.onPlay(selectURI)
     }

@@ -35,7 +35,6 @@ class MusicService : Service(){
     private val customScope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     private val _currentSongFlow: MutableStateFlow<SongWithDetails?> = MutableStateFlow(null)
-    private var lastSong: SongWithDetails? = null
 
     private val _autoPlayListSongs: MutableStateFlow<List<Song>?> = MutableStateFlow(null)
     private val _listSongs: MutableStateFlow<List<Song>?> = MutableStateFlow(null)
@@ -68,7 +67,7 @@ class MusicService : Service(){
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        val uri = intent.getStringExtra(ID_URI) ?: _currentSongFlow.value?.song?.uri ?: lastSong?.song?.uri ?: return START_NOT_STICKY
+        val uri = intent.getStringExtra(ID_URI) ?: _currentSongFlow.value?.song?.uri ?: return START_NOT_STICKY
         if (_currentSongFlow.value?.song?.uri != uri) {
             onStopMusic()
             val newSong = musicRepository.getSongByURI(uri) ?: return START_NOT_STICKY
@@ -124,8 +123,7 @@ class MusicService : Service(){
         if (playingSongWithDetails.isPlaying) return
         musicController.playMusic(playingSongWithDetails.song.uri)
         musicController.setActionOnFinish {
-            nextSong()
-            updateSongState()
+            nextSong(true)
         }
         if (timerJob == null) startUpdatingTimer()
         val newSong = _currentSongFlow.value
@@ -147,7 +145,6 @@ class MusicService : Service(){
     }
 
     private fun onStopMusic(){
-        lastSong = _currentSongFlow.value
         if (_currentSongFlow.value == null) return
         _currentSongFlow.value = null
         musicController.stopMusic()
@@ -184,7 +181,7 @@ class MusicService : Service(){
 
     fun setCurrentTime(currentTime: Int){
         musicController.setCurrentTimeInMillis(currentTime){
-            nextSong()
+            nextSong(true)
             updateSongState()
         }
     }
@@ -202,48 +199,59 @@ class MusicService : Service(){
 
     private fun previousSong(fromAutoPlayList: Boolean = false) = changeCurrentSong(-1, fromAutoPlayList)
 
-    private fun changeCurrentSong(direction: Int, fromAutoPlayList: Boolean) {
 
+    private fun changeCurrentSong(direction: Int, fromAutoPlayList: Boolean) {
         val currentSong = _currentSongFlow.value?.song ?: return
         val musicList = _listSongs.value ?: return
-        val autoPlayList = _autoPlayListSongs.value ?: emptyList()
 
+        val autoPlayList = _autoPlayListSongs.value ?: emptyList()
         val currentList = if (fromAutoPlayList) autoPlayList else musicList
 
-        val currentIndex = currentList.indexOfFirst { it.uri == currentSong.uri }
-        if (currentIndex == -1) return
-
-        if ((direction == 1 && currentIndex >= currentList.lastIndex) ||
-            (direction == -1 && currentIndex <= 0)) return
-
-        val newIndex = currentIndex + direction
-
-        val newSong = if (fromAutoPlayList) {
-            findNextInAutoPlayList(musicList, autoPlayList, musicList[newIndex], direction) ?: return
+        val newSong = if (fromAutoPlayList){
+             findNextInAutoPlayList(
+                listSongs = musicList,
+                currentList = currentList,
+                target = currentSong,
+                direction = direction
+            ) ?: return
         } else {
+            val currentIndex = musicList.indexOfFirst { it.uri == currentSong.uri }
+            if (currentIndex == -1) return
+            val newIndex = currentIndex + direction
             musicList.getOrNull(newIndex) ?: return
         }
         musicController.changeSong(newSong.uri)
+        musicController.setActionOnFinish {
+            nextSong(true)
+        }
         if (timerJob == null) startUpdatingTimer()
         _currentSongFlow.value = musicController.getInformationForSong(newSong)
     }
 
     private fun findNextInAutoPlayList(
         listSongs: List<Song>,
-        autoPlayList: List<Song>,
+        currentList: List<Song>,
         target: Song,
         direction: Int
     ): Song? {
         val indexInList = listSongs.indexOfFirst { it.uri == target.uri }
+        if (indexInList == -1) return null
 
-        val nextAutoPlaySong = if (direction == 1) {
-            listSongs.drop(indexInList + 1).firstOrNull { it in autoPlayList }
+        return if (direction == 1) {
+            listSongs
+                .drop(indexInList + 1)
+                .firstOrNull { song ->
+                    song in currentList && !song.disEnableAutoPlay
+                }
         } else {
-            listSongs.take(indexInList).lastOrNull { it in autoPlayList }
+            listSongs
+                .take(indexInList)
+                .lastOrNull { song ->
+                    song in currentList && !song.disEnableAutoPlay
+                }
         }
-
-        return nextAutoPlaySong
     }
+
 
     private fun startUpdatingTimer(){
         if (timerJob == null) {
