@@ -46,11 +46,7 @@ class MediaSource @Inject constructor() : SongSource {
     }
 
     private fun isSupportedFormat(extension: String): Boolean {
-        val supportedFormats = setOf(
-            "aa", "aac", "ac3", "adx", "ahx", "ape", "au", "aud", "dmf", "dts",
-            "dxd", "flac", "mmf", "mod", "mp1", "mp2", "mp3", "mp4", "mpc", "opus",
-            "ra", "tta", "voc", "vox", "vqf", "wav", "wma", "xm", "cd", "mqa"
-        )
+        val supportedFormats = setOf("aac", "m4a", "ogg", "wav", "mp3")
         return extension in supportedFormats
     }
 }
